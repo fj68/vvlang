@@ -20,7 +20,7 @@ fun is_eof(text, pos)
   return len(text) <= pos
 end
 
-fun skip_whitespaces(pos)
+fun skip_whitespaces(text, pos)
   while not(is_eof(text, pos)) do
     if not(is_space(text[pos])) do
       break
