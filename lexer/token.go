@@ -145,7 +145,7 @@ var Symbols = map[rune]TokenType{
 	'+': TPlus,
 	'-': THyphen,
 	'*': TAsterisk,
-	'/': THyphen,
+	'/': TSlash,
 	'.': TDot,
 }
 
