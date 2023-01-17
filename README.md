@@ -21,10 +21,7 @@ fun is_eof(text, pos)
 end
 
 fun skip_whitespaces(text, pos)
-  while not(is_eof(text, pos)) do
-    if not(is_space(text[pos])) do
-      break
-    end
+  while not(is_eof(text, pos)) and is_space(text[pos]) do
     pos = pos + 1
   end
   return pos
