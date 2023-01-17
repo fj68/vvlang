@@ -21,7 +21,6 @@ const (
 	TWhile
 	TDo
 	TIf
-	TThen
 	TElse
 	TTrue
 	TFalse
