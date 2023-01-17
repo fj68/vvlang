@@ -155,6 +155,7 @@ fun update()
   i = 0
   while i < len(bullets) do
     update_bullet(i)
+    i = i + 1
   end
 end
 
@@ -166,6 +167,7 @@ fun draw()
   i = 0
   while i < len(bullets) do
     sprite.draw(bullets[i])
+    i = i + 1
   end
 end
 
