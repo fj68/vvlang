@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/fj68/new-lang/ast"
 	"github.com/fj68/new-lang/lexer"
@@ -73,10 +74,13 @@ func Parse(text []rune) ([]ast.Stmt, error) {
 
 func (p *Parser) registerPrefixParsers() {
 	p.prefixParsers = map[lexer.TokenType]PrefixParser{
-		lexer.TDigit:  p.parsePrefixExpr,
-		lexer.THyphen: p.parsePrefixExpr,
-		lexer.TIdent:  p.parseVarRefExpr,
-		lexer.TFun:    p.parseFunLiteralExpr,
+		lexer.TDigit:   p.parseDigitLiteralExpr,
+		lexer.TTrue:    p.parseBoolLiteralExpr,
+		lexer.TFalse:   p.parseBoolLiteralExpr,
+		lexer.TLiteral: p.parseStringLiteralExpr,
+		lexer.THyphen:  p.parsePrefixExpr,
+		lexer.TIdent:   p.parseVarRefExpr,
+		lexer.TFun:     p.parseFunLiteralExpr,
 	}
 }
 
@@ -442,4 +446,37 @@ func (p *Parser) parseFunCallArgs() ([]ast.Expr, error) {
 		return nil, err
 	}
 	return args, nil
+}
+
+func (p *Parser) parseDigitLiteralExpr() (ast.Expr, error) {
+	value, err := strconv.ParseFloat(p.curToken.Text, 64)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.NumberLiteralExpr{
+		Value: value,
+	}, nil
+}
+
+func (p *Parser) parseBoolLiteralExpr() (ast.Expr, error) {
+	value := p.curToken.Type == lexer.TTrue
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.BoolLiteralExpr{
+		Value: value,
+	}, nil
+}
+
+func (p *Parser) parseStringLiteralExpr() (ast.Expr, error) {
+	value := p.curToken.Text
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.StringLiteralExpr{
+		Value: value,
+	}, nil
 }
