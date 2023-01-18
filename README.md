@@ -182,3 +182,12 @@ while true do
   wait(0.1)
 end
 ```
+
+## Development
+
+Assuming latest golang is installed:
+
+```sh
+go build -o main
+```
+
