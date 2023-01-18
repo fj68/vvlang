@@ -295,6 +295,9 @@ func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
 			return nil, err
 		}
 	}
+	if err := p.expect(lexer.TEnd); err != nil {
+		return nil, err
+	}
 	return &ast.IfStmt{
 		Cond: cond,
 		Then: thenBody,
@@ -323,13 +326,11 @@ func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
 		return nil, err
 	}
 
-	if err := p.expectNext(lexer.TEnd); err != nil {
+	if err := p.expect(lexer.TEnd); err != nil {
 		return nil, err
 	}
-	// consume TEnd
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
+	fmt.Printf("cur  = %s\n", p.curToken.Type)
+	fmt.Printf("peek = %s\n", p.peekToken.Type)
 
 	return &ast.FunLiteralExpr{
 		Name: name,
@@ -466,7 +467,7 @@ func (p *Parser) parseFunCallArgs() ([]ast.Expr, error) {
 		if p.curToken.Type == lexer.TRParen {
 			break
 		}
-		if err := p.expectNext(lexer.TComma); err != nil {
+		if err := p.expect(lexer.TComma); err != nil {
 			return nil, err
 		}
 	}
