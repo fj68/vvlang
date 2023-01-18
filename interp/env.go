@@ -35,11 +35,3 @@ func (env *Env) Set(name string, value Value) {
 	}
 	env.Values[name] = value
 }
-
-func (env *Env) Push() {
-	*env = *NewEnv(env)
-}
-
-func (env *Env) Pop() {
-	*env = *env.outer
-}

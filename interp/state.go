@@ -24,6 +24,10 @@ func Eval(text []rune) (Value, error) {
 	return s.Eval(text)
 }
 
+func (s *State) RegisterBuiltin(name string, value Value) {
+	s.Env.Values[name] = value
+}
+
 func (s *State) Eval(text []rune) (Value, error) {
 	program, err := parser.Parse(text)
 	if err != nil {
@@ -35,6 +39,14 @@ func (s *State) Eval(text []rune) (Value, error) {
 	}
 
 	return s.RetVals.Pop(), nil
+}
+
+func (s *State) pushEnv() {
+	s.Env = NewEnv(s.Env)
+}
+
+func (s *State) popEnv() {
+	s.Env = s.Env.outer
 }
 
 func (s *State) evalProgram(program []ast.Stmt) error {
@@ -166,8 +178,8 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
 		return nil, fmt.Errorf("not enough or too much arguments")
 	}
 
-	s.Env.Push()
-	defer s.Env.Pop()
+	s.pushEnv()
+	defer s.popEnv()
 
 	for i, arg := range args {
 		s.Env.Values[f.Args[i]] = arg
