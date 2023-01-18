@@ -33,8 +33,12 @@ func (lex *Lexer) Next() (*Token, error) {
 		return lex.digit()
 	}
 
-	if r == '"' || r == '\'' {
+	if r == '\'' {
 		return lex.literal()
+	}
+
+	if r == '"' {
+		return lex.interpolated()
 	}
 
 	if IsIdentLetter(r) {
@@ -99,6 +103,27 @@ func (lex *Lexer) digit() (*Token, error) {
 }
 
 func (lex *Lexer) literal() (*Token, error) {
+	marker := lex.s.Current()
+	lex.s.Skip(1)
+
+	for !lex.s.IsEOF() && lex.s.Current() != marker {
+		if lex.s.Current() == '\\' {
+			lex.scanEscapeSequence()
+		} else {
+			lex.s.Advance(1)
+		}
+	}
+
+	if lex.s.IsEOF() {
+		return nil, fmt.Errorf("unexpected eof while reading string literal: %s", lex.s.Pos)
+	}
+
+	lex.s.Skip(1) // skip end marker
+
+	return lex.newToken(TLiteral), nil
+}
+
+func (lex *Lexer) interpolated() (*Token, error) {
 	marker := lex.s.Current()
 	lex.s.Skip(1)
 

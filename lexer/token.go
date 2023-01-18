@@ -12,6 +12,7 @@ const (
 	TDigit
 	TIdent
 	TLiteral
+	TInterplated
 	TComment
 
 	// keywords
@@ -37,6 +38,8 @@ const (
 	TComma
 	TLBrace
 	TRBrace
+	TLBracket
+	TRBracket
 	TPlus
 	THyphen
 	TAsterisk
@@ -54,6 +57,8 @@ func (ty TokenType) String() string {
 		return "Ident"
 	case TLiteral:
 		return "Literal"
+	case TInterplated:
+		return "Interpolated"
 	case TComment:
 		return "Comment"
 
@@ -100,6 +105,10 @@ func (ty TokenType) String() string {
 		return "LBrace"
 	case TRBrace:
 		return "RBrace"
+	case TLBracket:
+		return "LBracket"
+	case TRBracket:
+		return "RBracket"
 	case TPlus:
 		return "Plus"
 	case THyphen:
@@ -141,6 +150,8 @@ var Symbols = map[rune]TokenType{
 	')': TRParen,
 	'[': TLBrace,
 	']': TRBrace,
+	'{': TLBracket,
+	'}': TRBracket,
 	'+': TPlus,
 	'-': THyphen,
 	'*': TAsterisk,
