@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/fj68/new-lang/ast"
-	"github.com/fj68/new-lang/lexer"
+	"github.com/fj68/vvlang/ast"
+	"github.com/fj68/vvlang/lexer"
 )
 
 func oneOf[T comparable](xs []T, x T) bool {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fj68/new-lang/interp"
+	"github.com/fj68/vvlang/interp"
 )
 
 func Print(s *interp.State, args []interp.Value) (interp.Value, error) {

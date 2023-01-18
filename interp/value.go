@@ -3,7 +3,7 @@ package interp
 import (
 	"fmt"
 
-	"github.com/fj68/new-lang/ast"
+	"github.com/fj68/vvlang/ast"
 )
 
 type ValueType int

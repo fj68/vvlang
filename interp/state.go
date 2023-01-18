@@ -3,9 +3,9 @@ package interp
 import (
 	"fmt"
 
-	"github.com/fj68/new-lang/ast"
-	"github.com/fj68/new-lang/parser"
-	"github.com/fj68/new-lang/stack"
+	"github.com/fj68/vvlang/ast"
+	"github.com/fj68/vvlang/parser"
+	"github.com/fj68/vvlang/stack"
 )
 
 type State struct {
