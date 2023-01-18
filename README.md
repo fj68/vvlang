@@ -10,6 +10,29 @@ _This project is still in __early stage of development__. Nothing useful for end
 
 ## Code Example
 
+### How it looks
+
+```vv
+// let's define very simple function
+fun add(a, b)
+  return a + b
+end
+
+// here, another simple function
+fun incr(x)
+  return x + 1
+end
+
+// variable definition
+var x = 5
+
+// builtin function
+print(incr(x))
+
+// top-level return is allowed
+return add(x, 0.5)
+```
+
 ### CSV Parser
 
 Currently, there are some missing features e.g. list and the code below won't run.
