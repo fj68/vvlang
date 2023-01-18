@@ -1,4 +1,4 @@
-# new-lang
+# vv programming language
 
 ## Features Planned
 
@@ -10,7 +10,9 @@
 
 ### CSV Parser
 
-```new-lang
+Currently, there are some missing features e.g. Array and the code below won't run.
+
+```vv
 fun is_space(c)
   return c == ' ' or
          c == '\t' or
@@ -74,7 +76,10 @@ print_csv(values)
 
 ### Shooting
 
-```new-lang
+Graphic API and related works are future plans.
+It's not currently available and the API may change.
+
+```vv
 // sprite module
 fun new(name, x, y, w, h, face)
   return {
