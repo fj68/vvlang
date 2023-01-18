@@ -3,14 +3,14 @@
 ## Features Planned
 
  - simple and enough, friendly syntax
- - bool, number and string
- - function, if-else-end, while, for-in and variables
+ - bool, number, string, list and struct
+ - function, if-else-end, while and variables
 
 ## Code Example
 
 ### CSV Parser
 
-Currently, there are some missing features e.g. Array and the code below won't run.
+Currently, there are some missing features e.g. list and the code below won't run.
 
 ```vv
 fun is_space(c)
