@@ -45,10 +45,10 @@ func (stmt *IfStmt) Inspect() string {
 		thenBody = append(thenBody, s.Inspect())
 	}
 	var elseBody []string
-	for _, s := range stmt.Then {
+	for _, s := range stmt.Else {
 		elseBody = append(elseBody, s.Inspect())
 	}
-	return fmt.Sprintf("WhileStmt{%s, %s, %s}", stmt.Cond.Inspect(), strings.Join(thenBody, ", "), strings.Join(elseBody, ", "))
+	return fmt.Sprintf("IfStmt{%s, %s, %s}", stmt.Cond.Inspect(), strings.Join(thenBody, ", "), strings.Join(elseBody, ", "))
 }
 
 type VarDeclStmt struct {

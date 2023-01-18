@@ -14,7 +14,7 @@ type NumberLiteralExpr struct {
 }
 
 func (expr *NumberLiteralExpr) Inspect() string {
-	return fmt.Sprintf("NumberLiteralExpr{%F}", expr.Value)
+	return fmt.Sprintf("NumberLiteralExpr{%g}", expr.Value)
 }
 
 type BoolLiteralExpr struct {
@@ -61,11 +61,11 @@ func (expr *FunLiteralExpr) Inspect() string {
 	for _, s := range expr.Body {
 		body = append(body, s.Inspect())
 	}
-	return fmt.Sprintf("FunLiteralExpr{\"%s\", %s, %s}", expr.Name, strings.Join(expr.Args, ", "), strings.Join(body, ", "))
+	return fmt.Sprintf("FunLiteralExpr{\"%s\", [%s], [%s]}", expr.Name, strings.Join(expr.Args, ", "), strings.Join(body, ", "))
 }
 
 type FunCallExpr struct {
-	Fun Expr
+	Fun  Expr
 	Args []Expr
 }
 
@@ -74,7 +74,7 @@ func (expr *FunCallExpr) Inspect() string {
 	for _, arg := range expr.Args {
 		args = append(args, arg.Inspect())
 	}
-	return fmt.Sprintf("FunCallExpr{%s, %s}", expr.Fun.Inspect(), strings.Join(args, ", "))
+	return fmt.Sprintf("FunCallExpr{%s, [%s]}", expr.Fun.Inspect(), strings.Join(args, ", "))
 }
 
 type VarRefExpr struct {

@@ -37,6 +37,7 @@ var precedences = map[lexer.TokenType]Precedence{
 	lexer.THyphen:   PSum,
 	lexer.TAsterisk: PProduct,
 	lexer.TSlash:    PProduct,
+	lexer.TLParen:   PCall,
 }
 
 func precedenceOf(ty lexer.TokenType) Precedence {
@@ -89,6 +90,7 @@ func (p *Parser) registerInfixParsers() {
 		lexer.TDot:    p.parseInfixExpr,
 		lexer.THyphen: p.parseInfixExpr,
 		lexer.TPlus:   p.parseInfixExpr,
+		lexer.TEqual:  p.parseInfixExpr,
 		lexer.TLessEq: p.parseInfixExpr,
 		lexer.TLess:   p.parseInfixExpr,
 		lexer.TLParen: p.parseFunCallExpr,
@@ -106,6 +108,16 @@ func (p *Parser) readToken() error {
 	}
 	p.curToken = p.peekToken
 	p.peekToken = tok
+	return nil
+}
+
+func (p *Parser) expect(ty lexer.TokenType) error {
+	if p.curToken.Type != ty {
+		return fmt.Errorf("expected %s, but got %s", ty, p.curToken.Type)
+	}
+	if err := p.readToken(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -200,6 +212,9 @@ func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {
 		}
 		return &ast.ReturnStmt{}, nil
 	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
 	expr, err := p.parseExpr(PLowest)
 	if err != nil {
 		return nil, err
@@ -242,7 +257,7 @@ func (p *Parser) parseWhileStmt() (*ast.WhileStmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := p.expectNext(lexer.TDo); err != nil {
+	if err := p.expect(lexer.TDo); err != nil {
 		return nil, err
 	}
 	body, err := p.parseBody()
@@ -263,7 +278,7 @@ func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := p.expectNext(lexer.TDo); err != nil {
+	if err := p.expect(lexer.TDo); err != nil {
 		return nil, err
 	}
 	thenBody, err := p.parseBody()
@@ -308,6 +323,14 @@ func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
 		return nil, err
 	}
 
+	if err := p.expectNext(lexer.TEnd); err != nil {
+		return nil, err
+	}
+	// consume TEnd
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
 	return &ast.FunLiteralExpr{
 		Name: name,
 		Args: args,
@@ -339,6 +362,9 @@ func (p *Parser) parseFunLiteralArgs() ([]string, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
 	return args, nil
 }
 
@@ -352,7 +378,12 @@ func (p *Parser) parseExpr(precedence Precedence) (expr ast.Expr, err error) {
 		return nil, err
 	}
 
-	for oneOf([]lexer.TokenType{lexer.TEOF, lexer.TDo, lexer.TEnd}, p.peekToken.Type) && precedence < precedenceOf(p.peekToken.Type) {
+	stopTokens := []lexer.TokenType{
+		lexer.TEOF,
+		lexer.TDo,
+		lexer.TEnd,
+	}
+	for !oneOf(stopTokens, p.curToken.Type) && precedence < precedenceOf(p.curToken.Type) {
 		infix, ok := p.infixParsers[p.curToken.Type]
 		if !ok {
 			break
@@ -361,9 +392,6 @@ func (p *Parser) parseExpr(precedence Precedence) (expr ast.Expr, err error) {
 		if err != nil {
 			return nil, err
 		}
-	}
-	if p.peekToken.Type == lexer.TEOF {
-		return nil, fmt.Errorf("unexpected eof while reading expr")
 	}
 	return expr, nil
 }
