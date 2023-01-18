@@ -2,8 +2,12 @@ fun add(a, b)
   return a + b
 end
 
-var x = 1
+fun incr(x)
+  return x + 1
+end
 
-print(add(x, 0.5))
+var x = 5
+
+print(incr(x))
 
 return add(x, 0.5)
