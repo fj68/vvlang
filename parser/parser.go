@@ -150,6 +150,14 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return p.parseReturnStmt()
 	}
 
+	if p.curToken.Type == lexer.TWhile {
+		return p.parseWhileStmt()
+	}
+
+	if p.curToken.Type == lexer.TIf {
+		return p.parseIfStmt()
+	}
+
 	expr, err := p.parseExpr(PLowest)
 	if err != nil {
 		return nil, err
@@ -167,6 +175,9 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 			return nil, fmt.Errorf("unexpected eof while reading body")
 		}
 		if p.curToken.Type == lexer.TEnd {
+			break
+		}
+		if p.curToken.Type == lexer.TElse {
 			break
 		}
 		stmt, err := p.parseStmt()
@@ -216,6 +227,59 @@ func (p *Parser) parseVarDeclStmt() (*ast.VarDeclStmt, error) {
 	return &ast.VarDeclStmt{
 		Name: name,
 		Body: expr,
+	}, nil
+}
+
+func (p *Parser) parseWhileStmt() (*ast.WhileStmt, error) {
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	cond, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expectNext(lexer.TDo); err != nil {
+		return nil, err
+	}
+	body, err := p.parseBody()
+	if err != nil {
+		return nil, err
+	}
+	return &ast.WhileStmt{
+		Cond: cond,
+		Body: body,
+	}, nil
+}
+
+func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	cond, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expectNext(lexer.TDo); err != nil {
+		return nil, err
+	}
+	thenBody, err := p.parseBody()
+	if err != nil {
+		return nil, err
+	}
+	var elseBody []ast.Stmt
+	if p.curToken.Type == lexer.TElse {
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		elseBody, err = p.parseBody()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &ast.IfStmt{
+		Cond: cond,
+		Then: thenBody,
+		Else: elseBody,
 	}, nil
 }
 
