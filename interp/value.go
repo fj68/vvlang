@@ -50,13 +50,16 @@ func (v VString) Type() ValueType {
 	return VTString
 }
 
-type VUserFun []ast.Stmt
+type VUserFun struct {
+	Args []string
+	Body []ast.Stmt
+}
 
-func (v VUserFun) Type() ValueType {
+func (v *VUserFun) Type() ValueType {
 	return VTUserFun
 }
 
-type VBuiltinFun func(*State) error
+type VBuiltinFun func(*State, []Value) (Value, error)
 
 func (v VBuiltinFun) Type() ValueType {
 	return VTBuiltinFun

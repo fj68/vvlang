@@ -7,6 +7,13 @@ type Env struct {
 	outer  *Env
 }
 
+func NewEnv(outer *Env) *Env {
+	return &Env{
+		Values: map[string]Value{},
+		outer:  outer,
+	}
+}
+
 func (env *Env) Get(name string) (Value, error) {
 	if v, ok := env.Values[name]; ok {
 		return v, nil
@@ -27,4 +34,12 @@ func (env *Env) Set(name string, value Value) {
 		}
 	}
 	env.Values[name] = value
+}
+
+func (env *Env) Push() {
+	*env = *NewEnv(env)
+}
+
+func (env *Env) Pop() {
+	*env = *env.outer
 }

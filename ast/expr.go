@@ -91,7 +91,7 @@ type PrefixExpr struct {
 }
 
 func (expr *PrefixExpr) Inspect() string {
-	return fmt.Sprintf("PrefixStmt{\"%s\", %s}", expr.Op, expr.Right.Inspect())
+	return fmt.Sprintf("PrefixExpr{\"%s\", %s}", expr.Op, expr.Right.Inspect())
 }
 
 type InfixExpr struct {
@@ -101,5 +101,5 @@ type InfixExpr struct {
 }
 
 func (expr *InfixExpr) Inspect() string {
-	return fmt.Sprintf("InfixStmt{\"%s\", %s, %s}", expr.Op, expr.Left.Inspect(), expr.Right.Inspect())
+	return fmt.Sprintf("InfixExpr{\"%s\", %s, %s}", expr.Op, expr.Left.Inspect(), expr.Right.Inspect())
 }

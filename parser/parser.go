@@ -306,11 +306,13 @@ func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
 }
 
 func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
-	if err := p.expectNext(lexer.TIdent); err != nil {
-		return nil, err
+	var name string
+	if p.peekToken.Type == lexer.TIdent {
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		name = p.curToken.Text
 	}
-
-	name := p.curToken.Text
 
 	if err := p.expectNext(lexer.TLParen); err != nil {
 		return nil, err
@@ -329,8 +331,6 @@ func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
 	if err := p.expect(lexer.TEnd); err != nil {
 		return nil, err
 	}
-	fmt.Printf("cur  = %s\n", p.curToken.Type)
-	fmt.Printf("peek = %s\n", p.peekToken.Type)
 
 	return &ast.FunLiteralExpr{
 		Name: name,
