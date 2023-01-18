@@ -22,6 +22,16 @@ func (lex *Lexer) Next() (*Token, error) {
 
 	r := lex.s.Current()
 
+	if lex.s.Peek(2) == "<=" {
+		lex.s.Advance(2)
+		return lex.newToken(TLessEq), nil
+	}
+
+	if lex.s.Peek(2) == "==" {
+		lex.s.Advance(2)
+		return lex.newToken(TEqual), nil
+	}
+
 	for sym, ty := range Symbols {
 		if r == sym {
 			lex.s.Advance(1)
@@ -98,6 +108,12 @@ func (lex *Lexer) comment(start, end string) int {
 func (lex *Lexer) digit() (*Token, error) {
 	for !lex.s.IsEOF() && unicode.IsDigit(lex.s.Current()) {
 		lex.s.Advance(1)
+	}
+	if lex.s.Current() == '.' {
+		lex.s.Advance(1)
+		for !lex.s.IsEOF() && unicode.IsDigit(lex.s.Current()) {
+			lex.s.Advance(1)
+		}
 	}
 	return lex.newToken(TDigit), nil
 }

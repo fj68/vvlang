@@ -31,7 +31,9 @@ const (
 	TOr
 
 	// symbols
+	TLessEq
 	TEqual
+	TAssign
 	TLParen
 	TRParen
 	TLess
@@ -91,6 +93,10 @@ func (ty TokenType) String() string {
 		return "Or"
 
 	// symbols
+	case TLessEq:
+		return "LessEq"
+	case TAssign:
+		return "Assign"
 	case TEqual:
 		return "Equal"
 	case TLParen:
@@ -143,7 +149,7 @@ func (tok *Token) Eq(other *Token) bool {
 }
 
 var Symbols = map[rune]TokenType{
-	'=': TEqual,
+	'=': TAssign,
 	'<': TLess,
 	',': TComma,
 	'(': TLParen,
