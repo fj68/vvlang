@@ -142,6 +142,10 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return nil, fmt.Errorf("unexpected EOF")
 	}
 
+	if p.curToken.Type == lexer.TVar {
+		return p.parseVarDeclStmt()
+	}
+
 	expr, err := p.parseExpr(PLowest)
 	if err != nil {
 		return nil, err
@@ -168,6 +172,31 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		body = append(body, stmt)
 	}
 	return body, nil
+}
+
+func (p *Parser) parseVarDeclStmt() (*ast.VarDeclStmt, error) {
+	if err := p.expectNext(lexer.TIdent); err != nil {
+		return nil, err
+	}
+	name := p.curToken.Text
+
+	if err := p.expectNext(lexer.TAssign); err != nil {
+		return nil, err
+	}
+
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ast.VarDeclStmt{
+		Name: name,
+		Body: expr,
+	}, nil
 }
 
 func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
@@ -299,7 +328,7 @@ func (p *Parser) parseFunCallExpr(fun ast.Expr) (ast.Expr, error) {
 		return nil, err
 	}
 	return &ast.FunCallExpr{
-		Fun: fun,
+		Fun:  fun,
 		Args: args,
 	}, nil
 }
