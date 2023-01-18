@@ -1,5 +1,7 @@
 # vv programming language
 
+_This project is still in __early stage of development__. Nothing useful for end-users._
+
 ## Features Planned
 
  - simple and enough, friendly syntax
