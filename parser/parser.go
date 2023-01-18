@@ -146,6 +146,10 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return p.parseVarDeclStmt()
 	}
 
+	if p.curToken.Type == lexer.TReturn {
+		return p.parseReturnStmt()
+	}
+
 	expr, err := p.parseExpr(PLowest)
 	if err != nil {
 		return nil, err
@@ -172,6 +176,22 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		body = append(body, stmt)
 	}
 	return body, nil
+}
+
+func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {
+	if p.peekToken.Type == lexer.TEnd {
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		return &ast.ReturnStmt{}, nil
+	}
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	return &ast.ReturnStmt{
+		Value: expr,
+	}, nil
 }
 
 func (p *Parser) parseVarDeclStmt() (*ast.VarDeclStmt, error) {
