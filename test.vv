@@ -1,13 +1,18 @@
+// let's define very simple function
 fun add(a, b)
   return a + b
 end
 
+// here, another simple function
 fun incr(x)
   return x + 1
 end
 
+// variable definition
 var x = 5
 
+// builtin function
 print(incr(x))
 
+// top-level return is allowed
 return add(x, 0.5)
