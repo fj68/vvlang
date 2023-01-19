@@ -18,21 +18,20 @@ fun add(a, b)
   return a + b
 end
 
+// define variable
+x = 0
+
 // here, another simple function
-fun incr(x)
-  return x + 1
+fun incr_x()
+  // variables are mutable
+  x = x + 1
 end
 
-// variable definition
-var x = 5
-
 // builtin function
-print(incr(x))
-
-// top-level return is allowed
-return add(x, 0.5)
+incr_x()
+print(x)  // 1
 ```
-
+<!--
 ### CSV Parser
 
 Currently, there are some missing features e.g. list and the code below won't run.
@@ -46,7 +45,7 @@ fun is_space(c)
 end
 
 fun trim_start(text)
-  var pos = 0
+  pos = 0
   while pos < len(text) and is_space(text[pos]) do
     pos = pos + 1
   end
@@ -54,9 +53,9 @@ fun trim_start(text)
 end
 
 fun split(text, sep)
-  var lines = []
-  var pos = 0
-  var start = 0
+  lines = []
+  pos = 0
+  start = 0
   while pos < len(text) do
     if slice(text, pos, pos+len(sep)) == sep do
       push(lines, slice(text, start, pos))
@@ -70,8 +69,8 @@ fun split(text, sep)
 end
 
 fun parse_line(line)
-  var cols = []
-  var cells = split(line, ',')
+  cols = []
+  cells = split(line, ',')
   while 0 < len(cells) do
     push(cols, trim_start(shift(cells)))
   end
@@ -79,8 +78,8 @@ fun parse_line(line)
 end
 
 fun parse_csv(text)
-  var rows = []
-  var lines = split(text, '\n')
+  rows = []
+  lines = split(text, '\n')
   while 0 < len(lines) do
     push(rows, parse_line(shift(lines)))
   end
@@ -89,13 +88,13 @@ end
 
 fun print_csv(rows)
   while 0 < len(rows) do
-    var cols = shift(rows)
+    cols = shift(rows)
     print(join(cols, "\n"))
   end
 end
 
-var text = read_file("test.csv")
-var values = parse_csv(text)
+text = read_file("test.csv")
+values = parse_csv(text)
 print_csv(values)
 ```
 
@@ -141,10 +140,10 @@ end
 ```
 
 ```
-var sprite = import("sprite")
+sprite = import("sprite")
 
-var player = sprite.new('player', 0, 0, 50, 100 'left')
-var bullets = []
+player = sprite.new('player', 0, 0, 50, 100 'left')
+bullets = []
 
 fun fire()
   push(bullets, sprite.new('bullet', player.x, player.y, 20, 5 player.face))
@@ -163,7 +162,7 @@ fun update_bullet(i)
   end
 end
 
-var holding = false
+holding = false
 
 fun update()
   if get_key('left') do
@@ -207,6 +206,7 @@ while true do
   wait(0.1)
 end
 ```
+-->
 
 ## Development
 
