@@ -258,7 +258,7 @@ end
 To negate the result of condition, use builtin function `not()`.
 
 ```vv
-if not(c == ' ') do
+if not(c == ' ')
   print('char is not a space.')
 end
 ```
