@@ -24,8 +24,14 @@ func Eval(text []rune) error {
 	return s.Eval(text)
 }
 
-func (s *State) RegisterBuiltin(name string, value Value) {
+func (s *State) RegisterGlobal(name string, value Value) {
 	s.Env.Values[name] = value
+}
+
+func (s *State) RegisterGlobals(values map[string]Value) {
+	for name, value := range values {
+		s.RegisterGlobal(name, value)
+	}
 }
 
 func (s *State) Eval(text []rune) error {
