@@ -12,6 +12,6 @@ fun incr_x()
   x = x + 1
 end
 
-// builtin function
+// call some functions
 incr_x()
 print(x)  // 1
