@@ -235,6 +235,10 @@ func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
 		return s.evalLessThanExpr(left, right)
 	case "<=":
 		return s.evalLessThanEqualExpr(left, right)
+	case "and":
+		return s.evalAndExpr(left, right)
+	case "or":
+		return s.evalOrExpr(left, right)
 	default:
 		return nil, fmt.Errorf("unknown operator: %s", expr.Op)
 	}
@@ -277,4 +281,28 @@ func (s *State) evalLessThanEqualExpr(left Value, right Value) (Value, error) {
 		return v, nil
 	}
 	return s.evalLessThanExpr(left, right)
+}
+
+func (s *State) evalAndExpr(left Value, right Value) (Value, error) {
+	lvalue, ok := left.(VBool)
+	if !ok {
+		return nil, fmt.Errorf("left side of and expr is expected bool, but got %s", left.Type())
+	}
+	rvalue, ok := right.(VBool)
+	if !ok {
+		return nil, fmt.Errorf("right side of and expr is expected bool, but got %s", right.Type())
+	}
+	return VBool(bool(lvalue) && bool(rvalue)), nil
+}
+
+func (s *State) evalOrExpr(left Value, right Value) (Value, error) {
+	lvalue, ok := left.(VBool)
+	if !ok {
+		return nil, fmt.Errorf("left side of or expr is expected bool, but got %s", left.Type())
+	}
+	rvalue, ok := right.(VBool)
+	if !ok {
+		return nil, fmt.Errorf("right side of or expr is expected bool, but got %s", right.Type())
+	}
+	return VBool(bool(lvalue) || bool(rvalue)), nil
 }
