@@ -12,6 +12,10 @@ fun incr_x()
   x = x + 1
 end
 
+if x < 10
+  print('x is less than 10.')
+end
+
 // call some functions
 incr_x()
 print(x)  // 1

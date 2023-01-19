@@ -20,7 +20,6 @@ const (
 	TReturn
 	TEnd
 	TWhile
-	TDo
 	TIf
 	TElse
 	TTrue
@@ -75,8 +74,6 @@ func (ty TokenType) String() string {
 		return "End"
 	case TWhile:
 		return "While"
-	case TDo:
-		return "Do"
 	case TIf:
 		return "If"
 	case TElse:
@@ -168,20 +165,19 @@ var Symbols = map[rune]TokenType{
 }
 
 var Keywords = map[string]TokenType{
-	"fun":    TFun,
-	"return": TReturn,
-	"end":    TEnd,
-	"while":  TWhile,
-	"do":     TDo,
-	"if":     TIf,
-	"else":   TElse,
-	"true":   TTrue,
-	"false":  TFalse,
-	"in":     TIn,
-	"mod":    TMod,
-	"and":    TAnd,
-	"or":     TOr,
-	"break": TBreak,
+	"fun":      TFun,
+	"return":   TReturn,
+	"end":      TEnd,
+	"while":    TWhile,
+	"if":       TIf,
+	"else":     TElse,
+	"true":     TTrue,
+	"false":    TFalse,
+	"in":       TIn,
+	"mod":      TMod,
+	"and":      TAnd,
+	"or":       TOr,
+	"break":    TBreak,
 	"continue": TContinue,
 }
 

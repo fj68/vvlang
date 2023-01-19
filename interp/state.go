@@ -218,30 +218,63 @@ func (s *State) evalVarRefExpr(expr *ast.VarRefExpr) (Value, error) {
 }
 
 func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
+	left, err := s.evalExpr(expr.Left)
+	if err != nil {
+		return nil, err
+	}
+	right, err := s.evalExpr(expr.Right)
+	if err != nil {
+		return nil, err
+	}
 	switch expr.Op {
 	case "+":
-		return s.evalAddExpr(expr)
+		return s.evalAddExpr(left, right)
+	case "==":
+		return s.evalEqualExpr(left, right)
+	case "<":
+		return s.evalLessThanExpr(left, right)
+	case "<=":
+		return s.evalLessThanEqualExpr(left, right)
 	default:
 		return nil, fmt.Errorf("unknown operator: %s", expr.Op)
 	}
 }
 
-func (s *State) evalAddExpr(expr *ast.InfixExpr) (Value, error) {
-	left, err := s.evalExpr(expr.Left)
-	if err != nil {
-		return nil, err
-	}
+func (s *State) evalAddExpr(left Value, right Value) (Value, error) {
 	lvalue, ok := left.(VNumber)
 	if !ok {
 		return nil, fmt.Errorf("left side value of add expression is not a number")
-	}
-	right, err := s.evalExpr(expr.Right)
-	if err != nil {
-		return nil, err
 	}
 	rvalue, ok := right.(VNumber)
 	if !ok {
 		return nil, fmt.Errorf("right side value of add expression is not a number")
 	}
 	return VNumber(lvalue + rvalue), nil
+}
+
+func (s *State) evalEqualExpr(left Value, right Value) (Value, error) {
+	v, err := left.Equal(right)
+	if err != nil {
+		return nil, err
+	}
+	return VBool(v), nil
+}
+
+func (s *State) evalLessThanExpr(left Value, right Value) (Value, error) {
+	v, err := left.LessThan(right)
+	if err != nil {
+		return nil, err
+	}
+	return VBool(v), nil
+}
+
+func (s *State) evalLessThanEqualExpr(left Value, right Value) (Value, error) {
+	v, err := s.evalEqualExpr(left, right)
+	if err != nil {
+		return nil, err
+	}
+	if bool(v.(VBool)) {
+		return v, nil
+	}
+	return s.evalLessThanExpr(left, right)
 }

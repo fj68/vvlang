@@ -278,9 +278,6 @@ func (p *Parser) parseWhileStmt() (*ast.WhileStmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := p.expect(lexer.TDo); err != nil {
-		return nil, err
-	}
 	body, err := p.parseBody()
 	if err != nil {
 		return nil, err
@@ -297,9 +294,6 @@ func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
 	}
 	cond, err := p.parseExpr(PLowest)
 	if err != nil {
-		return nil, err
-	}
-	if err := p.expect(lexer.TDo); err != nil {
 		return nil, err
 	}
 	thenBody, err := p.parseBody()
@@ -402,7 +396,6 @@ func (p *Parser) parseExpr(precedence Precedence) (expr ast.Expr, err error) {
 
 	stopTokens := []lexer.TokenType{
 		lexer.TEOF,
-		lexer.TDo,
 		lexer.TEnd,
 	}
 	for !oneOf(stopTokens, p.curToken.Type) && precedence < precedenceOf(p.curToken.Type) {
