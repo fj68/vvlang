@@ -317,6 +317,14 @@ print(apply(5, incr))  // 6
 Assuming latest golang is installed:
 
 ```sh
+# clone the repo
+git clone git@github.com:fj68/vvlang.git
+cd vvlang
+# install dependent modules
+go mod tidy
+# build executable
 go build -o vv
+# run interpreter
+vv ./test.vv
 ```
 
