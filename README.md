@@ -27,11 +27,17 @@ fun incr_x()
   x = x + 1
 end
 
-// builtin function
+if x < 10
+  print('x is less than 10.')
+end
+
+// call some functions
 incr_x()
 print(x)  // 1
 ```
+
 <!--
+
 ### CSV Parser
 
 Currently, there are some missing features e.g. list and the code below won't run.
@@ -207,6 +213,104 @@ while true do
 end
 ```
 -->
+
+## Language Reference
+
+### Value types
+
+ - bool - `true` and `false`
+ - number - `5`, `0.4`, `-8.2`
+ - string - `'this is string'`
+ - function - `fun name(arg) return 'fun' end`
+ - array (not implemented) - `[3, true, 'item']`
+ - struct (not implemented) - `{ name = 'value', key = 8 }`
+
+### Variables
+
+```vv
+variable_x = true
+```
+
+Variables are mutable and dynamically typed.
+
+### If
+
+```vv
+if c == 'a'
+  print('char is letter \'a\'')
+end
+```
+
+```vv
+if c == ' ' or c == '\t'
+  print('char is a space.')
+else
+  print('char is not a space.')
+end
+```
+
+#### Conditional operators
+
+ - `==` - equal to
+ - `<` - less than
+ - `<=` - less than or equal to
+
+To negate the result of condition, use builtin function `not()`.
+
+```vv
+if not(c == ' ') do
+  print('char is not a space.')
+end
+```
+
+### While
+
+```vv
+i = 0
+while is_eof()
+  i = i + 1
+end
+
+print(i)
+```
+
+`break` / `continue` will be available (not implemented yet).
+
+### Functions
+
+```vv
+fun incr(x)
+  return x + 1
+end
+
+print(incr(5))  // 6
+```
+
+Function is a value. Lambda functions are also supported.
+
+```vv
+fun incr(x)
+  return x + 1
+end
+
+apply = fun(v, f)
+  return f(v)
+end
+
+print(apply(5, incr))  // 6
+```
+
+### Builtin Functions
+
+ - `not(value)` - negate boolean `value`
+ - `print(value)` - print out the `value` (will be replaced with `draw_text(string)`)
+ - `get_type(value)` - get the type of `value` (will be removed)
+ - `len(array)` - get the size of `array` (not implemented)
+ - `bool(value)` - convert the `value` to bool
+ - `number(value)` - convert the `value` to bool
+ - `floor(number)` - floor the `number` to int
+ - `ceil(number)` - ceil the `number` to int
+ - `string(value)` - convert the `value` to string
 
 ## Development
 
