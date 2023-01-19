@@ -233,7 +233,7 @@ variable_x = true
 
 Variables are mutable and dynamically typed.
 
-### If
+### If Else
 
 ```vv
 if c == 'a'
@@ -267,7 +267,7 @@ end
 
 ```vv
 i = 0
-while is_eof()
+while i < 10
   i = i + 1
 end
 
