@@ -76,6 +76,8 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalReturnStmt(v)
 	case *ast.VarDeclStmt:
 		return s.evalVarDeclStmt(v)
+	case *ast.IfStmt:
+		return s.evalIfStmt(v)
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
@@ -91,6 +93,24 @@ func (s *State) evalReturnStmt(stmt *ast.ReturnStmt) error {
 	}
 	s.RetVals.Push(value)
 	return nil
+}
+
+func (s *State) evalIfStmt(stmt *ast.IfStmt) error {
+	v, err := s.evalExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	cond, ok := v.(VBool)
+	if !ok {
+		return fmt.Errorf("expected bool, but got %s", v.Type())
+	}
+	if cond {
+		return s.evalBody(stmt.Then)
+	}
+	if stmt.Else == nil {
+		return nil
+	}
+	return s.evalBody(stmt.Else)
 }
 
 func (s *State) evalExprStmt(stmt *ast.ExprStmt) error {
