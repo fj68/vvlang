@@ -29,10 +29,8 @@ func main() {
 	}
 	s := interp.NewState()
 	s.RegisterBuiltin("print", interp.VBuiltinFun(Print))
-	value, err := s.Eval([]rune(string(text)))
-	if err != nil {
+	if err := s.Eval([]rune(string(text))); err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(value)
 }

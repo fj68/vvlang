@@ -6,7 +6,7 @@ import (
 )
 
 func TestParser(t *testing.T) {
-	text := "fun add(a, b) while true do if get_key() == 'enter' do return a + b else var x = 0.8 return x end end var x = 1 return add(x, 0.5)"
+	text := "fun add(a, b) while true do if get_key() == 'enter' do return a + b else x = 0.8 return x end end x = 1 y = add(x, 0.5)"
 	program, err := Parse([]rune(text))
 	if err != nil {
 		t.Fatal(err)
@@ -21,7 +21,7 @@ func TestParser(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	text := "fun add(a, b) return a + b end var x = 1 return add(x, 0.5)"
+	text := "fun add(a, b) return a + b end x = 1 y = add(x, 0.5)"
 	v, err := Parse([]rune(text))
 	if err != nil {
 		t.Fatal(err)

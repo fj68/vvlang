@@ -72,15 +72,6 @@ func (stmt *VarDeclStmt) Inspect() string {
 	return fmt.Sprintf("VarDeclStmt{\"%s\", %s}", stmt.Name, stmt.Body.Inspect())
 }
 
-type VarAssignStmt struct {
-	VarRef *VarRefExpr
-	Body   Expr
-}
-
-func (stmt *VarAssignStmt) Inspect() string {
-	return fmt.Sprintf("VarAssignStmt{%s, %s}", stmt.VarRef.Inspect(), stmt.Body.Inspect())
-}
-
 type ExprStmt struct {
 	Expr
 }

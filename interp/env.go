@@ -1,6 +1,9 @@
 package interp
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Env struct {
 	Values map[string]Value
@@ -20,18 +23,26 @@ func (env *Env) Get(name string) (Value, error) {
 	}
 
 	if env.outer == nil {
-		return nil, fmt.Errorf("no variable named '%s' is not found", name)
+		return nil, fmt.Errorf("variable named '%s' is not found", name)
 	}
 
 	return env.outer.Get(name)
 }
 
 func (env *Env) Set(name string, value Value) {
-	for e := env; e.outer != nil; e = e.outer {
+	for e := env.outer; e != nil; e = e.outer {
 		if _, ok := e.Values[name]; ok {
 			e.Values[name] = value
 			return
 		}
 	}
 	env.Values[name] = value
+}
+
+func (env *Env) String() string {
+	var b strings.Builder
+	for name, value := range env.Values {
+		b.WriteString(fmt.Sprintf("%s = %s\n", name, value))
+	}
+	return b.String()
 }

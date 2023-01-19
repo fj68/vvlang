@@ -19,7 +19,7 @@ func NewState() *State {
 	}
 }
 
-func Eval(text []rune) (Value, error) {
+func Eval(text []rune) error {
 	s := NewState()
 	return s.Eval(text)
 }
@@ -28,17 +28,12 @@ func (s *State) RegisterBuiltin(name string, value Value) {
 	s.Env.Values[name] = value
 }
 
-func (s *State) Eval(text []rune) (Value, error) {
+func (s *State) Eval(text []rune) error {
 	program, err := parser.Parse(text)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	err = s.evalProgram(program)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.RetVals.Pop(), nil
+	return s.evalProgram(program)
 }
 
 func (s *State) pushEnv() {
@@ -59,7 +54,6 @@ func (s *State) evalProgram(program []ast.Stmt) error {
 }
 
 func (s *State) evalBody(body []ast.Stmt) error {
-	// TODO: prepare s.evalBodyStmt
 	for _, stmt := range body {
 		if err := s.evalStmt(stmt); err != nil {
 			return err
@@ -213,6 +207,9 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
 }
 
 func (s *State) callBuiltinFun(f VBuiltinFun, args []Value) (Value, error) {
+	s.pushEnv()
+	defer s.popEnv()
+
 	return f(s, args)
 }
 

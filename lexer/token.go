@@ -29,7 +29,6 @@ const (
 	TMod
 	TAnd
 	TOr
-	TVar
 	TBreak
 	TContinue
 
@@ -94,8 +93,6 @@ func (ty TokenType) String() string {
 		return "And"
 	case TOr:
 		return "Or"
-	case TVar:
-		return "Var"
 
 	// symbols
 	case TLessEq:
@@ -184,7 +181,6 @@ var Keywords = map[string]TokenType{
 	"mod":    TMod,
 	"and":    TAnd,
 	"or":     TOr,
-	"var":    TVar,
 	"break": TBreak,
 	"continue": TContinue,
 }

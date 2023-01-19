@@ -158,12 +158,8 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return nil, fmt.Errorf("unexpected EOF")
 	}
 
-	if p.curToken.Type == lexer.TVar {
+	if p.curToken.Type == lexer.TIdent && p.peekToken.Type == lexer.TAssign {
 		return p.parseVarDeclStmt()
-	}
-
-	if p.curToken.Type == lexer.TReturn {
-		return p.parseReturnStmt()
 	}
 
 	if p.curToken.Type == lexer.TWhile {
@@ -174,14 +170,6 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return p.parseIfStmt()
 	}
 
-	if p.curToken.Type == lexer.TBreak {
-		return p.parseBreakStmt()
-	}
-
-	if p.curToken.Type == lexer.TContinue {
-		return p.parseContinueStmt()
-	}
-
 	expr, err := p.parseExpr(PLowest)
 	if err != nil {
 		return nil, err
@@ -190,9 +178,23 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 	return &ast.ExprStmt{Expr: expr}, nil
 }
 
-func (p *Parser) parseBody() ([]ast.Stmt, error) {
-	// TODO: prepare p.parseBodyStmt() instead of p.parseStmt()
+func (p *Parser) parseBodyStmt() (ast.Stmt, error) {
+	if p.curToken.Type == lexer.TReturn {
+		return p.parseReturnStmt()
+	}
 
+	if p.curToken.Type == lexer.TBreak {
+		return p.parseBreakStmt()
+	}
+
+	if p.curToken.Type == lexer.TContinue {
+		return p.parseContinueStmt()
+	}
+
+	return p.parseStmt()
+}
+
+func (p *Parser) parseBody() ([]ast.Stmt, error) {
 	var body []ast.Stmt
 	for {
 		if p.curToken.Type == lexer.TEOF {
@@ -204,7 +206,7 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		if p.curToken.Type == lexer.TElse {
 			break
 		}
-		stmt, err := p.parseStmt()
+		stmt, err := p.parseBodyStmt()
 		if err != nil {
 			return nil, err
 		}
@@ -247,9 +249,6 @@ func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {
 }
 
 func (p *Parser) parseVarDeclStmt() (*ast.VarDeclStmt, error) {
-	if err := p.expectNext(lexer.TIdent); err != nil {
-		return nil, err
-	}
 	name := p.curToken.Text
 
 	if err := p.expectNext(lexer.TAssign); err != nil {
