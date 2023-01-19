@@ -8,6 +8,7 @@ import (
 )
 
 var DefaultBuiltins = map[string]Value{
+	"not":    VBuiltinFun(builtinNot),
 	"print":  VBuiltinFun(builtinPrint),
 	"type":   VBuiltinFun(builtinType),
 	"bool":   VBuiltinFun(builtinBool),
@@ -16,6 +17,17 @@ var DefaultBuiltins = map[string]Value{
 	"floor":  VBuiltinFun(builtinFloor),
 	"string": VBuiltinFun(builtinString),
 	"len":    VBuiltinFun(builtinLen),
+}
+
+func builtinNot(s *State, args []Value) (Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("too many / less arguments for not()")
+	}
+	v, ok := args[0].(VBool)
+	if !ok {
+		return nil, fmt.Errorf("argument for not() is expected bool, but got %s", v.Type())
+	}
+	return VBool(!bool(v)), nil
 }
 
 func builtinPrint(s *State, args []Value) (Value, error) {
