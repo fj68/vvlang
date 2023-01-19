@@ -8,13 +8,13 @@ import (
 )
 
 var DefaultBuiltins = map[string]Value{
-	"print":    VBuiltinFun(builtinPrint),
-	"get_type": VBuiltinFun(builtinGetType),
-	"bool":     VBuiltinFun(builtinBool),
-	"number":   VBuiltinFun(builtinNumber),
-	"ceil":     VBuiltinFun(builtinCeil),
-	"floor":    VBuiltinFun(builtinFloor),
-	"string":   VBuiltinFun(builtinString),
+	"print":  VBuiltinFun(builtinPrint),
+	"type":   VBuiltinFun(builtinType),
+	"bool":   VBuiltinFun(builtinBool),
+	"number": VBuiltinFun(builtinNumber),
+	"ceil":   VBuiltinFun(builtinCeil),
+	"floor":  VBuiltinFun(builtinFloor),
+	"string": VBuiltinFun(builtinString),
 }
 
 func builtinPrint(s *State, args []Value) (Value, error) {
@@ -26,7 +26,7 @@ func builtinPrint(s *State, args []Value) (Value, error) {
 	return nil, nil
 }
 
-func builtinGetType(s *State, args []Value) (Value, error) {
+func builtinType(s *State, args []Value) (Value, error) {
 	if len(args) != 1 {
 		return nil, fmt.Errorf("too many / less arguments for get_type()")
 	}

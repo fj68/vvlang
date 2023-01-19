@@ -304,7 +304,7 @@ print(apply(5, incr))  // 6
 
  - `not(value)` - negate boolean `value`
  - `print(value)` - print out the `value` (will be replaced with `draw_text(string)`)
- - `get_type(value)` - get the type of `value` (will be removed)
+ - `type(value)` - get the type of `value` (will be removed)
  - `len(array)` - get the size of `array` (not implemented)
  - `bool(value)` - convert the `value` to bool
  - `number(value)` - convert the `value` to bool
