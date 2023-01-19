@@ -15,6 +15,7 @@ var DefaultBuiltins = map[string]Value{
 	"ceil":   VBuiltinFun(builtinCeil),
 	"floor":  VBuiltinFun(builtinFloor),
 	"string": VBuiltinFun(builtinString),
+	"len":    VBuiltinFun(builtinLen),
 }
 
 func builtinPrint(s *State, args []Value) (Value, error) {
@@ -80,7 +81,7 @@ func builtinNumber(s *State, args []Value) (Value, error) {
 
 func builtinCeil(s *State, args []Value) (Value, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("too many / less arguments for number()")
+		return nil, fmt.Errorf("too many / less arguments for ceil()")
 	}
 	v, ok := args[0].(VNumber)
 	if !ok {
@@ -91,7 +92,7 @@ func builtinCeil(s *State, args []Value) (Value, error) {
 
 func builtinFloor(s *State, args []Value) (Value, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("too many / less arguments for number()")
+		return nil, fmt.Errorf("too many / less arguments for floor()")
 	}
 	v, ok := args[0].(VNumber)
 	if !ok {
@@ -102,7 +103,7 @@ func builtinFloor(s *State, args []Value) (Value, error) {
 
 func builtinString(s *State, args []Value) (Value, error) {
 	if len(args) != 1 {
-		return nil, fmt.Errorf("too many / less arguments for number()")
+		return nil, fmt.Errorf("too many / less arguments for string()")
 	}
 	switch v := args[0].(type) {
 	case VBool:
@@ -115,6 +116,25 @@ func builtinString(s *State, args []Value) (Value, error) {
 		return VString(v.Type().String()), nil
 	case VBuiltinFun:
 		return VString(v.Type().String()), nil
+	}
+	return nil, fmt.Errorf("unknown value type: %s", args[0].Type().String())
+}
+
+func builtinLen(s *State, args []Value) (Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("too many / less arguments for len()")
+	}
+	switch v := args[0].(type) {
+	case VBool:
+		return nil, fmt.Errorf("argument for len() is expected string or array, but got bool")
+	case VNumber:
+		return nil, fmt.Errorf("argument for len() is expected string or array, but got number")
+	case VString:
+		return VNumber(len([]rune(v))), nil
+	case *VUserFun:
+		return nil, fmt.Errorf("argument for len() is expected string or array, but got fun")
+	case VBuiltinFun:
+		return nil, fmt.Errorf("argument for len() is expected string or array, but got fun")
 	}
 	return nil, fmt.Errorf("unknown value type: %s", args[0].Type().String())
 }
