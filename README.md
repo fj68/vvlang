@@ -317,6 +317,6 @@ print(apply(5, incr))  // 6
 Assuming latest golang is installed:
 
 ```sh
-go build -o main
+go build -o vv
 ```
 
