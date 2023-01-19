@@ -3,19 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/fj68/vvlang/interp"
 )
-
-func Print(s *interp.State, args []interp.Value) (interp.Value, error) {
-	var b strings.Builder
-	for _, arg := range args {
-		b.WriteString(arg.String())
-	}
-	fmt.Println(b.String())
-	return nil, nil
-}
 
 func main() {
 	if len(os.Args) < 1 {
@@ -28,7 +18,7 @@ func main() {
 		return
 	}
 	s := interp.NewState()
-	s.RegisterBuiltin("print", interp.VBuiltinFun(Print))
+	s.RegisterGlobals(interp.DefaultBuiltins)
 	if err := s.Eval([]rune(string(text))); err != nil {
 		fmt.Println(err)
 		return
