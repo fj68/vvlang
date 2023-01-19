@@ -30,6 +30,8 @@ const (
 	TAnd
 	TOr
 	TVar
+	TBreak
+	TContinue
 
 	// symbols
 	TLessEq
@@ -183,6 +185,8 @@ var Keywords = map[string]TokenType{
 	"and":    TAnd,
 	"or":     TOr,
 	"var":    TVar,
+	"break": TBreak,
+	"continue": TContinue,
 }
 
 var Comments = map[string]string{

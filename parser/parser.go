@@ -174,6 +174,14 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return p.parseIfStmt()
 	}
 
+	if p.curToken.Type == lexer.TBreak {
+		return p.parseBreakStmt()
+	}
+
+	if p.curToken.Type == lexer.TContinue {
+		return p.parseContinueStmt()
+	}
+
 	expr, err := p.parseExpr(PLowest)
 	if err != nil {
 		return nil, err
@@ -203,6 +211,20 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		body = append(body, stmt)
 	}
 	return body, nil
+}
+
+func (p *Parser) parseBreakStmt() (*ast.BreakStmt, error) {
+	if err := p.expect(lexer.TBreak); err != nil {
+		return nil, err
+	}
+	return &ast.BreakStmt{}, nil
+}
+
+func (p *Parser) parseContinueStmt() (*ast.ContinueStmt, error) {
+	if err := p.expect(lexer.TContinue); err != nil {
+		return nil, err
+	}
+	return &ast.ContinueStmt{}, nil
 }
 
 func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {

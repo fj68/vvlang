@@ -9,6 +9,18 @@ type Stmt interface {
 	Inspect() string
 }
 
+type BreakStmt struct{}
+
+func (stmt *BreakStmt) Inspect() string {
+	return "BreakStmt"
+}
+
+type ContinueStmt struct{}
+
+func (stmt *ContinueStmt) Inspect() string {
+	return "ContinueStmt"
+}
+
 type ReturnStmt struct {
 	Value Expr
 }
