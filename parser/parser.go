@@ -158,15 +158,8 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return nil, fmt.Errorf("unexpected EOF")
 	}
 
-	if p.curToken.Type == lexer.TVar {
-		// `var x = expr` form
-		if err := p.readToken(); err != nil {
-			return nil, err
-		}
-		return p.parseVarDeclStmt()
-	}
-
 	if p.curToken.Type == lexer.TIdent && p.peekToken.Type == lexer.TAssign {
+		// `x = expr` form
 		return p.parseVarDeclStmt()
 	}
 

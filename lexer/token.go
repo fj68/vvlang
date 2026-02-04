@@ -176,7 +176,6 @@ var Keywords = map[string]TokenType{
 	"else":     TElse,
 	"true":     TTrue,
 	"false":    TFalse,
-	"var":      TVar,
 	"in":       TIn,
 	"mod":      TMod,
 	"and":      TAnd,

@@ -3,12 +3,11 @@ package lexer
 import "testing"
 
 func TestVarLex(t *testing.T) {
-	text := "var x = 1"
+	text := "x = 1"
 	expected := []*Token{
-		{TVar, "var", Pos{0, 3}},
-		{TIdent, "x", Pos{4, 5}},
-		{TAssign, "=", Pos{6, 7}},
-		{TDigit, "1", Pos{8, 9}},
+		{TIdent, "x", Pos{0, 1}},
+		{TAssign, "=", Pos{2, 3}},
+		{TDigit, "1", Pos{4, 5}},
 	}
 	lex := New([]rune(text))
 	for i := 0; ; i++ {
