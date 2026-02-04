@@ -82,6 +82,7 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.THyphen:  p.parsePrefixExpr,
 		lexer.TIdent:   p.parseVarRefExpr,
 		lexer.TFun:     p.parseFunLiteralExpr,
+		lexer.TLBracket: p.parseRecordLiteralExpr,
 	}
 }
 
@@ -539,4 +540,46 @@ func (p *Parser) parseStringLiteralExpr() (ast.Expr, error) {
 	return &ast.StringLiteralExpr{
 		Value: value,
 	}, nil
+}
+
+func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
+	// current token is TLBracket ("{")
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	fields := map[string]ast.Expr{}
+	// empty record
+	if p.curToken.Type == lexer.TRBracket {
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		return &ast.RecordLiteralExpr{Fields: fields}, nil
+	}
+	for {
+		if p.curToken.Type != lexer.TIdent {
+			return nil, fmt.Errorf("expected identifier for record field, got %s", p.curToken.Type)
+		}
+		name := p.curToken.Text
+		if err := p.expectNext(lexer.TAssign); err != nil {
+			return nil, err
+		}
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		expr, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+		fields[name] = expr
+		if p.curToken.Type == lexer.TRBracket {
+			break
+		}
+		if err := p.expect(lexer.TComma); err != nil {
+			return nil, err
+		}
+	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.RecordLiteralExpr{Fields: fields}, nil
 }
