@@ -158,6 +158,14 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return nil, fmt.Errorf("unexpected EOF")
 	}
 
+	if p.curToken.Type == lexer.TVar {
+		// `var x = expr` form
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		return p.parseVarDeclStmt()
+	}
+
 	if p.curToken.Type == lexer.TIdent && p.peekToken.Type == lexer.TAssign {
 		return p.parseVarDeclStmt()
 	}
@@ -168,6 +176,18 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 
 	if p.curToken.Type == lexer.TIf {
 		return p.parseIfStmt()
+	}
+
+	if p.curToken.Type == lexer.TReturn {
+		return p.parseReturnStmt()
+	}
+
+	if p.curToken.Type == lexer.TBreak {
+		return p.parseBreakStmt()
+	}
+
+	if p.curToken.Type == lexer.TContinue {
+		return p.parseContinueStmt()
 	}
 
 	expr, err := p.parseExpr(PLowest)
@@ -230,7 +250,8 @@ func (p *Parser) parseContinueStmt() (*ast.ContinueStmt, error) {
 }
 
 func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {
-	if p.peekToken.Type == lexer.TEnd {
+	// allow `return` without a value (e.g. `return`, or `return` followed by `end`)
+	if p.peekToken.Type == lexer.TEnd || p.peekToken.Type == lexer.TEOF {
 		if err := p.readToken(); err != nil {
 			return nil, err
 		}
