@@ -8,8 +8,9 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 1 {
-		fmt.Println("main [path]")
+	if len(os.Args) < 2 {
+		fmt.Println("usage: main [path]")
+		return
 	}
 	path := os.Args[1]
 	text, err := os.ReadFile(path)
