@@ -50,9 +50,17 @@ func (s *State) popEnv() {
 	s.Env = s.Env.outer
 }
 
+var ErrBreak = fmt.Errorf("break")
+var ErrContinue = fmt.Errorf("continue")
+var ErrReturn = fmt.Errorf("return")
+
 func (s *State) evalProgram(program []ast.Stmt) error {
 	for _, stmt := range program {
 		if err := s.evalStmt(stmt); err != nil {
+			if err == ErrReturn {
+				// Top-level return: stop program execution but do not treat as an error
+				return nil
+			}
 			return err
 		}
 	}
@@ -78,6 +86,12 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalVarDeclStmt(v)
 	case *ast.IfStmt:
 		return s.evalIfStmt(v)
+	case *ast.BreakStmt:
+		return ErrBreak
+	case *ast.ContinueStmt:
+		return ErrContinue
+	case *ast.WhileStmt:
+		return s.evalWhileStmt(v)
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
@@ -85,14 +99,15 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 
 func (s *State) evalReturnStmt(stmt *ast.ReturnStmt) error {
 	if stmt.Value == nil {
-		return nil
+		// return without value still signals return control flow
+		return ErrReturn
 	}
 	value, err := s.evalExpr(stmt.Value)
 	if err != nil {
 		return err
 	}
 	s.RetVals.Push(value)
-	return nil
+	return ErrReturn
 }
 
 func (s *State) evalIfStmt(stmt *ast.IfStmt) error {
@@ -205,13 +220,47 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
 		s.Env.Values[f.Args[i]] = arg
 	}
 
-	if err := s.evalBody(f.Body); err != nil {
+	if err := s.evalBody(f.Body); err != nil && err != ErrReturn {
 		return nil, err
 	}
 
 	return s.RetVals.Pop(), nil
 }
 
+func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {
+	for {
+		v, err := s.evalExpr(stmt.Cond)
+		if err != nil {
+			return err
+		}
+		cond, ok := v.(VBool)
+		if !ok {
+			return fmt.Errorf("expected bool, but got %s", v.Type())
+		}
+		if !cond {
+			break
+		}
+		for _, st := range stmt.Body {
+			err := s.evalStmt(st)
+			if err == ErrContinue {
+				// continue to next iteration
+				break
+			}
+			if err == ErrBreak {
+				// exit the while loop
+				return nil
+			}
+			if err == ErrReturn {
+				// propagate return up
+				return ErrReturn
+			}
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
 func (s *State) callBuiltinFun(f VBuiltinFun, args []Value) (Value, error) {
 	s.pushEnv()
 	defer s.popEnv()
