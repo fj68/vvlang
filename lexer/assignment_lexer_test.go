@@ -2,7 +2,7 @@ package lexer
 
 import "testing"
 
-func TestVarLex(t *testing.T) {
+func TestAssignmentLex(t *testing.T) {
 	text := "x = 1"
 	expected := []*Token{
 		{TIdent, "x", Pos{0, 1}},
