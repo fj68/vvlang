@@ -303,6 +303,9 @@ func (p *Parser) parseWhileStmt() (*ast.WhileStmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := p.expect(lexer.TEnd); err != nil {
+		return nil, err
+	}
 	return &ast.WhileStmt{
 		Cond: cond,
 		Body: body,

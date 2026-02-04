@@ -20,5 +20,5 @@ func (pos Pos) Copy() Pos {
 
 func (pos Pos) Eq(other Pos) bool {
 	return pos.Start == other.Start &&
-		   pos.End == other.End
+		pos.End == other.End
 }
