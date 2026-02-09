@@ -1,0 +1,4 @@
+str = 'hello'
+print(str[0])
+print(str[1:4])
+print(str[:2])

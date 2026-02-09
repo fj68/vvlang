@@ -48,6 +48,8 @@ const (
 	TAsterisk
 	TSlash
 	TDot
+	TColon
+	TEllipsis
 )
 
 func (ty TokenType) String() string {
@@ -124,6 +126,10 @@ func (ty TokenType) String() string {
 		return "Slash"
 	case TDot:
 		return "Dot"
+	case TColon:
+		return "Colon"
+	case TEllipsis:
+		return "Ellipsis"
 	}
 	return "Unknown"
 }
@@ -162,6 +168,7 @@ var Symbols = map[rune]TokenType{
 	'*': TAsterisk,
 	'/': TSlash,
 	'.': TDot,
+	':': TColon,
 }
 
 var Keywords = map[string]TokenType{

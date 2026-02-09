@@ -127,3 +127,37 @@ func (expr *ListLiteralExpr) Inspect() string {
 	}
 	return fmt.Sprintf("ListLiteralExpr{[%s]}", strings.Join(elements, ", "))
 }
+type IndexExpr struct {
+	Left  Expr
+	Index Expr
+}
+
+func (expr *IndexExpr) Inspect() string {
+	return fmt.Sprintf("IndexExpr{%s[%s]}", expr.Left.Inspect(), expr.Index.Inspect())
+}
+
+type SliceExpr struct {
+	Left  Expr
+	Start Expr
+	End   Expr
+}
+
+func (expr *SliceExpr) Inspect() string {
+	startStr := ""
+	if expr.Start != nil {
+		startStr = expr.Start.Inspect()
+	}
+	endStr := ""
+	if expr.End != nil {
+		endStr = expr.End.Inspect()
+	}
+	return fmt.Sprintf("SliceExpr{%s[%s:%s]}", expr.Left.Inspect(), startStr, endStr)
+}
+
+type SpreadExpr struct {
+	Expr Expr
+}
+
+func (expr *SpreadExpr) Inspect() string {
+	return fmt.Sprintf("SpreadExpr{...%s}", expr.Expr.Inspect())
+}
