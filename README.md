@@ -223,7 +223,7 @@ end
  - string - `'this is string'`
  - function - `fun name(arg) return 'fun' end`
  - array (not implemented) - `[3, true, 'item']`
- - struct (not implemented) - `{ name = 'value', key = 8 }`
+ - struct (a.k.a. record) - `{ name = 'value', key = 8 }`
 
 ### Variables
 

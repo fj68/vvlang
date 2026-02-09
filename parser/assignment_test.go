@@ -7,7 +7,7 @@ import (
 )
 
 func TestParseVarDecl(t *testing.T) {
-	text := "var x = 1"
+	text := "x = 1"
 	program, err := Parse([]rune(text))
 	if err != nil {
 		t.Fatal(err)

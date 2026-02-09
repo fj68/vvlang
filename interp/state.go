@@ -153,6 +153,16 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return VNumber(v.Value), nil
 	case *ast.StringLiteralExpr:
 		return VString(v.Value), nil
+	case *ast.RecordLiteralExpr:
+		m := map[string]Value{}
+		for k, e := range v.Fields {
+			val, err := s.evalExpr(e)
+			if err != nil {
+				return nil, err
+			}
+			m[k] = val
+		}
+		return &VRecord{Fields: m}, nil
 	case *ast.FunLiteralExpr:
 		return s.evalFunLiteralExpr(v)
 	case *ast.FunCallExpr:

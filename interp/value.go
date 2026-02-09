@@ -2,6 +2,7 @@ package interp
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/fj68/vvlang/ast"
@@ -16,6 +17,7 @@ const (
 	VTUserFun
 	VTBuiltinFun
 	VTList
+	VTRecord
 )
 
 func (ty ValueType) String() string {
@@ -32,6 +34,8 @@ func (ty ValueType) String() string {
 		return "fun"
 	case VTList:
 		return "list"
+	case VTRecord:
+		return "record"
 	}
 	return "unknown"
 }
@@ -194,4 +198,53 @@ func (v *VList) Equal(other Value) (bool, error) {
 
 func (v *VList) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare lists")
+}
+
+type VRecord struct {
+	Fields map[string]Value
+}
+
+func (v *VRecord) Type() ValueType {
+	return VTRecord
+}
+
+func (v *VRecord) String() string {
+	var keys []string
+	for k := range v.Fields {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var parts []string
+	for _, k := range keys {
+		parts = append(parts, fmt.Sprintf("%s = %s", k, v.Fields[k].String()))
+	}
+	return fmt.Sprintf("{%s}", strings.Join(parts, ", "))
+}
+
+func (v *VRecord) Equal(other Value) (bool, error) {
+	o, ok := other.(*VRecord)
+	if !ok {
+		return false, fmt.Errorf("expected record, but got %s", other.Type())
+	}
+	if len(o.Fields) != len(v.Fields) {
+		return false, nil
+	}
+	for k, val := range v.Fields {
+		ov, ok := o.Fields[k]
+		if !ok {
+			return false, nil
+		}
+		eq, err := val.Equal(ov)
+		if err != nil {
+			return false, err
+		}
+		if !eq {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+func (v *VRecord) LessThan(other Value) (bool, error) {
+	return false, fmt.Errorf("unable to compare records")
 }

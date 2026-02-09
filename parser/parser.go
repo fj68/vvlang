@@ -83,6 +83,7 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TIdent:   p.parseVarRefExpr,
 		lexer.TFun:     p.parseFunLiteralExpr,
 		lexer.TLBrace:  p.parseListLiteralExpr,
+		lexer.TLBracket: p.parseRecordLiteralExpr,
 	}
 }
 
@@ -159,15 +160,8 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return nil, fmt.Errorf("unexpected EOF")
 	}
 
-	if p.curToken.Type == lexer.TVar {
-		// `var x = expr` form
-		if err := p.readToken(); err != nil {
-			return nil, err
-		}
-		return p.parseVarDeclStmt()
-	}
-
 	if p.curToken.Type == lexer.TIdent && p.peekToken.Type == lexer.TAssign {
+		// `x = expr` form
 		return p.parseVarDeclStmt()
 	}
 
@@ -585,4 +579,57 @@ func (p *Parser) parseListLiteralExpr() (ast.Expr, error) {
 	return &ast.ListLiteralExpr{
 		Elements: elements,
 	}, nil
+}
+
+func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
+	// current token is TLBracket ("{")
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	fields := map[string]ast.Expr{}
+	// empty record
+	if p.curToken.Type == lexer.TRBracket {
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		return &ast.RecordLiteralExpr{Fields: fields}, nil
+	}
+	for {
+		if p.curToken.Type != lexer.TIdent {
+			return nil, fmt.Errorf("expected identifier for record field, got %s", p.curToken.Type)
+		}
+		name := p.curToken.Text
+		if err := p.expectNext(lexer.TAssign); err != nil {
+			return nil, err
+		}
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		expr, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+		fields[name] = expr
+		if p.curToken.Type == lexer.TRBracket {
+			break
+		}
+		// allow optional trailing comma before the closing brace
+		if p.curToken.Type == lexer.TComma {
+			// consume comma
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			// if next token is closing brace, break (trailing comma)
+			if p.curToken.Type == lexer.TRBracket {
+				break
+			}
+			// otherwise continue to next field
+			continue
+		}
+		return nil, fmt.Errorf("expected comma or '}', got %s", p.curToken.Type)
+	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.RecordLiteralExpr{Fields: fields}, nil
 }

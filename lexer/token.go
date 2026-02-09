@@ -24,7 +24,6 @@ const (
 	TElse
 	TTrue
 	TFalse
-	TVar
 	TIn
 	TMod
 	TAnd
@@ -83,8 +82,6 @@ func (ty TokenType) String() string {
 		return "True"
 	case TFalse:
 		return "False"
-	case TVar:
-		return "Var"
 	case TIn:
 		return "In"
 	case TMod:
@@ -176,7 +173,6 @@ var Keywords = map[string]TokenType{
 	"else":     TElse,
 	"true":     TTrue,
 	"false":    TFalse,
-	"var":      TVar,
 	"in":       TIn,
 	"mod":      TMod,
 	"and":      TAnd,
