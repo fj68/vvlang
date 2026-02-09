@@ -22,19 +22,11 @@ func (lex *Lexer) Next() (*Token, error) {
 
 	r := lex.s.Current()
 
-	if lex.s.Peek(3) == "..." {
-		lex.s.Advance(3)
-		return lex.newToken(TEllipsis), nil
-	}
-
-	if lex.s.Peek(2) == "<=" {
-		lex.s.Advance(2)
-		return lex.newToken(TLessEq), nil
-	}
-
-	if lex.s.Peek(2) == "==" {
-		lex.s.Advance(2)
-		return lex.newToken(TEqual), nil
+	for sym2, ty := range Symbols2 {
+		if lex.s.Peek(len(sym2)) == sym2 {
+			lex.s.Advance(len(sym2))
+			return lex.newToken(ty), nil
+		}
 	}
 
 	for sym, ty := range Symbols {
