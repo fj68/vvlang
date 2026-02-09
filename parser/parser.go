@@ -574,9 +574,20 @@ func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
 		if p.curToken.Type == lexer.TRBracket {
 			break
 		}
-		if err := p.expect(lexer.TComma); err != nil {
-			return nil, err
+		// allow optional trailing comma before the closing brace
+		if p.curToken.Type == lexer.TComma {
+			// consume comma
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			// if next token is closing brace, break (trailing comma)
+			if p.curToken.Type == lexer.TRBracket {
+				break
+			}
+			// otherwise continue to next field
+			continue
 		}
+		return nil, fmt.Errorf("expected comma or '}', got %s", p.curToken.Type)
 	}
 	if err := p.readToken(); err != nil {
 		return nil, err
