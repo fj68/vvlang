@@ -33,6 +33,18 @@ func (expr *StringLiteralExpr) Inspect() string {
 	return fmt.Sprintf("StringLiteralExpr{%s}", expr.Value)
 }
 
+type RecordLiteralExpr struct {
+	Fields map[string]Expr
+}
+
+func (expr *RecordLiteralExpr) Inspect() string {
+	var parts []string
+	for k, v := range expr.Fields {
+		parts = append(parts, fmt.Sprintf("%s = %s", k, v.Inspect()))
+	}
+	return fmt.Sprintf("RecordLiteralExpr{%s}", strings.Join(parts, ", "))
+}
+
 type InterpolatedStringLiteralExpr struct {
 	Texts  []string
 	Values []Expr
