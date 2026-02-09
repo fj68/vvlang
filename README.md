@@ -274,7 +274,7 @@ end
 print(i)
 ```
 
-`break` / `continue` will be available (not implemented yet).
+`break` / `continue` is also available.
 
 ### Functions
 
