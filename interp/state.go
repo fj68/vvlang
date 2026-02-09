@@ -173,6 +173,14 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalInfixExpr(v)
 	case *ast.ListLiteralExpr:
 		return s.evalListLiteralExpr(v)
+	case *ast.IndexExpr:
+		return s.evalIndexExpr(v)
+	case *ast.SliceExpr:
+		return s.evalSliceExpr(v)
+	case *ast.SpreadExpr:
+		return s.evalSpreadExpr(v)
+	case *ast.PrefixExpr:
+		return s.evalPrefixExpr(v)
 	default:
 		return nil, fmt.Errorf("unknown expr: %s", v.Inspect())
 	}
@@ -374,14 +382,206 @@ func (s *State) evalOrExpr(left Value, right Value) (Value, error) {
 	return VBool(bool(lvalue) || bool(rvalue)), nil
 }
 
+func (s *State) evalPrefixExpr(expr *ast.PrefixExpr) (Value, error) {
+	right, err := s.evalExpr(expr.Right)
+	if err != nil {
+		return nil, err
+	}
+	switch expr.Op {
+	case "-":
+		num, ok := right.(VNumber)
+		if !ok {
+			return nil, fmt.Errorf("cannot negate %s", right.Type())
+		}
+		return VNumber(-float64(num)), nil
+	default:
+		return nil, fmt.Errorf("unknown prefix operator: %s", expr.Op)
+	}
+}
+
 func (s *State) evalListLiteralExpr(expr *ast.ListLiteralExpr) (Value, error) {
 	var elements []Value
 	for _, elemExpr := range expr.Elements {
-		elem, err := s.evalExpr(elemExpr)
-		if err != nil {
-			return nil, err
+		// Check if this is a spread expression
+		if spread, ok := elemExpr.(*ast.SpreadExpr); ok {
+			val, err := s.evalExpr(spread.Expr)
+			if err != nil {
+				return nil, err
+			}
+			// The value should be a list
+			list, ok := val.(*VList)
+			if !ok {
+				return nil, fmt.Errorf("cannot spread non-list value of type %s", val.Type())
+			}
+			// Add all elements from the list
+			elements = append(elements, list.Elements...)
+		} else {
+			elem, err := s.evalExpr(elemExpr)
+			if err != nil {
+				return nil, err
+			}
+			elements = append(elements, elem)
 		}
-		elements = append(elements, elem)
 	}
 	return &VList{Elements: elements}, nil
 }
+
+func (s *State) evalIndexExpr(expr *ast.IndexExpr) (Value, error) {
+	left, err := s.evalExpr(expr.Left)
+	if err != nil {
+		return nil, err
+	}
+
+	index, err := s.evalExpr(expr.Index)
+	if err != nil {
+		return nil, err
+	}
+
+	switch l := left.(type) {
+	case *VList:
+		idx, ok := index.(VNumber)
+		if !ok {
+			return nil, fmt.Errorf("list index must be a number, got %s", index.Type())
+		}
+		// Convert to int, handle negative indices
+		intIdx := int(float64(idx))
+		if intIdx < 0 {
+			intIdx = len(l.Elements) + intIdx
+		}
+		if intIdx < 0 || intIdx >= len(l.Elements) {
+			return nil, fmt.Errorf("list index out of range: %d", intIdx)
+		}
+		return l.Elements[intIdx], nil
+	case VString:
+		idx, ok := index.(VNumber)
+		if !ok {
+			return nil, fmt.Errorf("string index must be a number, got %s", index.Type())
+		}
+		// Convert to int, handle negative indices
+		intIdx := int(float64(idx))
+		str := string(l)
+		if intIdx < 0 {
+			intIdx = len(str) + intIdx
+		}
+		if intIdx < 0 || intIdx >= len(str) {
+			return nil, fmt.Errorf("string index out of range: %d", intIdx)
+		}
+		return VString(string(str[intIdx])), nil
+	default:
+		return nil, fmt.Errorf("cannot index %s", left.Type())
+	}
+}
+
+func (s *State) evalSliceExpr(expr *ast.SliceExpr) (Value, error) {
+	left, err := s.evalExpr(expr.Left)
+	if err != nil {
+		return nil, err
+	}
+
+	switch l := left.(type) {
+	case *VList:
+		var start, end int
+		start = 0
+		end = len(l.Elements)
+
+		if expr.Start != nil {
+			startVal, err := s.evalExpr(expr.Start)
+			if err != nil {
+				return nil, err
+			}
+			startNum, ok := startVal.(VNumber)
+			if !ok {
+				return nil, fmt.Errorf("slice start must be a number, got %s", startVal.Type())
+			}
+			start = int(float64(startNum))
+			if start < 0 {
+				start = len(l.Elements) + start
+			}
+		}
+
+		if expr.End != nil {
+			endVal, err := s.evalExpr(expr.End)
+			if err != nil {
+				return nil, err
+			}
+			endNum, ok := endVal.(VNumber)
+			if !ok {
+				return nil, fmt.Errorf("slice end must be a number, got %s", endVal.Type())
+			}
+			end = int(float64(endNum))
+			if end < 0 {
+				end = len(l.Elements) + end
+			}
+		}
+
+		// Clamp to valid range
+		if start < 0 {
+			start = 0
+		}
+		if end > len(l.Elements) {
+			end = len(l.Elements)
+		}
+		if start > end {
+			start = end
+		}
+
+		return &VList{Elements: l.Elements[start:end]}, nil
+
+	case VString:
+		str := string(l)
+		var start, end int
+		start = 0
+		end = len(str)
+
+		if expr.Start != nil {
+			startVal, err := s.evalExpr(expr.Start)
+			if err != nil {
+				return nil, err
+			}
+			startNum, ok := startVal.(VNumber)
+			if !ok {
+				return nil, fmt.Errorf("slice start must be a number, got %s", startVal.Type())
+			}
+			start = int(float64(startNum))
+			if start < 0 {
+				start = len(str) + start
+			}
+		}
+
+		if expr.End != nil {
+			endVal, err := s.evalExpr(expr.End)
+			if err != nil {
+				return nil, err
+			}
+			endNum, ok := endVal.(VNumber)
+			if !ok {
+				return nil, fmt.Errorf("slice end must be a number, got %s", endVal.Type())
+			}
+			end = int(float64(endNum))
+			if end < 0 {
+				end = len(str) + end
+			}
+		}
+
+		// Clamp to valid range
+		if start < 0 {
+			start = 0
+		}
+		if end > len(str) {
+			end = len(str)
+		}
+		if start > end {
+			start = end
+		}
+
+		return VString(str[start:end]), nil
+
+	default:
+		return nil, fmt.Errorf("cannot slice %s", left.Type())
+	}
+}
+
+func (s *State) evalSpreadExpr(expr *ast.SpreadExpr) (Value, error) {
+	// Spread expressions should only appear inside list literals,
+	// so this shouldn't be called directly.
+	return nil, fmt.Errorf("spread expression can only be used inside list literals")}

@@ -22,6 +22,11 @@ func (lex *Lexer) Next() (*Token, error) {
 
 	r := lex.s.Current()
 
+	if lex.s.Peek(3) == "..." {
+		lex.s.Advance(3)
+		return lex.newToken(TEllipsis), nil
+	}
+
 	if lex.s.Peek(2) == "<=" {
 		lex.s.Advance(2)
 		return lex.newToken(TLessEq), nil

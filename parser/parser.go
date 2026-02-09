@@ -27,6 +27,7 @@ const (
 	PProduct
 	PPrefix
 	PCall
+	PIndex
 )
 
 var precedences = map[lexer.TokenType]Precedence{
@@ -38,6 +39,7 @@ var precedences = map[lexer.TokenType]Precedence{
 	lexer.TAsterisk: PProduct,
 	lexer.TSlash:    PProduct,
 	lexer.TLParen:   PCall,
+	lexer.TLBrace:   PIndex,
 }
 
 func precedenceOf(ty lexer.TokenType) Precedence {
@@ -89,13 +91,14 @@ func (p *Parser) registerPrefixParsers() {
 
 func (p *Parser) registerInfixParsers() {
 	p.infixParsers = map[lexer.TokenType]InfixParser{
-		lexer.TDot:    p.parseInfixExpr,
-		lexer.THyphen: p.parseInfixExpr,
-		lexer.TPlus:   p.parseInfixExpr,
-		lexer.TEqual:  p.parseInfixExpr,
-		lexer.TLessEq: p.parseInfixExpr,
-		lexer.TLess:   p.parseInfixExpr,
-		lexer.TLParen: p.parseFunCallExpr,
+		lexer.TDot:     p.parseInfixExpr,
+		lexer.THyphen:  p.parseInfixExpr,
+		lexer.TPlus:    p.parseInfixExpr,
+		lexer.TEqual:   p.parseInfixExpr,
+		lexer.TLessEq:  p.parseInfixExpr,
+		lexer.TLess:    p.parseInfixExpr,
+		lexer.TLParen:  p.parseFunCallExpr,
+		lexer.TLBrace:  p.parseIndexOrSliceExpr,
 	}
 }
 
@@ -510,6 +513,74 @@ func (p *Parser) parseFunCallArgs() ([]ast.Expr, error) {
 	return args, nil
 }
 
+func (p *Parser) parseIndexOrSliceExpr(left ast.Expr) (ast.Expr, error) {
+	// current token is TLBrace ('['
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	// Check for slice notation (with optional start)
+	// or index notation
+	var start ast.Expr
+	var end ast.Expr
+
+	// If we see a colon right away, start is nil and we have a slice like [:end]
+	if p.curToken.Type == lexer.TColon {
+		// start is nil
+	} else if p.curToken.Type == lexer.TRBrace {
+		// Empty brackets [] - error
+		return nil, fmt.Errorf("expected index or slice expression")
+	} else {
+		// Parse the first expression
+		expr, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+
+		// Check if it's a slice or index
+		if p.curToken.Type == lexer.TColon {
+			start = expr
+		} else {
+			// It's an index access
+			if p.curToken.Type != lexer.TRBrace {
+				return nil, fmt.Errorf("expected ']' after index, got %s", p.curToken.Type)
+			}
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			return &ast.IndexExpr{
+				Left:  left,
+				Index: expr,
+			}, nil
+		}
+	}
+
+	// Parse the end expression (for slice)
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	if p.curToken.Type != lexer.TRBrace {
+		expr, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+		end = expr
+	}
+
+	if p.curToken.Type != lexer.TRBrace {
+		return nil, fmt.Errorf("expected ']' after slice, got %s", p.curToken.Type)
+	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	return &ast.SliceExpr{
+		Left:  left,
+		Start: start,
+		End:   end,
+	}, nil
+}
+
 func (p *Parser) parseDigitLiteralExpr() (ast.Expr, error) {
 	value, err := strconv.ParseFloat(p.curToken.Text, 64)
 	if err != nil {
@@ -557,11 +628,23 @@ func (p *Parser) parseListLiteralExpr() (ast.Expr, error) {
 			break
 		}
 
-		elem, err := p.parseExpr(PLowest)
-		if err != nil {
-			return nil, err
+		// Check for spread expression
+		if p.curToken.Type == lexer.TEllipsis {
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			expr, err := p.parseExpr(PLowest)
+			if err != nil {
+				return nil, err
+			}
+			elements = append(elements, &ast.SpreadExpr{Expr: expr})
+		} else {
+			elem, err := p.parseExpr(PLowest)
+			if err != nil {
+				return nil, err
+			}
+			elements = append(elements, elem)
 		}
-		elements = append(elements, elem)
 
 		if p.curToken.Type == lexer.TRBrace {
 			break
