@@ -61,6 +61,10 @@ func builtinBool(s *State, args []Value) (Value, error) {
 		return VBool(v != nil), nil
 	case VBuiltinFun:
 		return VBool(v != nil), nil
+	case *VList:
+		return VBool(len(v.Elements) != 0), nil
+	case *VRecord:
+		return VBool(len(v.Fields) != 0), nil
 	}
 	return nil, fmt.Errorf("unknown value type: %s", args[0].Type().String())
 }
@@ -87,6 +91,10 @@ func builtinNumber(s *State, args []Value) (Value, error) {
 		return nil, fmt.Errorf("unable to convert function to number")
 	case VBuiltinFun:
 		return nil, fmt.Errorf("unable to convert function to number")
+	case *VList:
+		return nil, fmt.Errorf("unable to convert list to number")
+	case *VRecord:
+		return nil, fmt.Errorf("unable to convert record to number")
 	}
 	return nil, fmt.Errorf("unknown value type: %s", args[0].Type().String())
 }
@@ -128,6 +136,10 @@ func builtinString(s *State, args []Value) (Value, error) {
 		return VString(v.Type().String()), nil
 	case VBuiltinFun:
 		return VString(v.Type().String()), nil
+	case *VList:
+		return VString(v.String()), nil
+	case *VRecord:
+		return VString(v.String()), nil
 	}
 	return nil, fmt.Errorf("unknown value type: %s", args[0].Type().String())
 }
@@ -143,6 +155,10 @@ func builtinLen(s *State, args []Value) (Value, error) {
 		return nil, fmt.Errorf("argument for len() is expected string or array, but got number")
 	case VString:
 		return VNumber(len([]rune(v))), nil
+	case *VList:
+		return VNumber(len(v.Elements)), nil
+	case *VRecord:
+		return VNumber(len(v.Fields)), nil
 	case *VUserFun:
 		return nil, fmt.Errorf("argument for len() is expected string or array, but got fun")
 	case VBuiltinFun:

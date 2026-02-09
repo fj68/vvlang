@@ -75,14 +75,14 @@ func Parse(text []rune) ([]ast.Stmt, error) {
 
 func (p *Parser) registerPrefixParsers() {
 	p.prefixParsers = map[lexer.TokenType]PrefixParser{
-		lexer.TDigit:   p.parseDigitLiteralExpr,
-		lexer.TTrue:    p.parseBoolLiteralExpr,
-		lexer.TFalse:   p.parseBoolLiteralExpr,
-		lexer.TLiteral: p.parseStringLiteralExpr,
-		lexer.THyphen:  p.parsePrefixExpr,
-		lexer.TIdent:   p.parseVarRefExpr,
-		lexer.TFun:     p.parseFunLiteralExpr,
-		lexer.TLBrace:  p.parseListLiteralExpr,
+		lexer.TDigit:    p.parseDigitLiteralExpr,
+		lexer.TTrue:     p.parseBoolLiteralExpr,
+		lexer.TFalse:    p.parseBoolLiteralExpr,
+		lexer.TLiteral:  p.parseStringLiteralExpr,
+		lexer.THyphen:   p.parsePrefixExpr,
+		lexer.TIdent:    p.parseVarRefExpr,
+		lexer.TFun:      p.parseFunLiteralExpr,
+		lexer.TLBrace:   p.parseListLiteralExpr,
 		lexer.TLBracket: p.parseRecordLiteralExpr,
 	}
 }
