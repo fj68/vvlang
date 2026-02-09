@@ -82,6 +82,7 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.THyphen:  p.parsePrefixExpr,
 		lexer.TIdent:   p.parseVarRefExpr,
 		lexer.TFun:     p.parseFunLiteralExpr,
+		lexer.TLBrace:  p.parseListLiteralExpr,
 		lexer.TLBracket: p.parseRecordLiteralExpr,
 	}
 }
@@ -539,6 +540,44 @@ func (p *Parser) parseStringLiteralExpr() (ast.Expr, error) {
 	}
 	return &ast.StringLiteralExpr{
 		Value: value,
+	}, nil
+}
+
+func (p *Parser) parseListLiteralExpr() (ast.Expr, error) {
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	var elements []ast.Expr
+	for {
+		if p.curToken.Type == lexer.TEOF {
+			return nil, fmt.Errorf("unexpected EOF while reading list")
+		}
+		if p.curToken.Type == lexer.TRBrace {
+			break
+		}
+
+		elem, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+		elements = append(elements, elem)
+
+		if p.curToken.Type == lexer.TRBrace {
+			break
+		}
+
+		if err := p.expect(lexer.TComma); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := p.expect(lexer.TRBrace); err != nil {
+		return nil, err
+	}
+
+	return &ast.ListLiteralExpr{
+		Elements: elements,
 	}, nil
 }
 

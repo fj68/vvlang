@@ -16,6 +16,7 @@ const (
 	VTString
 	VTUserFun
 	VTBuiltinFun
+	VTList
 	VTRecord
 )
 
@@ -31,6 +32,8 @@ func (ty ValueType) String() string {
 		return "fun"
 	case VTBuiltinFun:
 		return "fun"
+	case VTList:
+		return "list"
 	case VTRecord:
 		return "record"
 	}
@@ -155,6 +158,46 @@ func (v VBuiltinFun) Equal(other Value) (bool, error) {
 
 func (v VBuiltinFun) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare functions")
+}
+
+type VList struct {
+	Elements []Value
+}
+
+func (v *VList) Type() ValueType {
+	return VTList
+}
+
+func (v *VList) String() string {
+	var elements []string
+	for _, elem := range v.Elements {
+		elements = append(elements, elem.String())
+	}
+	return fmt.Sprintf("[%s]", strings.Join(elements, ", "))
+}
+
+func (v *VList) Equal(other Value) (bool, error) {
+	x, ok := other.(*VList)
+	if !ok {
+		return false, fmt.Errorf("expected list, but got %s", other.Type())
+	}
+	if len(v.Elements) != len(x.Elements) {
+		return false, nil
+	}
+	for i, elem := range v.Elements {
+		eq, err := elem.Equal(x.Elements[i])
+		if err != nil {
+			return false, err
+		}
+		if !eq {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+func (v *VList) LessThan(other Value) (bool, error) {
+	return false, fmt.Errorf("unable to compare lists")
 }
 
 type VRecord struct {
