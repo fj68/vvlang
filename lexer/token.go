@@ -171,6 +171,12 @@ var Symbols = map[rune]TokenType{
 	':': TColon,
 }
 
+var Symbols2 = map[string]TokenType{
+	"<=": TLessEq,
+	"==": TEqual,
+	"...": TEllipsis,
+}
+
 var Keywords = map[string]TokenType{
 	"fun":      TFun,
 	"return":   TReturn,
