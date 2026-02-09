@@ -1,0 +1,8 @@
+admins = { alice = { name = 'Alice', age = 30 } }
+
+fun get_alice(r)
+  return r.alice
+end
+
+alice_name = get_alice(admins).name
+return alice_name

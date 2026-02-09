@@ -33,14 +33,37 @@ func (expr *StringLiteralExpr) Inspect() string {
 	return fmt.Sprintf("StringLiteralExpr{%s}", expr.Value)
 }
 
+// RecordElement represents either a field or a spread in a record literal
+type RecordElement interface {
+	isRecordElement()
+}
+
+type RecordField struct {
+	Key   string
+	Value Expr
+}
+
+func (f *RecordField) isRecordElement() {}
+
+type RecordSpread struct {
+	Expr Expr
+}
+
+func (s *RecordSpread) isRecordElement() {}
+
 type RecordLiteralExpr struct {
-	Fields map[string]Expr
+	Elements []RecordElement
 }
 
 func (expr *RecordLiteralExpr) Inspect() string {
 	var parts []string
-	for k, v := range expr.Fields {
-		parts = append(parts, fmt.Sprintf("%s = %s", k, v.Inspect()))
+	for _, elem := range expr.Elements {
+		switch e := elem.(type) {
+		case *RecordField:
+			parts = append(parts, fmt.Sprintf("%s = %s", e.Key, e.Value.Inspect()))
+		case *RecordSpread:
+			parts = append(parts, fmt.Sprintf("...%s", e.Expr.Inspect()))
+		}
 	}
 	return fmt.Sprintf("RecordLiteralExpr{%s}", strings.Join(parts, ", "))
 }
@@ -160,4 +183,13 @@ type SpreadExpr struct {
 
 func (expr *SpreadExpr) Inspect() string {
 	return fmt.Sprintf("SpreadExpr{...%s}", expr.Expr.Inspect())
+}
+
+type FieldAccessExpr struct {
+	Record Expr
+	Field  string
+}
+
+func (expr *FieldAccessExpr) Inspect() string {
+	return fmt.Sprintf("FieldAccessExpr{%s.%s}", expr.Record.Inspect(), expr.Field)
 }
