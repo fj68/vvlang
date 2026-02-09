@@ -154,15 +154,9 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 	case *ast.StringLiteralExpr:
 		return VString(v.Value), nil
 	case *ast.RecordLiteralExpr:
-		m := map[string]Value{}
-		for k, e := range v.Fields {
-			val, err := s.evalExpr(e)
-			if err != nil {
-				return nil, err
-			}
-			m[k] = val
-		}
-		return &VRecord{Fields: m}, nil
+		return s.evalRecordLiteralExpr(v)
+	case *ast.FieldAccessExpr:
+		return s.evalFieldAccessExpr(v)
 	case *ast.FunLiteralExpr:
 		return s.evalFunLiteralExpr(v)
 	case *ast.FunCallExpr:
@@ -192,6 +186,36 @@ func (s *State) evalFunLiteralExpr(expr *ast.FunLiteralExpr) (Value, error) {
 		s.Env.Set(expr.Name, f)
 	}
 	return f, nil
+}
+
+func (s *State) evalRecordLiteralExpr(expr *ast.RecordLiteralExpr) (Value, error) {
+	m := map[string]Value{}
+	// Process elements in order
+	for _, elem := range expr.Elements {
+		switch e := elem.(type) {
+		case *ast.RecordField:
+			val, err := s.evalExpr(e.Value)
+			if err != nil {
+				return nil, err
+			}
+			m[e.Key] = val
+		case *ast.RecordSpread:
+			val, err := s.evalExpr(e.Expr)
+			if err != nil {
+				return nil, err
+			}
+			// The value should be a record
+			rec, ok := val.(*VRecord)
+			if !ok {
+				return nil, fmt.Errorf("cannot spread non-record value of type %s", val.Type())
+			}
+			// Add all fields from the spread record
+			for k, v := range rec.Fields {
+				m[k] = v
+			}
+		}
+	}
+	return &VRecord{Fields: m}, nil
 }
 
 func (s *State) evalFunCallExpr(expr *ast.FunCallExpr) (Value, error) {
@@ -582,6 +606,23 @@ func (s *State) evalSliceExpr(expr *ast.SliceExpr) (Value, error) {
 }
 
 func (s *State) evalSpreadExpr(expr *ast.SpreadExpr) (Value, error) {
-	// Spread expressions should only appear inside list literals,
+	// Spread expressions should only appear inside list/record literals,
 	// so this shouldn't be called directly.
-	return nil, fmt.Errorf("spread expression can only be used inside list literals")}
+	return nil, fmt.Errorf("spread expression can only be used inside list or record literals")
+}
+
+func (s *State) evalFieldAccessExpr(expr *ast.FieldAccessExpr) (Value, error) {
+	recordVal, err := s.evalExpr(expr.Record)
+	if err != nil {
+		return nil, err
+	}
+	rec, ok := recordVal.(*VRecord)
+	if !ok {
+		return nil, fmt.Errorf("cannot access field on non-record value of type %s", recordVal.Type())
+	}
+	fieldVal, ok := rec.Fields[expr.Field]
+	if !ok {
+		return nil, fmt.Errorf("record does not have field '%s'", expr.Field)
+	}
+	return fieldVal, nil
+}
