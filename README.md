@@ -2,7 +2,7 @@
 
 _This project is still in __early stage of development__. Nothing useful for end-users._
 
-## Features Planned
+## Features Implemented
 
  - simple and enough, friendly syntax
  - bool, number, string, list and struct
@@ -222,8 +222,8 @@ end
  - number - `5`, `0.4`, `-8.2`
  - string - `'this is string'`
  - function - `fun name(arg) return 'fun' end`
- - array (not implemented) - `[3, true, 'item']`
- - struct (a.k.a. record) - `{ name = 'value', key = 8 }`
+ - list (array) - `[3, true, 'item']`
+ - struct (record) - `{ name = 'value', key = 8 }`
 
 ### Variables
 
@@ -305,9 +305,9 @@ print(apply(5, incr))  // 6
  - `not(value)` - negate boolean `value`
  - `print(value)` - print out the `value` (will be replaced with `draw_text(string)`)
  - `type(value)` - get the type of `value` (will be removed)
- - `len(value)` - get the size of `value` which should be array or string (not implemented)
+ - `len(value)` - get the size of `value` which should be array or string
  - `bool(value)` - convert the `value` to bool
- - `number(value)` - convert the `value` to bool
+ - `number(value)` - convert the `value` to number
  - `floor(number)` - floor the `number` to int
  - `ceil(number)` - ceil the `number` to int
  - `string(value)` - convert the `value` to string
