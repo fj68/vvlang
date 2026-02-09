@@ -161,6 +161,8 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalVarRefExpr(v)
 	case *ast.InfixExpr:
 		return s.evalInfixExpr(v)
+	case *ast.ListLiteralExpr:
+		return s.evalListLiteralExpr(v)
 	default:
 		return nil, fmt.Errorf("unknown expr: %s", v.Inspect())
 	}
@@ -360,4 +362,16 @@ func (s *State) evalOrExpr(left Value, right Value) (Value, error) {
 		return nil, fmt.Errorf("right side of or expr is expected bool, but got %s", right.Type())
 	}
 	return VBool(bool(lvalue) || bool(rvalue)), nil
+}
+
+func (s *State) evalListLiteralExpr(expr *ast.ListLiteralExpr) (Value, error) {
+	var elements []Value
+	for _, elemExpr := range expr.Elements {
+		elem, err := s.evalExpr(elemExpr)
+		if err != nil {
+			return nil, err
+		}
+		elements = append(elements, elem)
+	}
+	return &VList{Elements: elements}, nil
 }

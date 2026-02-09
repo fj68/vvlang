@@ -103,3 +103,15 @@ type InfixExpr struct {
 func (expr *InfixExpr) Inspect() string {
 	return fmt.Sprintf("InfixExpr{\"%s\", %s, %s}", expr.Op, expr.Left.Inspect(), expr.Right.Inspect())
 }
+
+type ListLiteralExpr struct {
+	Elements []Expr
+}
+
+func (expr *ListLiteralExpr) Inspect() string {
+	var elements []string
+	for _, elem := range expr.Elements {
+		elements = append(elements, elem.Inspect())
+	}
+	return fmt.Sprintf("ListLiteralExpr{[%s]}", strings.Join(elements, ", "))
+}
