@@ -1,7 +1,7 @@
 // List Support Features Test
 
 // Index access
-xs = [10, 20, 30, 40, 50]
+let xs = [10, 20, 30, 40, 50]
 print(xs[0])   // 10
 print(xs[2])   // 30
 print(xs[-1])  // 50 (negative indexing)
@@ -14,17 +14,17 @@ print(xs[:3])     // [10, 20, 30] (omit start)
 print(xs[:])      // [10, 20, 30, 40, 50] (full slice)
 
 // Spreading
-ys = [1, 2, 3]
-zs = [0, ...ys, 4]
+let ys = [1, 2, 3]
+let zs = [0, ...ys, 4]
 print(zs)  // [0, 1, 2, 3, 4]
 
-as = [100, 200]
-bs = [300, 400]
-cs = [...as, ...bs]
+let as = [100, 200]
+let bs = [300, 400]
+let cs = [...as, ...bs]
 print(cs)  // [100, 200, 300, 400]
 
 // String indexing and slicing
-text = 'hello'
+let text = 'hello'
 print(text[0])    // "h"
 print(text[1:4])  // "ell"
 print(text[:2])   // "he"

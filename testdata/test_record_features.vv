@@ -1,6 +1,6 @@
-person = { name = 'Alice', age = 30 }
-name = person.name
-defaults = { x = 0, y = 0 }
-point = { ...defaults, x = 10 }
-result = point.x
+let person = { name = 'Alice', age = 30 }
+let name = person.name
+let defaults = { x = 0, y = 0 }
+let point = { ...defaults, x = 10 }
+let result = point.x
 return result

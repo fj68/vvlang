@@ -166,6 +166,10 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 
 	if p.curToken.Type == lexer.TIdent && p.peekToken.Type == lexer.TAssign {
 		// `x = expr` form
+		return p.parseVarAssignStmt()
+	}
+
+	if p.curToken.Type == lexer.TLet {
 		return p.parseVarDeclStmt()
 	}
 
@@ -269,12 +273,32 @@ func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {
 }
 
 func (p *Parser) parseVarDeclStmt() (*ast.VarDeclStmt, error) {
+	if err := p.expect(lexer.TLet); err != nil {
+		return nil, err
+	}
+	name := p.curToken.Text
+	if err := p.expect(lexer.TIdent); err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TAssign); err != nil {
+		return nil, err
+	}
+	body, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	return &ast.VarDeclStmt{
+		Name: name,
+		Body: body,
+	}, nil
+}
+
+func (p *Parser) parseVarAssignStmt() (*ast.VarAssignStmt, error) {
 	name := p.curToken.Text
 
 	if err := p.expectNext(lexer.TAssign); err != nil {
 		return nil, err
 	}
-
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
@@ -284,7 +308,7 @@ func (p *Parser) parseVarDeclStmt() (*ast.VarDeclStmt, error) {
 		return nil, err
 	}
 
-	return &ast.VarDeclStmt{
+	return &ast.VarAssignStmt{
 		Name: name,
 		Body: expr,
 	}, nil
