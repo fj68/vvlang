@@ -19,7 +19,7 @@ fun add(a, b)
 end
 
 // define variable
-x = 0
+let x = 0
 
 // here, another simple function
 fun incr_x()
@@ -51,20 +51,20 @@ fun is_space(c)
 end
 
 fun trim_start(text)
-  pos = 0
+  let pos = 0
   while pos < len(text) and is_space(text[pos]) do
     pos = pos + 1
   end
-  return slice(text, pos, len(text))
+  return text[pos:]
 end
 
 fun split(text, sep)
-  lines = []
-  pos = 0
-  start = 0
+  let lines = []
+  let pos = 0
+  let start = 0
   while pos < len(text) do
-    if slice(text, pos, pos+len(sep)) == sep do
-      push(lines, slice(text, start, pos))
+    if text[pos:pos+len(sep)] == sep do
+      push(lines, text[start:pos])
       pos = pos + len(sep)
       start = pos
     else
@@ -75,8 +75,8 @@ fun split(text, sep)
 end
 
 fun parse_line(line)
-  cols = []
-  cells = split(line, ',')
+  let cols = []
+  let cells = split(line, ',')
   while 0 < len(cells) do
     push(cols, trim_start(shift(cells)))
   end
@@ -84,8 +84,8 @@ fun parse_line(line)
 end
 
 fun parse_csv(text)
-  rows = []
-  lines = split(text, '\n')
+  let rows = []
+  let lines = split(text, '\n')
   while 0 < len(lines) do
     push(rows, parse_line(shift(lines)))
   end
@@ -94,13 +94,13 @@ end
 
 fun print_csv(rows)
   while 0 < len(rows) do
-    cols = shift(rows)
+    let cols = shift(rows)
     print(join(cols, "\n"))
   end
 end
 
-text = read_file("test.csv")
-values = parse_csv(text)
+let text = read_file("test.csv")
+let values = parse_csv(text)
 print_csv(values)
 ```
 
@@ -146,17 +146,17 @@ end
 ```
 
 ```
-sprite = import("sprite")
+let sprite = import("sprite")
 
-player = sprite.new('player', 0, 0, 50, 100 'left')
-bullets = []
+let player = sprite.new('player', 0, 0, 50, 100 'left')
+let bullets = []
 
 fun fire()
   push(bullets, sprite.new('bullet', player.x, player.y, 20, 5 player.face))
 end
 
 fun update_bullet(i)
-  bullet = bullets[i]
+  let bullet = bullets[i]
   if bullet.face == 'left' do
     sprite.move_by(bullet, -1, 0)
   else
@@ -168,7 +168,7 @@ fun update_bullet(i)
   end
 end
 
-holding = false
+let holding = false
 
 fun update()
   if get_key('left') do
@@ -187,7 +187,7 @@ fun update()
     holding = false
   end
   
-  i = 0
+  let i = 0
   while i < len(bullets) do
     update_bullet(i)
     i = i + 1
@@ -199,7 +199,7 @@ fun draw()
   
   sprite.draw(player)
   
-  i = 0
+  let i = 0
   while i < len(bullets) do
     sprite.draw(bullets[i])
     i = i + 1
@@ -228,7 +228,11 @@ end
 ### Variables
 
 ```vv
-variable_x = true
+## definition
+let variable_x = true
+
+## update
+variable_x = false
 ```
 
 Variables are mutable and dynamically typed.
@@ -266,7 +270,7 @@ end
 ### While
 
 ```vv
-i = 0
+let i = 0
 while i < 10
   i = i + 1
 end

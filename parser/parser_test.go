@@ -7,7 +7,7 @@ import (
 )
 
 func TestParser(t *testing.T) {
-	text := "fun add(a, b) while true if get_key() == 'enter' return a + b else x = 0.8 return x end end end x = 1 y = add(x, 0.5)"
+	text := "fun add(a, b) while true if get_key() == 'enter' return a + b else let x = 0.8 return x end end end let x = 1 let y = add(x, 0.5)"
 	program, err := Parse([]rune(text))
 	if err != nil {
 		t.Fatal(err)
@@ -22,7 +22,7 @@ func TestParser(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	text := "fun add(a, b) return a + b end x = 1 y = add(x, 0.5)"
+	text := "fun add(a, b) return a + b end let x = 1 let y = add(x, 0.5)"
 	v, err := Parse([]rune(text))
 	if err != nil {
 		t.Fatal(err)
@@ -36,7 +36,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestParseWhile(t *testing.T) {
-	text := "while 1 < 2 x = 1 end"
+	text := "while 1 < 2 let x = 1 end"
 	v, err := Parse([]rune(text))
 	if err != nil {
 		t.Fatal(err)

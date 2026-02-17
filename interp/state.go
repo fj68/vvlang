@@ -84,6 +84,8 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalReturnStmt(v)
 	case *ast.VarDeclStmt:
 		return s.evalVarDeclStmt(v)
+	case *ast.VarAssignStmt:
+		return s.evalVarAssignStmt(v)
 	case *ast.IfStmt:
 		return s.evalIfStmt(v)
 	case *ast.BreakStmt:
@@ -142,6 +144,15 @@ func (s *State) evalVarDeclStmt(stmt *ast.VarDeclStmt) error {
 		return err
 	}
 	s.Env.Set(stmt.Name, v)
+	return nil
+}
+
+func (s *State) evalVarAssignStmt(stmt *ast.VarAssignStmt) error {
+	v, err := s.evalExpr(stmt.Body)
+	if err != nil {
+		return err
+	}
+	s.Env.SetOuter(stmt.Name, v)
 	return nil
 }
 

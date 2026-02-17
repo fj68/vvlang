@@ -30,6 +30,10 @@ func (env *Env) Get(name string) (Value, error) {
 }
 
 func (env *Env) Set(name string, value Value) {
+	env.Values[name] = value
+}
+
+func (env *Env) SetOuter(name string, value Value) {
 	for e := env.outer; e != nil; e = e.outer {
 		if _, ok := e.Values[name]; ok {
 			e.Values[name] = value

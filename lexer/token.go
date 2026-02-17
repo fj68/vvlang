@@ -30,6 +30,7 @@ const (
 	TOr
 	TBreak
 	TContinue
+	TLet
 
 	// symbols
 	TLessEq
@@ -92,6 +93,8 @@ func (ty TokenType) String() string {
 		return "And"
 	case TOr:
 		return "Or"
+	case TLet:
+		return "Let"
 
 	// symbols
 	case TLessEq:
@@ -192,6 +195,7 @@ var Keywords = map[string]TokenType{
 	"or":       TOr,
 	"break":    TBreak,
 	"continue": TContinue,
+	"let":	    TLet,
 }
 
 var Comments = map[string]string{

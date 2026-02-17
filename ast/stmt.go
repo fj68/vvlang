@@ -63,6 +63,15 @@ func (stmt *IfStmt) Inspect() string {
 	return fmt.Sprintf("IfStmt{%s, %s, %s}", stmt.Cond.Inspect(), strings.Join(thenBody, ", "), strings.Join(elseBody, ", "))
 }
 
+type VarAssignStmt struct {
+	Name string
+	Body Expr
+}
+
+func (stmt *VarAssignStmt) Inspect() string {
+	return fmt.Sprintf("VarAssignStmt{\"%s\", %s}", stmt.Name, stmt.Body.Inspect())
+}
+
 type VarDeclStmt struct {
 	Name string
 	Body Expr
