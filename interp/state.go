@@ -97,7 +97,7 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 	case *ast.TestStmt:
 		return nil // test statements are handled separately in the test runner
 	case *ast.AssertStmt:
-		return nil // assert statements are handled separately in the test runner
+		return s.evalAssertStmt(v)
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
@@ -600,4 +600,19 @@ func (s *State) evalFieldAccessExpr(expr *ast.FieldAccessExpr) (Value, error) {
 		return nil, fmt.Errorf("field '%s' not found in record", fieldName)
 	}
 	return value, nil
+}
+
+func (s *State) evalAssertStmt(stmt *ast.AssertStmt) error {
+	v, err := s.evalExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	cond, ok := v.(VBool)
+	if !ok {
+		return fmt.Errorf("expected bool in assert condition, but got %s", v.Type())
+	}
+	if !cond {
+		return fmt.Errorf("assertion failed: %s", stmt.Cond.Inspect())
+	}
+	return nil
 }
