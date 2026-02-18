@@ -1,6 +1,5 @@
 let person = { name = 'Alice', age = 30 }
 let name = person.name
-let defaults = { x = 0, y = 0 }
-let point = { ...defaults, x = 10 }
+let point = { x = 0, y = 0 }
 let result = point.x
-return result
+print(result)
