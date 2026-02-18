@@ -50,7 +50,6 @@ const (
 	TSlash
 	TDot
 	TColon
-	TEllipsis
 	TIncr
 	TDecr
 )
@@ -133,8 +132,6 @@ func (ty TokenType) String() string {
 		return "Dot"
 	case TColon:
 		return "Colon"
-	case TEllipsis:
-		return "Ellipsis"
 	case TIncr:
 		return "Incr"
 	case TDecr:
@@ -185,7 +182,6 @@ var Symbols2 = map[string]TokenType{
 	"==": TEqual,
 	"+=": TIncr,
 	"-=": TDecr,
-	"...": TEllipsis,
 }
 
 var Keywords = map[string]TokenType{

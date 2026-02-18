@@ -22,29 +22,13 @@ func TestParseRecordLiteral(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected RecordLiteralExpr, got %T", exprStmt.Expr)
 	}
-	if len(rec.Elements) != 2 {
-		t.Fatalf("expected 2 elements, got %d", len(rec.Elements))
+	if len(rec.Fields) != 2 {
+		t.Fatalf("expected 2 fields, got %d", len(rec.Fields))
 	}
-	
-	// Check that both elements are RecordFields
-	for i, elem := range rec.Elements {
-		_, ok := elem.(*ast.RecordField)
-		if !ok {
-			t.Fatalf("expected RecordField at index %d, got %T", i, elem)
-		}
-	}
-	
-	// Check field names
-	fieldMap := make(map[string]bool)
-	for _, elem := range rec.Elements {
-		if field, ok := elem.(*ast.RecordField); ok {
-			fieldMap[field.Key] = true
-		}
-	}
-	if _, ok := fieldMap["name"]; !ok {
+	if _, ok := rec.Fields["name"]; !ok {
 		t.Fatalf("missing field 'name'")
 	}
-	if _, ok := fieldMap["key"]; !ok {
+	if _, ok := rec.Fields["key"]; !ok {
 		t.Fatalf("missing field 'key'")
 	}
 }
@@ -66,14 +50,10 @@ func TestParseRecordLiteralTrailingComma(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected RecordLiteralExpr, got %T", exprStmt.Expr)
 	}
-	if len(rec.Elements) != 1 {
-		t.Fatalf("expected 1 element, got %d", len(rec.Elements))
+	if len(rec.Fields) != 1 {
+		t.Fatalf("expected 1 field, got %d", len(rec.Fields))
 	}
-	field, ok := rec.Elements[0].(*ast.RecordField)
-	if !ok {
-		t.Fatalf("expected RecordField, got %T", rec.Elements[0])
-	}
-	if field.Key != "name" {
-		t.Fatalf("expected field 'name', got '%s'", field.Key)
+	if _, ok := rec.Fields["name"]; !ok {
+		t.Fatalf("missing field 'name'")
 	}
 }

@@ -320,7 +320,7 @@ func (p *Parser) parseVarAssignStmt() (*ast.VarAssignStmt, error) {
 	}, nil
 }
 
-func (p *Parser) parseVarIncrDecrStmt() (*ast.VarIncrDecrStmt, error) {
+func (p *Parser) parseVarIncrDecrStmt() (*ast.VarAssignStmt, error) {
 	name := p.curToken.Text
 	op := p.peekToken.Type
 
@@ -339,7 +339,8 @@ func (p *Parser) parseVarIncrDecrStmt() (*ast.VarIncrDecrStmt, error) {
 	if op == lexer.TIncr {
 		return &ast.VarAssignStmt{
 			Name: name,
-			Body: &ast.AddExpr{
+			Body: &ast.InfixExpr{
+				Op:    "+",
 				Left:  &ast.VarRefExpr{Name: name},
 				Right: expr,
 			},
@@ -347,7 +348,8 @@ func (p *Parser) parseVarIncrDecrStmt() (*ast.VarIncrDecrStmt, error) {
 	}
 	return &ast.VarAssignStmt{
 		Name: name,
-		Body: &ast.SubExpr{
+		Body: &ast.InfixExpr{
+			Op:    "-",
 			Left:  &ast.VarRefExpr{Name: name},
 			Right: expr,
 		},
@@ -529,25 +531,6 @@ func (p *Parser) parseInfixExpr(left ast.Expr) (ast.Expr, error) {
 	}, nil
 }
 
-func (p *Parser) parseFieldAccessExpr(record ast.Expr) (ast.Expr, error) {
-	// current token is TDot
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	// next token should be an identifier
-	if p.curToken.Type != lexer.TIdent {
-		return nil, fmt.Errorf("expected identifier after '.', got %s", p.curToken.Type)
-	}
-	fieldName := p.curToken.Text
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	return &ast.FieldAccessExpr{
-		Record: record,
-		Field:  fieldName,
-	}, nil
-}
-
 func (p *Parser) parseVarRefExpr() (ast.Expr, error) {
 	name := p.curToken.Text
 	if err := p.readToken(); err != nil {
@@ -712,23 +695,11 @@ func (p *Parser) parseListLiteralExpr() (ast.Expr, error) {
 			break
 		}
 
-		// Check for spread expression
-		if p.curToken.Type == lexer.TEllipsis {
-			if err := p.readToken(); err != nil {
-				return nil, err
-			}
-			expr, err := p.parseExpr(PLowest)
-			if err != nil {
-				return nil, err
-			}
-			elements = append(elements, &ast.SpreadExpr{Expr: expr})
-		} else {
-			elem, err := p.parseExpr(PLowest)
-			if err != nil {
-				return nil, err
-			}
-			elements = append(elements, elem)
+		elem, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
 		}
+		elements = append(elements, elem)
 
 		if p.curToken.Type == lexer.TRBrace {
 			break
@@ -753,43 +724,30 @@ func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
-	var elements []ast.RecordElement
+	fields := map[string]ast.Expr{}
 	// empty record
 	if p.curToken.Type == lexer.TRBracket {
 		if err := p.readToken(); err != nil {
 			return nil, err
 		}
-		return &ast.RecordLiteralExpr{Elements: elements}, nil
+		return &ast.RecordLiteralExpr{Fields: fields}, nil
 	}
 	for {
-		// Check for spread expression
-		if p.curToken.Type == lexer.TEllipsis {
-			if err := p.readToken(); err != nil {
-				return nil, err
-			}
-			expr, err := p.parseExpr(PLowest)
-			if err != nil {
-				return nil, err
-			}
-			elements = append(elements, &ast.RecordSpread{Expr: expr})
-		} else if p.curToken.Type == lexer.TIdent {
-			// Regular field
-			name := p.curToken.Text
-			if err := p.expectNext(lexer.TAssign); err != nil {
-				return nil, err
-			}
-			if err := p.readToken(); err != nil {
-				return nil, err
-			}
-			expr, err := p.parseExpr(PLowest)
-			if err != nil {
-				return nil, err
-			}
-			elements = append(elements, &ast.RecordField{Key: name, Value: expr})
-		} else {
-			return nil, fmt.Errorf("expected identifier or spread (...) for record field, got %s", p.curToken.Type)
+		if p.curToken.Type != lexer.TIdent {
+			return nil, fmt.Errorf("expected identifier for record field, got %s", p.curToken.Type)
 		}
-
+		name := p.curToken.Text
+		if err := p.expectNext(lexer.TAssign); err != nil {
+			return nil, err
+		}
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		expr, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+		fields[name] = expr
 		if p.curToken.Type == lexer.TRBracket {
 			break
 		}
@@ -811,5 +769,22 @@ func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
-	return &ast.RecordLiteralExpr{Elements: elements}, nil
+	return &ast.RecordLiteralExpr{Fields: fields}, nil
+}
+
+func (p *Parser) parseFieldAccessExpr(record ast.Expr) (ast.Expr, error) {
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	if p.curToken.Type != lexer.TIdent {
+		return nil, fmt.Errorf("expected identifier after '.', got %s", p.curToken.Type)
+	}
+	field := p.curToken.Text
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.FieldAccessExpr{
+		Record: record,
+		Field:  field,
+	}, nil
 }
