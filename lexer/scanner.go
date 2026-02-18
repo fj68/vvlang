@@ -2,11 +2,13 @@ package lexer
 
 import (
 	"strings"
+
+	"github.com/fj68/vvlang/ast"
 )
 
 type Scanner struct {
 	Text []rune
-	Pos  Pos
+	Pos  ast.Pos
 	buf  strings.Builder
 }
 
@@ -39,6 +41,14 @@ func (s *Scanner) Advance(n int) {
 	text := s.Text[s.Pos.End : s.Pos.End+n]
 	s.buf.WriteString(string(text))
 	s.Pos.End += n
+	for _, r := range text {
+		if r == '\n' {
+			s.Pos.Line++
+			s.Pos.Col = 0
+		} else {
+			s.Pos.Col++
+		}
+	}
 }
 
 func (s *Scanner) Skip(n int) {
@@ -46,6 +56,14 @@ func (s *Scanner) Skip(n int) {
 		return
 	}
 	s.Pos.End += n
+	for _, r := range s.Text[s.Pos.End-n : s.Pos.End] {
+		if r == '\n' {
+			s.Pos.Line++
+			s.Pos.Col = 0
+		} else {
+			s.Pos.Col++
+		}
+	}
 }
 
 func (s *Scanner) Replace(r rune) {
@@ -53,7 +71,7 @@ func (s *Scanner) Replace(r rune) {
 	s.Skip(1)
 }
 
-func (s *Scanner) Flush() (string, Pos) {
+func (s *Scanner) Flush() (string, ast.Pos) {
 	buf := s.buf.String()
 	pos := s.Pos.Copy()
 	s.buf.Reset()

@@ -9,8 +9,9 @@ import (
 )
 
 type State struct {
-	Env     *Env
-	RetVals stack.Stack[Value]
+	IsTestMode bool
+	Env        *Env
+	RetVals    stack.Stack[Value]
 }
 
 func NewState() *State {
@@ -34,6 +35,14 @@ func (s *State) RegisterGlobals(values map[string]Value) {
 	}
 }
 
+func (s *State) EvalTest(text []rune) error {
+	program, err := parser.Parse(text)
+	if err != nil {
+		return err
+	}
+	return s.evalTestProgram(program)
+}
+
 func (s *State) Eval(text []rune) error {
 	program, err := parser.Parse(text)
 	if err != nil {
@@ -53,6 +62,24 @@ func (s *State) popEnv() {
 var ErrBreak = fmt.Errorf("break")
 var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
+
+func (s *State) evalTestProgram(program []ast.Stmt) error {
+	s.IsTestMode = true
+	for _, stmt := range program {
+		if _, ok := stmt.(*ast.TestStmt); !ok {
+			// run only test stmts, and skip other top-level stmts during test evaluation
+			continue
+		}
+		if err := s.evalStmt(stmt); err != nil {
+			if err == ErrReturn {
+				// Top-level return: stop program execution but do not treat as an error
+				return nil
+			}
+			return err
+		}
+	}
+	return nil
+}
 
 func (s *State) evalProgram(program []ast.Stmt) error {
 	for _, stmt := range program {
@@ -94,6 +121,10 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return ErrContinue
 	case *ast.WhileStmt:
 		return s.evalWhileStmt(v)
+	case *ast.TestStmt:
+		return s.evalTestStmt(v)
+	case *ast.AssertStmt:
+		return s.evalAssertStmt(v)
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
@@ -596,4 +627,27 @@ func (s *State) evalFieldAccessExpr(expr *ast.FieldAccessExpr) (Value, error) {
 		return nil, fmt.Errorf("field '%s' not found in record", fieldName)
 	}
 	return value, nil
+}
+
+func (s *State) evalAssertStmt(stmt *ast.AssertStmt) error {
+	v, err := s.evalExpr(stmt.Cond)
+	if err != nil {
+		return err
+	}
+	cond, ok := v.(VBool)
+	if !ok {
+		return fmt.Errorf("expected bool in assert condition, but got %s", v.Type())
+	}
+	if !cond {
+		return fmt.Errorf("assertion failed: %s", stmt.Cond.Inspect())
+	}
+	return nil
+}
+
+func (s *State) evalTestStmt(stmt *ast.TestStmt) error {
+	// run them only in test mode, and skip during normal evaluation
+	if s.IsTestMode {
+		return s.evalBody(stmt.Body)
+	}
+	return nil
 }

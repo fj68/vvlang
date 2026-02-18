@@ -88,3 +88,24 @@ type ExprStmt struct {
 func (stmt *ExprStmt) Inspect() string {
 	return stmt.Expr.Inspect()
 }
+
+type TestStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (stmt *TestStmt) Inspect() string {
+	var body []string
+	for _, s := range stmt.Body {
+		body = append(body, s.Inspect())
+	}
+	return fmt.Sprintf("TestStmt{\"%s\", [%s]}", stmt.Name, strings.Join(body, ", "))
+}
+
+type AssertStmt struct {
+	Cond Expr
+}
+
+func (stmt *AssertStmt) Inspect() string {
+	return fmt.Sprintf("AssertStmt{%s}", stmt.Cond.Inspect())
+}

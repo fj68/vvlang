@@ -6,10 +6,26 @@ import (
 )
 
 type Expr interface {
+	StartPos() *Pos
+	EndPos() *Pos
 	Inspect() string
 }
 
+type Position struct {
+	Start *Pos
+	End   *Pos
+}
+
+func (p Position) StartPos() *Pos {
+	return p.Start
+}
+
+func (p Position) EndPos() *Pos {
+	return p.End
+}
+
 type NumberLiteralExpr struct {
+	Position
 	Value float64
 }
 
@@ -18,6 +34,7 @@ func (expr *NumberLiteralExpr) Inspect() string {
 }
 
 type BoolLiteralExpr struct {
+	Position
 	Value bool
 }
 
@@ -26,6 +43,7 @@ func (expr *BoolLiteralExpr) Inspect() string {
 }
 
 type StringLiteralExpr struct {
+	Position
 	Value string
 }
 
@@ -34,6 +52,7 @@ func (expr *StringLiteralExpr) Inspect() string {
 }
 
 type RecordLiteralExpr struct {
+	Position
 	Fields map[string]Expr
 }
 
@@ -46,6 +65,7 @@ func (expr *RecordLiteralExpr) Inspect() string {
 }
 
 type InterpolatedStringLiteralExpr struct {
+	Position
 	Texts  []string
 	Values []Expr
 }
@@ -63,6 +83,7 @@ func (expr *InterpolatedStringLiteralExpr) Inspect() string {
 }
 
 type FunLiteralExpr struct {
+	Position
 	Name string
 	Args []string
 	Body []Stmt
@@ -77,6 +98,7 @@ func (expr *FunLiteralExpr) Inspect() string {
 }
 
 type FunCallExpr struct {
+	Position
 	Fun  Expr
 	Args []Expr
 }
@@ -90,6 +112,7 @@ func (expr *FunCallExpr) Inspect() string {
 }
 
 type VarRefExpr struct {
+	Position
 	Name string
 }
 
@@ -98,6 +121,7 @@ func (expr *VarRefExpr) Inspect() string {
 }
 
 type PrefixExpr struct {
+	Position
 	Op    string
 	Right Expr
 }
@@ -107,6 +131,7 @@ func (expr *PrefixExpr) Inspect() string {
 }
 
 type InfixExpr struct {
+	Position
 	Op    string
 	Left  Expr
 	Right Expr
@@ -117,6 +142,7 @@ func (expr *InfixExpr) Inspect() string {
 }
 
 type ListLiteralExpr struct {
+	Position
 	Elements []Expr
 }
 
@@ -128,6 +154,7 @@ func (expr *ListLiteralExpr) Inspect() string {
 	return fmt.Sprintf("ListLiteralExpr{[%s]}", strings.Join(elements, ", "))
 }
 type IndexExpr struct {
+	Position
 	Left  Expr
 	Index Expr
 }
@@ -137,6 +164,7 @@ func (expr *IndexExpr) Inspect() string {
 }
 
 type SliceExpr struct {
+	Position
 	Left  Expr
 	Start Expr
 	End   Expr
@@ -155,6 +183,7 @@ func (expr *SliceExpr) Inspect() string {
 }
 
 type FieldAccessExpr struct {
+	Position
 	Record Expr
 	Field  string
 }

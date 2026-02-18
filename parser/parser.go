@@ -150,13 +150,21 @@ func (p *Parser) parseProgram() ([]ast.Stmt, error) {
 		if p.curToken.Type == lexer.TEOF {
 			break
 		}
-		stmt, err := p.parseStmt()
+		stmt, err := p.parseToplevelStmt()
 		if err != nil {
 			return nil, err
 		}
 		program = append(program, stmt)
 	}
 	return program, nil
+}
+
+func (p *Parser) parseToplevelStmt() (ast.Stmt, error) {
+	if p.curToken.Type == lexer.TTest {
+		return p.parseTestStmt()
+	}
+
+	return p.parseStmt()
 }
 
 func (p *Parser) parseStmt() (ast.Stmt, error) {
@@ -197,6 +205,10 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 
 	if p.curToken.Type == lexer.TContinue {
 		return p.parseContinueStmt()
+	}
+
+	if p.curToken.Type == lexer.TAssert {
+		return p.parseAssertStmt()
 	}
 
 	expr, err := p.parseExpr(PLowest)
@@ -786,5 +798,39 @@ func (p *Parser) parseFieldAccessExpr(record ast.Expr) (ast.Expr, error) {
 	return &ast.FieldAccessExpr{
 		Record: record,
 		Field:  field,
+	}, nil
+}
+
+func (p *Parser) parseTestStmt() (*ast.TestStmt, error) {
+	if err := p.expect(lexer.TTest); err != nil {
+		return nil, err
+	}
+	name := p.curToken.Text
+	if err := p.expect(lexer.TLiteral); err != nil {
+		return nil, err
+	}
+	body, err := p.parseBody()
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TEnd); err != nil {
+		return nil, err
+	}
+	return &ast.TestStmt{
+		Name: name,
+		Body: body,
+	}, nil
+}
+
+func (p *Parser) parseAssertStmt() (*ast.AssertStmt, error) {
+	if err := p.expect(lexer.TAssert); err != nil {
+		return nil, err
+	}
+	cond, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	return &ast.AssertStmt{
+		Cond: cond,
 	}, nil
 }

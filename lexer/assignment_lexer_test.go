@@ -1,13 +1,17 @@
 package lexer
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/fj68/vvlang/ast"
+)
 
 func TestAssignmentLex(t *testing.T) {
 	text := "x = 1"
 	expected := []*Token{
-		{TIdent, "x", Pos{0, 1}},
-		{TAssign, "=", Pos{2, 3}},
-		{TDigit, "1", Pos{4, 5}},
+		{TIdent, "x", ast.Pos{0, 1, 0, 1}},
+		{TAssign, "=", ast.Pos{2, 3, 0, 3}},
+		{TDigit, "1", ast.Pos{4, 5, 0, 5}},
 	}
 	lex := New([]rune(text))
 	for i := 0; ; i++ {
