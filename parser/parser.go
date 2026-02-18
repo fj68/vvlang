@@ -150,13 +150,21 @@ func (p *Parser) parseProgram() ([]ast.Stmt, error) {
 		if p.curToken.Type == lexer.TEOF {
 			break
 		}
-		stmt, err := p.parseStmt()
+		stmt, err := p.parseToplevelStmt()
 		if err != nil {
 			return nil, err
 		}
 		program = append(program, stmt)
 	}
 	return program, nil
+}
+
+func (p *Parser) parseToplevelStmt() (ast.Stmt, error) {
+	if p.curToken.Type == lexer.TTest {
+		return p.parseTestStmt()
+	}
+
+	return p.parseStmt()
 }
 
 func (p *Parser) parseStmt() (ast.Stmt, error) {
@@ -197,10 +205,6 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 
 	if p.curToken.Type == lexer.TContinue {
 		return p.parseContinueStmt()
-	}
-
-	if p.curToken.Type == lexer.TTest {
-		return p.parseTestStmt()
 	}
 
 	if p.curToken.Type == lexer.TAssert {

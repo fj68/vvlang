@@ -3,6 +3,8 @@ package lexer
 import (
 	"fmt"
 	"unicode"
+
+	"github.com/fj68/vvlang/ast"
 )
 
 type TokenType int
@@ -153,7 +155,7 @@ func (ty TokenType) String() string {
 type Token struct {
 	Type TokenType
 	Text string
-	Pos  Pos
+	Pos  ast.Pos
 }
 
 func (tok *Token) String() string {

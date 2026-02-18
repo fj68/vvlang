@@ -35,6 +35,14 @@ func (s *State) RegisterGlobals(values map[string]Value) {
 	}
 }
 
+func (s *State) EvalTest(text []rune) error {
+	program, err := parser.Parse(text)
+	if err != nil {
+		return err
+	}
+	return s.evalTestProgram(program)
+}
+
 func (s *State) Eval(text []rune) error {
 	program, err := parser.Parse(text)
 	if err != nil {
@@ -54,6 +62,24 @@ func (s *State) popEnv() {
 var ErrBreak = fmt.Errorf("break")
 var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
+
+func (s *State) evalTestProgram(program []ast.Stmt) error {
+	s.IsTestMode = true
+	for _, stmt := range program {
+		if _, ok := stmt.(*ast.TestStmt); !ok {
+			// run only test stmts, and skip other top-level stmts during test evaluation
+			continue
+		}
+		if err := s.evalStmt(stmt); err != nil {
+			if err == ErrReturn {
+				// Top-level return: stop program execution but do not treat as an error
+				return nil
+			}
+			return err
+		}
+	}
+	return nil
+}
 
 func (s *State) evalProgram(program []ast.Stmt) error {
 	for _, stmt := range program {
