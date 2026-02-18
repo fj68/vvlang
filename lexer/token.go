@@ -51,6 +51,8 @@ const (
 	TDot
 	TColon
 	TEllipsis
+	TIncr
+	TDecr
 )
 
 func (ty TokenType) String() string {
@@ -133,6 +135,10 @@ func (ty TokenType) String() string {
 		return "Colon"
 	case TEllipsis:
 		return "Ellipsis"
+	case TIncr:
+		return "Incr"
+	case TDecr:
+		return "Decr"
 	}
 	return "Unknown"
 }
@@ -177,6 +183,8 @@ var Symbols = map[rune]TokenType{
 var Symbols2 = map[string]TokenType{
 	"<=": TLessEq,
 	"==": TEqual,
+	"+=": TIncr,
+	"-=": TDecr,
 	"...": TEllipsis,
 }
 

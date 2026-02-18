@@ -164,9 +164,15 @@ func (p *Parser) parseStmt() (ast.Stmt, error) {
 		return nil, fmt.Errorf("unexpected EOF")
 	}
 
-	if p.curToken.Type == lexer.TIdent && p.peekToken.Type == lexer.TAssign {
-		// `x = expr` form
-		return p.parseVarAssignStmt()
+	if p.curToken.Type == lexer.TIdent {
+		if p.peekToken.Type == lexer.TAssign {
+			// `x = expr` form
+			return p.parseVarAssignStmt()
+		}
+		if p.peekToken.Type == lexer.TIncr || p.peekToken.Type == lexer.TDecr {
+			// `x += expr` or `x -= expr` form
+			return p.parseVarIncrDecrStmt()
+		}
 	}
 
 	if p.curToken.Type == lexer.TLet {
@@ -311,6 +317,40 @@ func (p *Parser) parseVarAssignStmt() (*ast.VarAssignStmt, error) {
 	return &ast.VarAssignStmt{
 		Name: name,
 		Body: expr,
+	}, nil
+}
+
+func (p *Parser) parseVarIncrDecrStmt() (*ast.VarIncrDecrStmt, error) {
+	name := p.curToken.Text
+	op := p.peekToken.Type
+
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+
+	if op == lexer.TIncr {
+		return &ast.VarAssignStmt{
+			Name: name,
+			Body: &ast.AddExpr{
+				Left:  &ast.VarRefExpr{Name: name},
+				Right: expr,
+			},
+		}, nil
+	}
+	return &ast.VarAssignStmt{
+		Name: name,
+		Body: &ast.SubExpr{
+			Left:  &ast.VarRefExpr{Name: name},
+			Right: expr,
+		},
 	}, nil
 }
 
