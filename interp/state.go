@@ -9,8 +9,9 @@ import (
 )
 
 type State struct {
-	Env     *Env
-	RetVals stack.Stack[Value]
+	IsTestMode bool
+	Env        *Env
+	RetVals    stack.Stack[Value]
 }
 
 func NewState() *State {
@@ -95,7 +96,7 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 	case *ast.WhileStmt:
 		return s.evalWhileStmt(v)
 	case *ast.TestStmt:
-		return nil // test statements are handled separately in the test runner
+		return s.evalTestStmt(v)
 	case *ast.AssertStmt:
 		return s.evalAssertStmt(v)
 	default:
@@ -613,6 +614,14 @@ func (s *State) evalAssertStmt(stmt *ast.AssertStmt) error {
 	}
 	if !cond {
 		return fmt.Errorf("assertion failed: %s", stmt.Cond.Inspect())
+	}
+	return nil
+}
+
+func (s *State) evalTestStmt(stmt *ast.TestStmt) error {
+	// run them only in test mode, and skip during normal evaluation
+	if s.IsTestMode {
+		return s.evalBody(stmt.Body)
 	}
 	return nil
 }
