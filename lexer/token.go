@@ -12,7 +12,7 @@ const (
 	TDigit
 	TIdent
 	TLiteral
-	TInterplated
+	TInterpolated
 	TComment
 
 	// keywords
@@ -31,6 +31,8 @@ const (
 	TBreak
 	TContinue
 	TLet
+	TTest
+	TAssert
 
 	// symbols
 	TLessEq
@@ -64,7 +66,7 @@ func (ty TokenType) String() string {
 		return "Ident"
 	case TLiteral:
 		return "Literal"
-	case TInterplated:
+	case TInterpolated:
 		return "Interpolated"
 	case TComment:
 		return "Comment"
@@ -96,6 +98,14 @@ func (ty TokenType) String() string {
 		return "Or"
 	case TLet:
 		return "Let"
+	case TBreak:
+		return "Break"
+	case TContinue:
+		return "Continue"
+	case TTest:
+		return "Test"
+	case TAssert:
+		return "Assert"	
 
 	// symbols
 	case TLessEq:
@@ -200,6 +210,8 @@ var Keywords = map[string]TokenType{
 	"break":    TBreak,
 	"continue": TContinue,
 	"let":	    TLet,
+	"test":     TTest,
+	"assert":   TAssert,
 }
 
 var Comments = map[string]string{

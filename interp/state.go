@@ -94,6 +94,10 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return ErrContinue
 	case *ast.WhileStmt:
 		return s.evalWhileStmt(v)
+	case *ast.TestStmt:
+		return nil // test statements are handled separately in the test runner
+	case *ast.AssertStmt:
+		return nil // assert statements are handled separately in the test runner
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
