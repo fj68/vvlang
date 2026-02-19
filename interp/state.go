@@ -111,6 +111,10 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalReturnStmt(v)
 	case *ast.VarDeclStmt:
 		return s.evalVarDeclStmt(v)
+	case *ast.AssignStmt:
+		return s.evalAssignStmt(v)
+	case *ast.BlockStmt:
+		return s.evalBlockStmt(v)
 	case *ast.VarAssignStmt:
 		return s.evalVarAssignStmt(v)
 	case *ast.IfStmt:
@@ -178,6 +182,22 @@ func (s *State) evalVarDeclStmt(stmt *ast.VarDeclStmt) error {
 	return nil
 }
 
+func (s *State) evalAssignStmt(stmt *ast.AssignStmt) error {
+	v, err := s.evalExpr(stmt.Body)
+	if err != nil {
+		return err
+	}
+	s.Env.SetOuter(stmt.Name, v)
+	return nil
+}
+
+func (s *State) evalBlockStmt(stmt *ast.BlockStmt) error {
+	s.pushEnv()
+	defer s.popEnv()
+
+	return s.evalBody(stmt.Body)
+}
+
 func (s *State) evalVarAssignStmt(stmt *ast.VarAssignStmt) error {
 	v, err := s.evalExpr(stmt.Body)
 	if err != nil {
@@ -197,6 +217,8 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return VString(v.Value), nil
 	case *ast.RecordLiteralExpr:
 		return s.evalRecordLiteralExpr(v)
+	case *ast.NullLiteralExpr:
+		return VNull{}, nil
 	case *ast.FunLiteralExpr:
 		return s.evalFunLiteralExpr(v)
 	case *ast.FunCallExpr:

@@ -153,6 +153,7 @@ func (expr *ListLiteralExpr) Inspect() string {
 	}
 	return fmt.Sprintf("ListLiteralExpr{[%s]}", strings.Join(elements, ", "))
 }
+
 type IndexExpr struct {
 	Position
 	Left  Expr
@@ -190,4 +191,12 @@ type FieldAccessExpr struct {
 
 func (expr *FieldAccessExpr) Inspect() string {
 	return fmt.Sprintf("FieldAccessExpr{%s.%s}", expr.Record.Inspect(), expr.Field)
+}
+
+type NullLiteralExpr struct {
+	Position
+}
+
+func (expr *NullLiteralExpr) Inspect() string {
+	return "NullLiteralExpr{}"
 }

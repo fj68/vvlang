@@ -18,6 +18,7 @@ const (
 	VTBuiltinFun
 	VTList
 	VTRecord
+	VTNull
 )
 
 func (ty ValueType) String() string {
@@ -36,6 +37,8 @@ func (ty ValueType) String() string {
 		return "list"
 	case VTRecord:
 		return "record"
+	case VTNull:
+		return "null"
 	}
 	return "unknown"
 }
@@ -247,4 +250,23 @@ func (v *VRecord) Equal(other Value) (bool, error) {
 
 func (v *VRecord) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare records")
+}
+
+type VNull struct{}
+
+func (v VNull) Type() ValueType {
+	return VTNull
+}
+
+func (v VNull) String() string {
+	return "null"
+}
+
+func (v VNull) Equal(other Value) (bool, error) {
+	_, ok := other.(VNull)
+	return ok, nil
+}
+
+func (v VNull) LessThan(other Value) (bool, error) {
+	return false, fmt.Errorf("unable to compare null")
 }
