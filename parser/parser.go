@@ -93,14 +93,16 @@ func (p *Parser) registerPrefixParsers() {
 
 func (p *Parser) registerInfixParsers() {
 	p.infixParsers = map[lexer.TokenType]InfixParser{
-		lexer.TDot:    p.parseFieldAccessExpr,
-		lexer.THyphen: p.parseInfixExpr,
-		lexer.TPlus:   p.parseInfixExpr,
-		lexer.TEqual:  p.parseInfixExpr,
-		lexer.TLessEq: p.parseInfixExpr,
-		lexer.TLess:   p.parseInfixExpr,
-		lexer.TLParen: p.parseFunCallExpr,
-		lexer.TLBrace: p.parseIndexOrSliceExpr,
+		lexer.TDot:      p.parseFieldAccessExpr,
+		lexer.THyphen:   p.parseInfixExpr,
+		lexer.TPlus:     p.parseInfixExpr,
+		lexer.TEqual:    p.parseInfixExpr,
+		lexer.TLessEq:   p.parseInfixExpr,
+		lexer.TLess:     p.parseInfixExpr,
+		lexer.TLParen:   p.parseFunCallExpr,
+		lexer.TLBrace:   p.parseIndexOrSliceExpr,
+		lexer.TAsterisk: p.parseInfixExpr,
+		lexer.TSlash:    p.parseInfixExpr,
 	}
 }
 
@@ -256,6 +258,14 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 		return []ast.Stmt{stmt}, nil
 	}
 
+	if p.curToken.Type == lexer.TDefer {
+		stmt, err := p.parseDeferStmt()
+		if err != nil {
+			return nil, err
+		}
+		return []ast.Stmt{stmt}, nil
+	}
+
 	expr, err := p.parseExpr(PLowest)
 	if err != nil {
 		return nil, err
@@ -341,6 +351,17 @@ func (p *Parser) parseContinueStmt() (*ast.ContinueStmt, error) {
 		return nil, err
 	}
 	return &ast.ContinueStmt{}, nil
+}
+
+func (p *Parser) parseDeferStmt() (*ast.DeferStmt, error) {
+	if err := p.expect(lexer.TDefer); err != nil {
+		return nil, err
+	}
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	return &ast.DeferStmt{Body: expr}, nil
 }
 
 func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {
