@@ -200,6 +200,14 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 		return p.parseVarDeclStmt()
 	}
 
+	if p.curToken.Type == lexer.TBegin {
+		stmt, err := p.parseBlockStmt()
+		if err != nil {
+			return nil, err
+		}
+		return []ast.Stmt{stmt}, nil
+	}
+
 	if p.curToken.Type == lexer.TWhile {
 		stmt, err := p.parseWhileStmt()
 		if err != nil {
@@ -303,6 +311,22 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		body = append(body, stmts...)
 	}
 	return body, nil
+}
+
+func (p *Parser) parseBlockStmt() (*ast.BlockStmt, error) {
+	if err := p.expect(lexer.TBegin); err != nil {
+		return nil, err
+	}
+	body, err := p.parseBody()
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TEnd); err != nil {
+		return nil, err
+	}
+	return &ast.BlockStmt{
+		Body: body,
+	}, nil
 }
 
 func (p *Parser) parseBreakStmt() (*ast.BreakStmt, error) {
