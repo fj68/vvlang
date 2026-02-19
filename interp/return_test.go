@@ -3,7 +3,7 @@ package interp
 import "testing"
 
 func TestTopLevelReturnValue(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	if err := s.Eval([]rune("return 1")); err != nil {
 		t.Fatal(err)
 	}

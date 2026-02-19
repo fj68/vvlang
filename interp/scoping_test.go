@@ -52,7 +52,7 @@ end
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewState()
+			s := NewState("test.vv")
 			err := s.Eval([]rune(tt.input))
 			if (err != nil) != tt.err {
 				t.Fatalf("Eval() error = %v, wantErr %v", err, tt.err)

@@ -71,7 +71,7 @@ func New(text []rune) *Parser {
 	return p
 }
 
-func Parse(text []rune) ([]ast.Stmt, error) {
+func Parse(text []rune) (*ast.Module, error) {
 	p := New(text)
 	return p.Parse()
 }
@@ -106,7 +106,7 @@ func (p *Parser) registerInfixParsers() {
 	}
 }
 
-func (p *Parser) Parse() ([]ast.Stmt, error) {
+func (p *Parser) Parse() (*ast.Module, error) {
 	return p.parseProgram()
 }
 
@@ -140,7 +140,7 @@ func (p *Parser) expectNext(ty lexer.TokenType) error {
 	return nil
 }
 
-func (p *Parser) parseProgram() ([]ast.Stmt, error) {
+func (p *Parser) parseProgram() (*ast.Module, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
@@ -148,43 +148,95 @@ func (p *Parser) parseProgram() ([]ast.Stmt, error) {
 		return nil, err
 	}
 
-	var program []ast.Stmt
 	header, err := p.parseProgramHeader()
 	if err != nil {
 		return nil, err
 	}
-	program = append(program, header...)
+
+	module := &ast.Module{
+		Statements: header,
+		Exports:    make(map[string]ast.Stmt),
+	}
 
 	for {
 		if p.curToken.Type == lexer.TEOF {
 			break
 		}
+		if p.curToken.Type == lexer.TImport {
+			return nil, fmt.Errorf("import statement must be at the beginning of the program")
+		}
 		if p.curToken.Type == lexer.TExtern {
-			return nil, fmt.Errorf("extern statement must be at the beginning of the program")
+			return nil, fmt.Errorf("extern statement must be after import statements and before other statements")
 		}
 		stmts, err := p.parseToplevelStmt()
 		if err != nil {
 			return nil, err
 		}
-		program = append(program, stmts...)
+		module.Statements = append(module.Statements, stmts...)
 	}
-	return program, nil
+
+	// Collect exports
+	for _, stmt := range module.Statements {
+		switch s := stmt.(type) {
+		case *ast.VarDeclStmt:
+			if s.Exported {
+				module.Exports[s.Name] = s
+			}
+		case *ast.ExternStmt:
+			if s.Exported {
+				module.Exports[s.Name] = s
+			}
+		}
+	}
+
+	return module, nil
 }
 
 func (p *Parser) parseProgramHeader() ([]ast.Stmt, error) {
 	var header []ast.Stmt
-	for {
-		if p.curToken.Type == lexer.TExtern {
-			stmt, err := p.parseExternStmt()
-			if err != nil {
+	// imports first
+	for p.curToken.Type == lexer.TImport {
+		stmt, err := p.parseImportStmt()
+		if err != nil {
+			return nil, err
+		}
+		header = append(header, stmt)
+	}
+	// then externs
+	for p.curToken.Type == lexer.TExtern || (p.curToken.Type == lexer.TPub && p.peekToken.Type == lexer.TExtern) {
+		exported := false
+		if p.curToken.Type == lexer.TPub {
+			exported = true
+			if err := p.readToken(); err != nil {
 				return nil, err
 			}
-			header = append(header, stmt)
-			continue
 		}
-		break
+		stmt, err := p.parseExternStmt()
+		if err != nil {
+			return nil, err
+		}
+		stmt.Exported = exported
+		header = append(header, stmt)
 	}
 	return header, nil
+}
+
+func (p *Parser) parseImportStmt() (*ast.ImportStmt, error) {
+	if err := p.expect(lexer.TImport); err != nil {
+		return nil, err
+	}
+	alias := p.curToken.Text
+	if err := p.expect(lexer.TIdent); err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TFrom); err != nil {
+		return nil, err
+	}
+	path := p.curToken.Text
+	if err := p.expect(lexer.TLiteral); err != nil {
+		return nil, err
+	}
+	return &ast.ImportStmt{Alias: alias, Path: path}, nil
 }
 
 func (p *Parser) parseToplevelStmt() ([]ast.Stmt, error) {
@@ -196,12 +248,37 @@ func (p *Parser) parseToplevelStmt() ([]ast.Stmt, error) {
 		return []ast.Stmt{stmt}, nil
 	}
 
+	if p.curToken.Type == lexer.TPub {
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		stmts, err := p.parseStmt()
+		if err != nil {
+			return nil, err
+		}
+		for _, stmt := range stmts {
+			switch s := stmt.(type) {
+			case *ast.VarDeclStmt:
+				s.Exported = true
+			default:
+				return nil, fmt.Errorf("only variable and function declarations can be exported")
+			}
+		}
+		return stmts, nil
+	}
+
 	return p.parseStmt()
 }
 
 func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 	if p.curToken.Type == lexer.TEOF {
 		return nil, fmt.Errorf("unexpected EOF")
+	}
+
+	if p.curToken.Type == lexer.TFun {
+		if p.peekToken.Type == lexer.TIdent {
+			return p.parseFunDeclStmt()
+		}
 	}
 
 	if p.curToken.Type == lexer.TIdent {
@@ -344,6 +421,26 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 	}
 }
 
+func (p *Parser) parseFunDeclStmt() ([]ast.Stmt, error) {
+	// Named function declaration: `fun name(args) ... end`
+	// converted to `VarDeclStmt{"name", FunLiteralExpr{args, body}}`
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	name := p.curToken.Text
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	expr, err := p.parseFunLiteralExpr()
+	if err != nil {
+		return nil, err
+	}
+	return []ast.Stmt{&ast.VarDeclStmt{
+		Name: name,
+		Body: expr,
+	}}, nil
+}
+
 func (p *Parser) parseBlockStmt() (*ast.BlockStmt, error) {
 	if err := p.expect(lexer.TBegin); err != nil {
 		return nil, err
@@ -405,8 +502,8 @@ func (p *Parser) parseExternStmt() (*ast.ExternStmt, error) {
 		if err := p.expect(lexer.TIdent); err != nil {
 			return nil, err
 		}
-		if p.curToken.Type != lexer.TLParen {
-			return nil, fmt.Errorf("expected '(', but got %s", p.curToken.Type)
+		if err := p.expect(lexer.TLParen); err != nil {
+			return nil, err
 		}
 		_, err := p.parseFunLiteralArgs()
 		if err != nil {
@@ -682,15 +779,12 @@ func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
 }
 
 func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
-	var name string
-	if p.peekToken.Type == lexer.TIdent {
+	if p.curToken.Type == lexer.TFun {
 		if err := p.readToken(); err != nil {
 			return nil, err
 		}
-		name = p.curToken.Text
 	}
-
-	if err := p.expectNext(lexer.TLParen); err != nil {
+	if err := p.expect(lexer.TLParen); err != nil {
 		return nil, err
 	}
 
@@ -709,7 +803,6 @@ func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
 	}
 
 	return &ast.FunLiteralExpr{
-		Name: name,
 		Args: args,
 		Body: body,
 	}, nil
@@ -718,28 +811,22 @@ func (p *Parser) parseFunLiteralExpr() (ast.Expr, error) {
 func (p *Parser) parseFunLiteralArgs() ([]string, error) {
 	var args []string
 	for {
-		if p.peekToken.Type == lexer.TEOF {
-			return nil, fmt.Errorf("unexpected eof while reading function arguments")
-		}
-		if p.peekToken.Type == lexer.TRParen {
+		if p.curToken.Type == lexer.TRParen {
 			break
 		}
-		if err := p.expectNext(lexer.TIdent); err != nil {
+		name := p.curToken.Text
+		if err := p.expect(lexer.TIdent); err != nil {
 			return nil, err
 		}
-		args = append(args, p.curToken.Text)
-		if p.peekToken.Type == lexer.TRParen {
+		args = append(args, name)
+		if p.curToken.Type == lexer.TRParen {
 			break
 		}
-		if err := p.expectNext(lexer.TComma); err != nil {
+		if err := p.expect(lexer.TComma); err != nil {
 			return nil, err
 		}
 	}
-	// read remaining TRParen
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	if err := p.readToken(); err != nil {
+	if err := p.expect(lexer.TRParen); err != nil {
 		return nil, err
 	}
 	return args, nil

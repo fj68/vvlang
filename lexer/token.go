@@ -40,6 +40,9 @@ const (
 	TNull
 	TDefer
 	TExtern
+	TPub
+	TImport
+	TFrom
 
 	// symbols
 	TLessEq
@@ -123,6 +126,12 @@ func (ty TokenType) String() string {
 		return "Defer"
 	case TExtern:
 		return "Extern"
+	case TPub:
+		return "Pub"
+	case TImport:
+		return "Import"
+	case TFrom:
+		return "From"
 
 	// symbols
 	case TLessEq:
@@ -234,6 +243,9 @@ var Keywords = map[string]TokenType{
 	"null":     TNull,
 	"defer":    TDefer,
 	"extern":   TExtern,
+	"pub":      TPub,
+	"import":   TImport,
+	"from":     TFrom,
 }
 
 var Comments = map[string]string{

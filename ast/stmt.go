@@ -64,8 +64,9 @@ func (stmt *VarAssignStmt) Inspect() string {
 }
 
 type VarDeclStmt struct {
-	Name string
-	Body Expr
+	Name     string
+	Body     Expr
+	Exported bool
 }
 
 func (stmt *VarDeclStmt) Inspect() string {
@@ -131,10 +132,33 @@ func (stmt *DeferStmt) Inspect() string {
 }
 
 type ExternStmt struct {
-	Type string // e.g. "native"
-	Name string
+	Type     string // e.g. "native"
+	Name     string
+	Exported bool
 }
 
 func (stmt *ExternStmt) Inspect() string {
 	return fmt.Sprintf("ExternStmt{\"%s\", \"%s\"}", stmt.Type, stmt.Name)
+}
+
+type ImportStmt struct {
+	Alias string
+	Path  string
+}
+
+func (stmt *ImportStmt) Inspect() string {
+	return fmt.Sprintf("ImportStmt{\"%s\", \"%s\"}", stmt.Alias, stmt.Path)
+}
+
+type Module struct {
+	Statements []Stmt
+	Exports    map[string]Stmt
+}
+
+func (m *Module) Inspect() string {
+	var body []string
+	for _, s := range m.Statements {
+		body = append(body, s.Inspect())
+	}
+	return fmt.Sprintf("Module{[%s]}", strings.Join(body, ", "))
 }

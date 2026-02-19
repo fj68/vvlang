@@ -125,8 +125,14 @@ func (v VString) LessThan(other Value) (bool, error) {
 }
 
 type VUserFun struct {
-	Args []string
-	Body []ast.Stmt
+	// CapturedEnv is the environment at the time the function was defined.
+	// This is essential for:
+	// 1. Closures: allowing functions to access variables from their outer scopes.
+	// 2. Modules: ensuring functions in imported modules can access other symbols
+	//    within that same module's top-level scope, even when called from elsewhere.
+	CapturedEnv *Env
+	Args        []string
+	Body        []ast.Stmt
 }
 
 func (v *VUserFun) Type() ValueType {

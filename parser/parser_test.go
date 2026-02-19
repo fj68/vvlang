@@ -1,9 +1,10 @@
 package parser
 
 import (
-	"github.com/fj68/vvlang/ast"
 	"strings"
 	"testing"
+
+	"github.com/fj68/vvlang/ast"
 )
 
 func TestParser(t *testing.T) {
@@ -14,7 +15,7 @@ func TestParser(t *testing.T) {
 		return
 	}
 	var b strings.Builder
-	for _, stmt := range program {
+	for _, stmt := range program.Statements {
 		b.WriteString(stmt.Inspect())
 	}
 	s := b.String()
@@ -28,7 +29,7 @@ func TestParse(t *testing.T) {
 		t.Fatal(err)
 	}
 	var b strings.Builder
-	for _, stmt := range v {
+	for _, stmt := range v.Statements {
 		b.WriteString(stmt.Inspect())
 	}
 	s := b.String()
@@ -41,10 +42,10 @@ func TestParseWhile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(v) != 1 {
-		t.Fatalf("expected 1 stmt, got %d", len(v))
+	if len(v.Statements) != 1 {
+		t.Fatalf("expected 1 stmt, got %d", len(v.Statements))
 	}
-	if _, ok := v[0].(*ast.WhileStmt); !ok {
-		t.Fatalf("expected WhileStmt, got %T", v[0])
+	if _, ok := v.Statements[0].(*ast.WhileStmt); !ok {
+		t.Fatalf("expected WhileStmt, got %T", v.Statements[0])
 	}
 }

@@ -50,7 +50,7 @@ return { v = value, e = error }
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewState()
+			s := NewState("test.vv")
 			if err := s.Eval([]rune(tt.input)); err != nil {
 				t.Fatal(err)
 			}
@@ -93,7 +93,7 @@ func TestRecordDestructuringError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewState()
+			s := NewState("test.vv")
 			err := s.Eval([]rune(tt.input))
 			if err == nil {
 				t.Fatal("expected error but got nil")

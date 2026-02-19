@@ -12,11 +12,11 @@ func TestParseReturnTopLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(program) != 1 {
-		t.Fatalf("expected 1 stmt, got %d", len(program))
+	if len(program.Statements) != 1 {
+		t.Fatalf("expected 1 stmt, got %d", len(program.Statements))
 	}
-	if _, ok := program[0].(*ast.ReturnStmt); !ok {
-		t.Fatalf("expected ReturnStmt, got %T", program[0])
+	if _, ok := program.Statements[0].(*ast.ReturnStmt); !ok {
+		t.Fatalf("expected ReturnStmt, got %T", program.Statements[0])
 	}
 }
 
@@ -26,12 +26,12 @@ func TestParseReturnNoValue(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(program) != 1 {
-		t.Fatalf("expected 1 stmt, got %d", len(program))
+	if len(program.Statements) != 1 {
+		t.Fatalf("expected 1 stmt, got %d", len(program.Statements))
 	}
-	rtn, ok := program[0].(*ast.ReturnStmt)
+	rtn, ok := program.Statements[0].(*ast.ReturnStmt)
 	if !ok {
-		t.Fatalf("expected ReturnStmt, got %T", program[0])
+		t.Fatalf("expected ReturnStmt, got %T", program.Statements[0])
 	}
 	if rtn.Value != nil {
 		t.Fatalf("expected nil value, got %v", rtn.Value)

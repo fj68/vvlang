@@ -3,7 +3,7 @@ package interp
 import "testing"
 
 func TestWhileLoopIncrements(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "i = 0 while i < 3 i = i + 1 end return i"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -19,7 +19,7 @@ func TestWhileLoopIncrements(t *testing.T) {
 }
 
 func TestWhileBreak(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "i = 0 while true if i == 2 break end i = i + 1 end return i"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -35,7 +35,7 @@ func TestWhileBreak(t *testing.T) {
 }
 
 func TestWhileContinue(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "i = 0 j = 0 while i < 5 i = i + 1 if i == 2 continue end j = j + 1 end return j"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)

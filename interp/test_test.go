@@ -3,7 +3,7 @@ package interp
 import "testing"
 
 func TestTestBlockIsNotRun(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "let x = 1 test 'test block is not run in normal evaluation' x = 2 end return x"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -19,7 +19,7 @@ func TestTestBlockIsNotRun(t *testing.T) {
 }
 
 func TestTestBlockIsRun(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "let x = 1 test 'test block is run in test-mode evaluation' let x = 2 assert x == 2 return x end return x"
 	if err := s.EvalTest([]rune(text)); err != nil {
 		t.Fatal(err)
