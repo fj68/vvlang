@@ -129,3 +129,12 @@ type DeferStmt struct {
 func (stmt *DeferStmt) Inspect() string {
 	return fmt.Sprintf("DeferStmt{%s}", stmt.Body.Inspect())
 }
+
+type ExternStmt struct {
+	Type string // e.g. "native"
+	Name string
+}
+
+func (stmt *ExternStmt) Inspect() string {
+	return fmt.Sprintf("ExternStmt{\"%s\", \"%s\"}", stmt.Type, stmt.Name)
+}

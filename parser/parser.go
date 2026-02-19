@@ -149,9 +149,18 @@ func (p *Parser) parseProgram() ([]ast.Stmt, error) {
 	}
 
 	var program []ast.Stmt
+	header, err := p.parseProgramHeader()
+	if err != nil {
+		return nil, err
+	}
+	program = append(program, header...)
+
 	for {
 		if p.curToken.Type == lexer.TEOF {
 			break
+		}
+		if p.curToken.Type == lexer.TExtern {
+			return nil, fmt.Errorf("extern statement must be at the beginning of the program")
 		}
 		stmts, err := p.parseToplevelStmt()
 		if err != nil {
@@ -160,6 +169,22 @@ func (p *Parser) parseProgram() ([]ast.Stmt, error) {
 		program = append(program, stmts...)
 	}
 	return program, nil
+}
+
+func (p *Parser) parseProgramHeader() ([]ast.Stmt, error) {
+	var header []ast.Stmt
+	for {
+		if p.curToken.Type == lexer.TExtern {
+			stmt, err := p.parseExternStmt()
+			if err != nil {
+				return nil, err
+			}
+			header = append(header, stmt)
+			continue
+		}
+		break
+	}
+	return header, nil
 }
 
 func (p *Parser) parseToplevelStmt() ([]ast.Stmt, error) {
@@ -305,14 +330,11 @@ func (p *Parser) parseBodyStmt() ([]ast.Stmt, error) {
 func (p *Parser) parseBody() ([]ast.Stmt, error) {
 	var body []ast.Stmt
 	for {
-		if p.curToken.Type == lexer.TEOF {
+		switch p.curToken.Type {
+		case lexer.TEOF:
 			return nil, fmt.Errorf("unexpected eof while reading body")
-		}
-		if p.curToken.Type == lexer.TEnd {
-			break
-		}
-		if p.curToken.Type == lexer.TElse {
-			break
+		case lexer.TEnd, lexer.TElse:
+			return body, nil
 		}
 		stmts, err := p.parseBodyStmt()
 		if err != nil {
@@ -320,7 +342,6 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		}
 		body = append(body, stmts...)
 	}
-	return body, nil
 }
 
 func (p *Parser) parseBlockStmt() (*ast.BlockStmt, error) {
@@ -362,6 +383,51 @@ func (p *Parser) parseDeferStmt() (*ast.DeferStmt, error) {
 		return nil, err
 	}
 	return &ast.DeferStmt{Body: expr}, nil
+}
+
+func (p *Parser) parseExternStmt() (*ast.ExternStmt, error) {
+	if err := p.expect(lexer.TExtern); err != nil {
+		return nil, err
+	}
+
+	extType := p.curToken.Text
+	if err := p.expect(lexer.TLiteral); err != nil {
+		return nil, err
+	}
+
+	var name string
+	switch p.curToken.Type {
+	case lexer.TFun:
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		name = p.curToken.Text
+		if err := p.expect(lexer.TIdent); err != nil {
+			return nil, err
+		}
+		if p.curToken.Type != lexer.TLParen {
+			return nil, fmt.Errorf("expected '(', but got %s", p.curToken.Type)
+		}
+		_, err := p.parseFunLiteralArgs()
+		if err != nil {
+			return nil, err
+		}
+	case lexer.TLet:
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		name = p.curToken.Text
+		if err := p.expect(lexer.TIdent); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("expected 'fun' or 'let' after extern literal, but got %s", p.curToken.Type)
+	}
+
+	return &ast.ExternStmt{
+		Type: extType,
+		Name: name,
+	}, nil
 }
 
 func (p *Parser) parseReturnStmt() (*ast.ReturnStmt, error) {
@@ -798,12 +864,13 @@ func (p *Parser) parseIndexOrSliceExpr(left ast.Expr) (ast.Expr, error) {
 	var end ast.Expr
 
 	// If we see a colon right away, start is nil and we have a slice like [:end]
-	if p.curToken.Type == lexer.TColon {
+	switch p.curToken.Type {
+	case lexer.TColon:
 		// start is nil
-	} else if p.curToken.Type == lexer.TRBrace {
+	case lexer.TRBrace:
 		// Empty brackets [] - error
 		return nil, fmt.Errorf("expected index or slice expression")
-	} else {
+	default:
 		// Parse the first expression
 		expr, err := p.parseExpr(PLowest)
 		if err != nil {
