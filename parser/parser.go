@@ -557,7 +557,7 @@ func (p *Parser) parseWhileStmt() (*ast.WhileStmt, error) {
 	}
 	return &ast.WhileStmt{
 		Cond: cond,
-		Body: body,
+		Body: &ast.BlockStmt{Body: body},
 	}, nil
 }
 
@@ -573,22 +573,23 @@ func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	var elseBody []ast.Stmt
+	var elseBody *ast.BlockStmt
 	if p.curToken.Type == lexer.TElse {
 		if err := p.readToken(); err != nil {
 			return nil, err
 		}
-		elseBody, err = p.parseBody()
+		eBody, err := p.parseBody()
 		if err != nil {
 			return nil, err
 		}
+		elseBody = &ast.BlockStmt{Body: eBody}
 	}
 	if err := p.expect(lexer.TEnd); err != nil {
 		return nil, err
 	}
 	return &ast.IfStmt{
 		Cond: cond,
-		Then: thenBody,
+		Then: &ast.BlockStmt{Body: thenBody},
 		Else: elseBody,
 	}, nil
 }

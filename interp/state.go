@@ -157,12 +157,12 @@ func (s *State) evalIfStmt(stmt *ast.IfStmt) error {
 		return fmt.Errorf("expected bool, but got %s", v.Type())
 	}
 	if cond {
-		return s.evalBody(stmt.Then)
+		return s.evalStmt(stmt.Then)
 	}
 	if stmt.Else == nil {
 		return nil
 	}
-	return s.evalBody(stmt.Else)
+	return s.evalStmt(stmt.Else)
 }
 
 func (s *State) evalExprStmt(stmt *ast.ExprStmt) error {
@@ -328,23 +328,15 @@ func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {
 		if !cond {
 			break
 		}
-		for _, st := range stmt.Body {
-			err := s.evalStmt(st)
-			if err == ErrContinue {
-				// continue to next iteration
-				break
-			}
-			if err == ErrBreak {
-				// exit the while loop
-				return nil
-			}
-			if err == ErrReturn {
-				// propagate return up
-				return ErrReturn
-			}
-			if err != nil {
-				return err
-			}
+		err = s.evalStmt(stmt.Body)
+		if err == ErrBreak {
+			return nil
+		}
+		if err == ErrReturn {
+			return ErrReturn
+		}
+		if err != nil && err != ErrContinue {
+			return err
 		}
 	}
 	return nil
