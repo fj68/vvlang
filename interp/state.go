@@ -169,6 +169,8 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalAssertStmt(v)
 	case *ast.DeferStmt:
 		return s.evalDeferStmt(v)
+	case *ast.ExternStmt:
+		return s.evalExternStmt(v)
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
@@ -772,5 +774,13 @@ func (s *State) evalDeferStmt(stmt *ast.DeferStmt) error {
 		return fmt.Errorf("no defer scope available")
 	}
 	s.Defers[len(s.Defers)-1] = append(s.Defers[len(s.Defers)-1], stmt.Body)
+	return nil
+}
+func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
+	_, err := s.Env.Get(stmt.Name)
+	if err != nil {
+		return fmt.Errorf("extern: %s", err)
+	}
+	// success: the name is provided by the environment
 	return nil
 }
