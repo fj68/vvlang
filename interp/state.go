@@ -12,6 +12,7 @@ type State struct {
 	IsTestMode bool
 	Env        *Env
 	RetVals    stack.Stack[Value]
+	Defers     [][]ast.Expr
 }
 
 func NewState() *State {
@@ -59,12 +60,41 @@ func (s *State) popEnv() {
 	s.Env = s.Env.outer
 }
 
+func (s *State) pushDeferScope() {
+	s.Defers = append(s.Defers, []ast.Expr{})
+}
+
+func (s *State) popDeferScope() error {
+	if len(s.Defers) == 0 {
+		return nil
+	}
+	scope := s.Defers[len(s.Defers)-1]
+	s.Defers = s.Defers[:len(s.Defers)-1]
+
+	// Execute defers in LIFO order
+	for i := len(scope) - 1; i >= 0; i-- {
+		_, err := s.evalExpr(scope[i])
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 var ErrBreak = fmt.Errorf("break")
 var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
 
-func (s *State) evalTestProgram(program []ast.Stmt) error {
+func (s *State) evalTestProgram(program []ast.Stmt) (err error) {
 	s.IsTestMode = true
+	s.pushDeferScope()
+	defer func() {
+		deferErr := s.popDeferScope()
+		if err == nil {
+			err = deferErr
+		}
+	}()
+
 	for _, stmt := range program {
 		if _, ok := stmt.(*ast.TestStmt); !ok {
 			// run only test stmts, and skip other top-level stmts during test evaluation
@@ -81,7 +111,15 @@ func (s *State) evalTestProgram(program []ast.Stmt) error {
 	return nil
 }
 
-func (s *State) evalProgram(program []ast.Stmt) error {
+func (s *State) evalProgram(program []ast.Stmt) (err error) {
+	s.pushDeferScope()
+	defer func() {
+		deferErr := s.popDeferScope()
+		if err == nil {
+			err = deferErr
+		}
+	}()
+
 	for _, stmt := range program {
 		if err := s.evalStmt(stmt); err != nil {
 			if err == ErrReturn {
@@ -129,6 +167,8 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalTestStmt(v)
 	case *ast.AssertStmt:
 		return s.evalAssertStmt(v)
+	case *ast.DeferStmt:
+		return s.evalDeferStmt(v)
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
@@ -191,9 +231,17 @@ func (s *State) evalAssignStmt(stmt *ast.AssignStmt) error {
 	return nil
 }
 
-func (s *State) evalBlockStmt(stmt *ast.BlockStmt) error {
+func (s *State) evalBlockStmt(stmt *ast.BlockStmt) (err error) {
 	s.pushEnv()
 	defer s.popEnv()
+
+	s.pushDeferScope()
+	defer func() {
+		deferErr := s.popDeferScope()
+		if err == nil {
+			err = deferErr
+		}
+	}()
 
 	return s.evalBody(stmt.Body)
 }
@@ -296,13 +344,21 @@ func (s *State) evalArgs(exprs []ast.Expr) ([]Value, error) {
 	return args, nil
 }
 
-func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
+func (s *State) callUserFun(f *VUserFun, args []Value) (val Value, err error) {
 	if len(f.Args) != len(args) {
 		return nil, fmt.Errorf("not enough or too much arguments")
 	}
 
 	s.pushEnv()
 	defer s.popEnv()
+
+	s.pushDeferScope()
+	defer func() {
+		deferErr := s.popDeferScope()
+		if err == nil {
+			err = deferErr
+		}
+	}()
 
 	for i, arg := range args {
 		s.Env.Values[f.Args[i]] = arg
@@ -364,6 +420,12 @@ func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
 	switch expr.Op {
 	case "+":
 		return s.evalAddExpr(left, right)
+	case "-":
+		return s.evalSubExpr(left, right)
+	case "*":
+		return s.evalMulExpr(left, right)
+	case "/":
+		return s.evalDivExpr(left, right)
 	case "==":
 		return s.evalEqualExpr(left, right)
 	case "<":
@@ -389,6 +451,45 @@ func (s *State) evalAddExpr(left Value, right Value) (Value, error) {
 		return nil, fmt.Errorf("right side value of add expression is not a number")
 	}
 	return VNumber(lvalue + rvalue), nil
+}
+
+func (s *State) evalSubExpr(left Value, right Value) (Value, error) {
+	lvalue, ok := left.(VNumber)
+	if !ok {
+		return nil, fmt.Errorf("left side value of sub expression is not a number")
+	}
+	rvalue, ok := right.(VNumber)
+	if !ok {
+		return nil, fmt.Errorf("right side value of sub expression is not a number")
+	}
+	return VNumber(lvalue - rvalue), nil
+}
+
+func (s *State) evalMulExpr(left Value, right Value) (Value, error) {
+	lvalue, ok := left.(VNumber)
+	if !ok {
+		return nil, fmt.Errorf("left side value of mul expression is not a number")
+	}
+	rvalue, ok := right.(VNumber)
+	if !ok {
+		return nil, fmt.Errorf("right side value of mul expression is not a number")
+	}
+	return VNumber(lvalue * rvalue), nil
+}
+
+func (s *State) evalDivExpr(left Value, right Value) (Value, error) {
+	lvalue, ok := left.(VNumber)
+	if !ok {
+		return nil, fmt.Errorf("left side value of div expression is not a number")
+	}
+	rvalue, ok := right.(VNumber)
+	if !ok {
+		return nil, fmt.Errorf("right side value of div expression is not a number")
+	}
+	if rvalue == 0 {
+		return nil, fmt.Errorf("division by zero")
+	}
+	return VNumber(lvalue / rvalue), nil
 }
 
 func (s *State) evalEqualExpr(left Value, right Value) (Value, error) {
@@ -663,5 +764,13 @@ func (s *State) evalTestStmt(stmt *ast.TestStmt) error {
 	if s.IsTestMode {
 		return s.evalBody(stmt.Body)
 	}
+	return nil
+}
+
+func (s *State) evalDeferStmt(stmt *ast.DeferStmt) error {
+	if len(s.Defers) == 0 {
+		return fmt.Errorf("no defer scope available")
+	}
+	s.Defers[len(s.Defers)-1] = append(s.Defers[len(s.Defers)-1], stmt.Body)
 	return nil
 }

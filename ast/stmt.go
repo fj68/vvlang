@@ -121,3 +121,11 @@ type AssertStmt struct {
 func (stmt *AssertStmt) Inspect() string {
 	return fmt.Sprintf("AssertStmt{%s}", stmt.Cond.Inspect())
 }
+
+type DeferStmt struct {
+	Body Expr
+}
+
+func (stmt *DeferStmt) Inspect() string {
+	return fmt.Sprintf("DeferStmt{%s}", stmt.Body.Inspect())
+}
