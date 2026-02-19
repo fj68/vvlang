@@ -35,6 +35,8 @@ const (
 	TLet
 	TTest
 	TAssert
+	TAs
+	TNull
 
 	// symbols
 	TLessEq
@@ -107,7 +109,11 @@ func (ty TokenType) String() string {
 	case TTest:
 		return "Test"
 	case TAssert:
-		return "Assert"	
+		return "Assert"
+	case TAs:
+		return "As"
+	case TNull:
+		return "Null"
 
 	// symbols
 	case TLessEq:
@@ -211,9 +217,11 @@ var Keywords = map[string]TokenType{
 	"or":       TOr,
 	"break":    TBreak,
 	"continue": TContinue,
-	"let":	    TLet,
+	"let":      TLet,
 	"test":     TTest,
 	"assert":   TAssert,
+	"as":       TAs,
+	"null":     TNull,
 }
 
 var Comments = map[string]string{

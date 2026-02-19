@@ -81,6 +81,27 @@ func (stmt *VarDeclStmt) Inspect() string {
 	return fmt.Sprintf("VarDeclStmt{\"%s\", %s}", stmt.Name, stmt.Body.Inspect())
 }
 
+type AssignStmt struct {
+	Name string
+	Body Expr
+}
+
+func (stmt *AssignStmt) Inspect() string {
+	return fmt.Sprintf("AssignStmt{\"%s\", %s}", stmt.Name, stmt.Body.Inspect())
+}
+
+type BlockStmt struct {
+	Body []Stmt
+}
+
+func (stmt *BlockStmt) Inspect() string {
+	var body []string
+	for _, s := range stmt.Body {
+		body = append(body, s.Inspect())
+	}
+	return fmt.Sprintf("BlockStmt{[%s]}", strings.Join(body, ", "))
+}
+
 type ExprStmt struct {
 	Expr
 }
