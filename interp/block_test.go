@@ -23,7 +23,7 @@ end
 	}
 
 	for _, tt := range tests {
-		s := NewState()
+		s := NewState("test.vv")
 		err := s.Eval([]rune(tt.input))
 		if err != nil {
 			t.Errorf("Eval(%q) failed: %v", tt.input, err)

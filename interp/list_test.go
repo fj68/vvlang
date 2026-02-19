@@ -3,7 +3,7 @@ package interp
 import "testing"
 
 func TestListLiteralEval(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "return [0, 1, 2]"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -28,7 +28,7 @@ func TestListLiteralEval(t *testing.T) {
 }
 
 func TestListLiteralEvalTrailingComma(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "return [0, 1, 2, ]"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -44,7 +44,7 @@ func TestListLiteralEvalTrailingComma(t *testing.T) {
 }
 
 func TestListLiteralEmpty(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "return []"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -60,7 +60,7 @@ func TestListLiteralEmpty(t *testing.T) {
 }
 
 func TestListLiteralMixed(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "return [42, 'hello', true]"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)

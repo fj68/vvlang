@@ -3,7 +3,7 @@ package interp
 import "testing"
 
 func TestRecordLiteralEval(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "return { name = 'value', key = 8 }"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -41,7 +41,7 @@ func TestRecordLiteralEval(t *testing.T) {
 }
 
 func TestRecordLiteralEvalTrailingComma(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "return { name = 'value', key = 8, }"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -56,7 +56,7 @@ func TestRecordLiteralEvalTrailingComma(t *testing.T) {
 	}
 }
 func TestRecordFieldAccess(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "r = { name = 'value', key = 8 }\nreturn r.name"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -72,7 +72,7 @@ func TestRecordFieldAccess(t *testing.T) {
 }
 
 func TestRecordFieldAccessNumber(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := "r = { name = 'value', key = 8 }\nreturn r.key"
 	if err := s.Eval([]rune(text)); err != nil {
 		t.Fatal(err)
@@ -88,7 +88,7 @@ func TestRecordFieldAccessNumber(t *testing.T) {
 }
 
 func TestNestedRecordsWithChainedFieldAccess(t *testing.T) {
-	s := NewState()
+	s := NewState("test.vv")
 	text := `admins = { alice = { name = 'Alice', age = 30 } }
 fun get_alice(r)
   return r.alice

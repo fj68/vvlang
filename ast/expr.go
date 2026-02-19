@@ -84,7 +84,6 @@ func (expr *InterpolatedStringLiteralExpr) Inspect() string {
 
 type FunLiteralExpr struct {
 	Position
-	Name string
 	Args []string
 	Body []Stmt
 }
@@ -94,7 +93,7 @@ func (expr *FunLiteralExpr) Inspect() string {
 	for _, s := range expr.Body {
 		body = append(body, s.Inspect())
 	}
-	return fmt.Sprintf("FunLiteralExpr{\"%s\", [%s], [%s]}", expr.Name, strings.Join(expr.Args, ", "), strings.Join(body, ", "))
+	return fmt.Sprintf("FunLiteralExpr{[%s], [%s]}", strings.Join(expr.Args, ", "), strings.Join(body, ", "))
 }
 
 type FunCallExpr struct {

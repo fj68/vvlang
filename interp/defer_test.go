@@ -113,7 +113,7 @@ end
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewState()
+			s := NewState("test.vv")
 			s.RegisterGlobals(DefaultBuiltins) // ensure builtins are available if needed
 			err := s.Eval([]rune(tt.input))
 			if err != nil {

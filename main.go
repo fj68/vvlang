@@ -18,7 +18,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	s := interp.NewState()
+	s := interp.NewState(path)
 	s.RegisterGlobals(interp.DefaultBuiltins)
 	if err := s.Eval([]rune(string(text))); err != nil {
 		fmt.Println(err)

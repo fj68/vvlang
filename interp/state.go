@@ -2,6 +2,8 @@ package interp
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/fj68/vvlang/ast"
 	"github.com/fj68/vvlang/parser"
@@ -9,20 +11,24 @@ import (
 )
 
 type State struct {
-	IsTestMode bool
-	Env        *Env
-	RetVals    stack.Stack[Value]
-	Defers     [][]ast.Expr
+	IsTestMode  bool
+	SourcePath  string
+	ModuleCache map[string]*VRecord
+	Env         *Env
+	RetVals     stack.Stack[Value]
+	Defers      [][]ast.Expr
 }
 
-func NewState() *State {
+func NewState(sourcePath string) *State {
 	return &State{
-		Env: NewEnv(nil),
+		SourcePath:  sourcePath,
+		ModuleCache: make(map[string]*VRecord),
+		Env:         NewEnv(nil),
 	}
 }
 
-func Eval(text []rune) error {
-	s := NewState()
+func Eval(sourcePath string, text []rune) error {
+	s := NewState(sourcePath)
 	return s.Eval(text)
 }
 
@@ -37,27 +43,19 @@ func (s *State) RegisterGlobals(values map[string]Value) {
 }
 
 func (s *State) EvalTest(text []rune) error {
-	program, err := parser.Parse(text)
+	module, err := parser.Parse(text)
 	if err != nil {
 		return err
 	}
-	return s.evalTestProgram(program)
+	return s.evalTestModule(module)
 }
 
 func (s *State) Eval(text []rune) error {
-	program, err := parser.Parse(text)
+	module, err := parser.Parse(text)
 	if err != nil {
 		return err
 	}
-	return s.evalProgram(program)
-}
-
-func (s *State) pushEnv() {
-	s.Env = NewEnv(s.Env)
-}
-
-func (s *State) popEnv() {
-	s.Env = s.Env.outer
+	return s.evalModule(module)
 }
 
 func (s *State) pushDeferScope() {
@@ -85,7 +83,7 @@ var ErrBreak = fmt.Errorf("break")
 var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
 
-func (s *State) evalTestProgram(program []ast.Stmt) (err error) {
+func (s *State) evalTestModule(module *ast.Module) (err error) {
 	s.IsTestMode = true
 	s.pushDeferScope()
 	defer func() {
@@ -95,7 +93,7 @@ func (s *State) evalTestProgram(program []ast.Stmt) (err error) {
 		}
 	}()
 
-	for _, stmt := range program {
+	for _, stmt := range module.Statements {
 		if _, ok := stmt.(*ast.TestStmt); !ok {
 			// run only test stmts, and skip other top-level stmts during test evaluation
 			continue
@@ -111,7 +109,7 @@ func (s *State) evalTestProgram(program []ast.Stmt) (err error) {
 	return nil
 }
 
-func (s *State) evalProgram(program []ast.Stmt) (err error) {
+func (s *State) evalModule(module *ast.Module) (err error) {
 	s.pushDeferScope()
 	defer func() {
 		deferErr := s.popDeferScope()
@@ -120,7 +118,7 @@ func (s *State) evalProgram(program []ast.Stmt) (err error) {
 		}
 	}()
 
-	for _, stmt := range program {
+	for _, stmt := range module.Statements {
 		if err := s.evalStmt(stmt); err != nil {
 			if err == ErrReturn {
 				// Top-level return: stop program execution but do not treat as an error
@@ -171,6 +169,8 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalDeferStmt(v)
 	case *ast.ExternStmt:
 		return s.evalExternStmt(v)
+	case *ast.ImportStmt:
+		return s.evalImportStmt(v)
 	default:
 		return fmt.Errorf("unknown stmt: %s", v.Inspect())
 	}
@@ -234,8 +234,9 @@ func (s *State) evalAssignStmt(stmt *ast.AssignStmt) error {
 }
 
 func (s *State) evalBlockStmt(stmt *ast.BlockStmt) (err error) {
-	s.pushEnv()
-	defer s.popEnv()
+	oldEnv := s.Env
+	s.Env = NewEnv(s.Env)
+	defer func() { s.Env = oldEnv }()
 
 	s.pushDeferScope()
 	defer func() {
@@ -293,11 +294,7 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 }
 
 func (s *State) evalFunLiteralExpr(expr *ast.FunLiteralExpr) (Value, error) {
-	f := &VUserFun{expr.Args, expr.Body}
-	if expr.Name != "" {
-		s.Env.Set(expr.Name, f)
-	}
-	return f, nil
+	return &VUserFun{s.Env, expr.Args, expr.Body}, nil
 }
 
 func (s *State) evalRecordLiteralExpr(expr *ast.RecordLiteralExpr) (Value, error) {
@@ -351,8 +348,9 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (val Value, err error) {
 		return nil, fmt.Errorf("not enough or too much arguments")
 	}
 
-	s.pushEnv()
-	defer s.popEnv()
+	oldEnv := s.Env
+	s.Env = NewEnv(f.CapturedEnv)
+	defer func() { s.Env = oldEnv }()
 
 	s.pushDeferScope()
 	defer func() {
@@ -400,8 +398,9 @@ func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {
 	return nil
 }
 func (s *State) callBuiltinFun(f VBuiltinFun, args []Value) (Value, error) {
-	s.pushEnv()
-	defer s.popEnv()
+	oldEnv := s.Env
+	s.Env = NewEnv(s.Env)
+	defer func() { s.Env = oldEnv }()
 
 	return f(s, args)
 }
@@ -782,5 +781,74 @@ func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
 		return fmt.Errorf("extern: %s", err)
 	}
 	// success: the name is provided by the environment
+	return nil
+}
+
+func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
+	// Resolve path relative to current module's source path
+	dir := filepath.Dir(s.SourcePath)
+	targetPath := filepath.Join(dir, stmt.Path)
+	targetPath, err := filepath.Abs(targetPath)
+	if err != nil {
+		return err
+	}
+
+	// Check if already in cache (successful load or currently loading)
+	if mod, ok := s.ModuleCache[targetPath]; ok {
+		if mod == nil {
+			return fmt.Errorf("cyclic dependency detected: %s", targetPath)
+		}
+		// If we find it in the cache, it's already evaluated
+		s.Env.Set(stmt.Alias, mod)
+		return nil
+	}
+
+	// Read and parse the target file
+	text, err := os.ReadFile(targetPath)
+	if err != nil {
+		return err
+	}
+
+	module, err := parser.Parse([]rune(string(text)))
+	if err != nil {
+		return err
+	}
+
+	// Create a new state for the module
+	// Pass the same ModuleCache to detect cycles across the whole project
+	modState := NewState(targetPath)
+	modState.ModuleCache = s.ModuleCache
+
+	// To detect cycles: we can add a placeholder in the cache or check a "loading" set
+	// For simplicity, let's use the cache with a nil value as a "currently loading" marker
+	s.ModuleCache[targetPath] = nil
+	defer func() {
+		if s.ModuleCache[targetPath] == nil {
+			delete(s.ModuleCache, targetPath)
+		}
+	}()
+
+	// Evaluate the module
+	if err := modState.evalModule(module); err != nil {
+		return err
+	}
+
+	// Create a VRecord for exports
+	fields := make(map[string]Value)
+	for name := range module.Exports {
+		val, err := modState.Env.Get(name)
+		if err != nil {
+			return err
+		}
+		fields[name] = val
+	}
+	modRecord := &VRecord{Fields: fields}
+
+	// Cache the result
+	s.ModuleCache[targetPath] = modRecord
+
+	// Bind to alias in current env
+	s.Env.Set(stmt.Alias, modRecord)
+
 	return nil
 }
