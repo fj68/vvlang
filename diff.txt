@@ -1,0 +1,123 @@
+diff --git a/interp/block_test.go b/interp/block_test.go
+new file mode 100644
+index 0000000..3980956
+--- /dev/null
++++ b/interp/block_test.go
+@@ -0,0 +1,46 @@
++package interp
++
++import (
++	"testing"
++)
++
++func TestBlockStmt(t *testing.T) {
++	tests := []struct {
++		input    string
++		expected string // if empty, no error expected
++	}{
++		{
++			input: `
++let x = 0
++begin
++  let y = 1
++  x += 1
++end
++// Here x should be 1, y should be undefined
++`,
++			expected: "",
++		},
++	}
++
++	for _, tt := range tests {
++		s := NewState()
++		err := s.Eval([]rune(tt.input))
++		if err != nil {
++			t.Errorf("Eval(%q) failed: %v", tt.input, err)
++		}
++
++		// Check x is 1
++		val, err := s.Env.Get("x")
++		if err != nil {
++			t.Errorf("expected x to be defined, got error: %v", err)
++		} else if float64(val.(VNumber)) != 1 {
++			t.Errorf("expected x=1, got %v", val)
++		}
++
++		// Check y is not defined
++		_, err = s.Env.Get("y")
++		if err == nil {
++			t.Errorf("expected y to be undefined, but it was found")
++		}
++	}
++}
+diff --git a/lexer/token.go b/lexer/token.go
+index 00e6765..b7e4a87 100644
+--- a/lexer/token.go
++++ b/lexer/token.go
+@@ -19,6 +19,7 @@ const (
+ 
+ 	// keywords
+ 	TFun
++	TBegin
+ 	TReturn
+ 	TEnd
+ 	TWhile
+@@ -78,6 +79,8 @@ func (ty TokenType) String() string {
+ 		// keywords
+ 	case TFun:
+ 		return "Fun"
++	case TBegin:
++		return "Begin"
+ 	case TReturn:
+ 		return "Return"
+ 	case TEnd:
+@@ -204,6 +207,7 @@ var Symbols2 = map[string]TokenType{
+ 
+ var Keywords = map[string]TokenType{
+ 	"fun":      TFun,
++	"begin":    TBegin,
+ 	"return":   TReturn,
+ 	"end":      TEnd,
+ 	"while":    TWhile,
+diff --git a/parser/parser.go b/parser/parser.go
+index 9be0e9c..230919e 100644
+--- a/parser/parser.go
++++ b/parser/parser.go
+@@ -200,6 +200,14 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
+ 		return p.parseVarDeclStmt()
+ 	}
+ 
++	if p.curToken.Type == lexer.TBegin {
++		stmt, err := p.parseBlockStmt()
++		if err != nil {
++			return nil, err
++		}
++		return []ast.Stmt{stmt}, nil
++	}
++
+ 	if p.curToken.Type == lexer.TWhile {
+ 		stmt, err := p.parseWhileStmt()
+ 		if err != nil {
+@@ -305,6 +313,22 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
+ 	return body, nil
+ }
+ 
++func (p *Parser) parseBlockStmt() (*ast.BlockStmt, error) {
++	if err := p.expect(lexer.TBegin); err != nil {
++		return nil, err
++	}
++	body, err := p.parseBody()
++	if err != nil {
++		return nil, err
++	}
++	if err := p.expect(lexer.TEnd); err != nil {
++		return nil, err
++	}
++	return &ast.BlockStmt{
++		Body: body,
++	}, nil
++}
++
+ func (p *Parser) parseBreakStmt() (*ast.BreakStmt, error) {
+ 	if err := p.expect(lexer.TBreak); err != nil {
+ 		return nil, err

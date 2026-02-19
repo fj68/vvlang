@@ -34,33 +34,24 @@ func (stmt *ReturnStmt) Inspect() string {
 
 type WhileStmt struct {
 	Cond Expr
-	Body []Stmt
+	Body *BlockStmt
 }
 
 func (stmt *WhileStmt) Inspect() string {
-	var body []string
-	for _, s := range stmt.Body {
-		body = append(body, s.Inspect())
-	}
-	return fmt.Sprintf("WhileStmt{%s, %s}", stmt.Cond.Inspect(), strings.Join(body, ", "))
+	return fmt.Sprintf("WhileStmt{%s, %s}", stmt.Cond.Inspect(), stmt.Body)
 }
 
 type IfStmt struct {
 	Cond Expr
-	Then []Stmt
-	Else []Stmt
+	Then *BlockStmt
+	Else *BlockStmt
 }
 
 func (stmt *IfStmt) Inspect() string {
-	var thenBody []string
-	for _, s := range stmt.Then {
-		thenBody = append(thenBody, s.Inspect())
+	if stmt.Else == nil {
+		return fmt.Sprintf("IfStmt{%s, %s}", stmt.Cond.Inspect(), stmt.Then.Inspect())
 	}
-	var elseBody []string
-	for _, s := range stmt.Else {
-		elseBody = append(elseBody, s.Inspect())
-	}
-	return fmt.Sprintf("IfStmt{%s, %s, %s}", stmt.Cond.Inspect(), strings.Join(thenBody, ", "), strings.Join(elseBody, ", "))
+	return fmt.Sprintf("IfStmt{%s, %s, %s}", stmt.Cond.Inspect(), stmt.Then.Inspect(), stmt.Else.Inspect())
 }
 
 type VarAssignStmt struct {
