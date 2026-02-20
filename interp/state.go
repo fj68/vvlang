@@ -108,7 +108,6 @@ func (s *State) popDeferScope() error {
 var ErrBreak = fmt.Errorf("break")
 var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
-var ErrReturnWithValue = fmt.Errorf("return with value")
 
 func (s *State) evalTestModule(module *ast.Module) (err error) {
 	s.IsTestMode = true
@@ -126,7 +125,7 @@ func (s *State) evalTestModule(module *ast.Module) (err error) {
 			continue
 		}
 		if err := s.evalStmt(stmt); err != nil {
-			if err == ErrReturn || err == ErrReturnWithValue {
+			if err == ErrReturn {
 				// Top-level return: stop program execution but do not treat as an error
 				return nil
 			}
@@ -147,7 +146,7 @@ func (s *State) evalModule(module *ast.Module) (err error) {
 
 	for _, stmt := range module.Statements {
 		if err := s.evalStmt(stmt); err != nil {
-			if err == ErrReturn || err == ErrReturnWithValue {
+			if err == ErrReturn {
 				// Top-level return: stop program execution but do not treat as an error
 				return nil
 			}
@@ -205,7 +204,7 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 
 func (s *State) evalReturnStmt(stmt *ast.ReturnStmt) error {
 	if stmt.Value == nil {
-		// return without value still signals return control flow
+		s.RetVals.Push(VNull{})
 		return ErrReturn
 	}
 	value, err := s.evalExpr(stmt.Value)
@@ -213,7 +212,7 @@ func (s *State) evalReturnStmt(stmt *ast.ReturnStmt) error {
 		return err
 	}
 	s.RetVals.Push(value)
-	return ErrReturnWithValue
+	return ErrReturn
 }
 
 func (s *State) evalIfStmt(stmt *ast.IfStmt) error {
@@ -391,15 +390,11 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (val Value, err error) {
 		s.Env.Values[f.Args[i]] = arg
 	}
 
-	if err = s.evalBody(f.Body); err != nil && err != ErrReturn && err != ErrReturnWithValue {
+	if err = s.evalBody(f.Body); err != nil && err != ErrReturn {
 		return nil, err
 	}
 
-	if err == ErrReturnWithValue {
-		return s.RetVals.Pop(), nil
-	}
-
-	return nil, nil
+	return s.RetVals.Pop(), nil
 }
 
 func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {
@@ -419,7 +414,7 @@ func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {
 		if err == ErrBreak {
 			return nil
 		}
-		if err == ErrReturn || err == ErrReturnWithValue {
+		if err == ErrReturn {
 			return err
 		}
 		if err != nil && err != ErrContinue {
