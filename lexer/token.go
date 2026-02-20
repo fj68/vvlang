@@ -44,6 +44,8 @@ const (
 	TPub
 	TImport
 	TFrom
+	TType
+	TNot
 
 	// symbols
 	TLessEq
@@ -135,6 +137,10 @@ func (ty TokenType) String() string {
 		return "Import"
 	case TFrom:
 		return "From"
+	case TType:
+		return "Type"
+	case TNot:
+		return "Not"
 
 	// symbols
 	case TLessEq:
@@ -249,6 +255,8 @@ var Keywords = map[string]TokenType{
 	"pub":      TPub,
 	"import":   TImport,
 	"from":     TFrom,
+	"type":     TType,
+	"not":      TNot,
 }
 
 var Comments = map[string]string{

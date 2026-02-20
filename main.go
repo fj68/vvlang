@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/fj68/vvlang/interp"
+	"github.com/fj68/vvlang/interp/builtins"
+	"github.com/fj68/vvlang/mod"
 )
 
 func main() {
@@ -19,10 +21,47 @@ func main() {
 		return
 	}
 	s := interp.NewState(path)
-	s.RegisterGlobals(interp.DefaultBuiltins)
+
+	var moduleBuiltins = map[string]map[string]interp.Value{
+		"std/sys.vv": {
+			"help": interp.VBuiltinFun(builtins.Help),
+		},
+		"std/console.vv": {
+			"print": interp.VBuiltinFun(builtins.Print),
+		},
+		"std/math.vv": {
+			"floor": interp.VBuiltinFun(builtins.Floor),
+			"ceil":  interp.VBuiltinFun(builtins.Ceil),
+		},
+		"std/string.vv": {
+			"length": interp.VBuiltinFun(builtins.StringLength),
+		},
+		"std/list.vv": {
+			"length": interp.VBuiltinFun(builtins.ListLength),
+			"push":   interp.VBuiltinFun(builtins.Push),
+		},
+		"std/float.vv": {
+			"to_string": interp.VBuiltinFun(builtins.FloatToString),
+		},
+		"std/int.vv": {
+			"to_string": interp.VBuiltinFun(builtins.IntToString),
+		},
+		"std/bool.vv": {
+			"to_string": interp.VBuiltinFun(builtins.BoolToString),
+		},
+	}
+
 	s.NewState = func(sourcePath string) *interp.State {
 		ns := interp.NewState(sourcePath)
-		ns.RegisterGlobals(interp.DefaultBuiltins)
+
+		// Register module-specific built-ins
+		for stdPath, funcs := range moduleBuiltins {
+			if sourcePath == mod.GetPackagePath(stdPath) {
+				ns.RegisterGlobals(funcs)
+				break
+			}
+		}
+
 		ns.NewState = s.NewState
 		return ns
 	}

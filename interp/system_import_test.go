@@ -23,8 +23,7 @@ func TestSystemImport(t *testing.T) {
 		}
 
 		s := NewState(mainFile)
-		s.RegisterGlobals(DefaultBuiltins)
-		err = s.Eval([]rune("import l from './lib.vv' print(l.x)"))
+		err = s.Eval([]rune("import l from './lib.vv' assert l.x == 42"))
 		if err != nil {
 			t.Fatalf("Relative import failed: %v", err)
 		}
@@ -41,13 +40,15 @@ func TestSystemImport(t *testing.T) {
 			"std/math.vv": &fstest.MapFile{
 				Data: []byte("pub fun add(a, b) return a + b end"),
 			},
+			"std/console.vv": &fstest.MapFile{
+				Data: []byte("pub extern \"native\" fun print(v)"),
+			},
 		}
 
 		s := NewState("main.vv")
-		s.RegisterGlobals(DefaultBuiltins)
 		s.EnsureSystemLibrary("std", mapFs)
 
-		err := s.Eval([]rune("import m from 'std/math.vv' if not(m.add(1, 2) == 3) then print('fail') end"))
+		err := s.Eval([]rune("import m from 'std/math.vv' assert m.add(1, 2) == 3"))
 		if err != nil {
 			t.Fatalf("System import failed: %v", err)
 		}
@@ -74,7 +75,6 @@ func TestSystemImport(t *testing.T) {
 		}
 
 		s := NewState("main.vv")
-		s.RegisterGlobals(DefaultBuiltins)
 		s.EnsureSystemLibrary("std", mapFs)
 
 		path, err := mod.ResolveModulePath("./", "std/math.vv")

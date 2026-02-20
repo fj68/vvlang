@@ -89,6 +89,8 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TLBrace:   p.parseListLiteralExpr,
 		lexer.TLBracket: p.parseRecordLiteralExpr,
 		lexer.TNull:     p.parseNullLiteralExpr,
+		lexer.TType:     p.parseTypeExpr,
+		lexer.TNot:      p.parseNotExpr,
 	}
 }
 
@@ -1050,6 +1052,48 @@ func (p *Parser) parseNullLiteralExpr() (ast.Expr, error) {
 		return nil, err
 	}
 	return &ast.NullLiteralExpr{}, nil
+}
+
+func (p *Parser) parseTypeExpr() (ast.Expr, error) {
+	pos := p.curToken.Pos
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TLParen); err != nil {
+		return nil, err
+	}
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TRParen); err != nil {
+		return nil, err
+	}
+	return &ast.TypeExpr{
+		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
+		Value:    expr,
+	}, nil
+}
+
+func (p *Parser) parseNotExpr() (ast.Expr, error) {
+	pos := p.curToken.Pos
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TLParen); err != nil {
+		return nil, err
+	}
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TRParen); err != nil {
+		return nil, err
+	}
+	return &ast.NotExpr{
+		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
+		Value:    expr,
+	}, nil
 }
 
 func (p *Parser) parseDigitLiteralExpr() (ast.Expr, error) {
