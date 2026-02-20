@@ -59,11 +59,29 @@ func TestExtern(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := NewState("test.vv")
-			s.RegisterGlobals(tt.globals)
+			s.RegisterNatives(tt.globals)
 			err := s.Eval([]rune(tt.input))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Eval() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
+
+	t.Run("extern native exported", func(t *testing.T) {
+		s := NewState("test.vv")
+		s.RegisterNative("f", VBuiltinFun(func(s *State, args []Value) (Value, error) {
+			return VNumber(42), nil
+		}))
+		err := s.Eval([]rune("pub extern 'native' fun f()"))
+		if err != nil {
+			t.Fatalf("Eval() error = %v", err)
+		}
+		val, err := s.Env.Get("f")
+		if err != nil {
+			t.Fatalf("Env.Get(\"f\") error = %v", err)
+		}
+		if _, ok := val.(VBuiltinFun); !ok {
+			t.Errorf("expected VBuiltinFun, but got %T", val)
+		}
+	})
 }
