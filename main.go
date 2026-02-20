@@ -57,7 +57,7 @@ func main() {
 		// Register module-specific built-ins
 		for stdPath, funcs := range moduleBuiltins {
 			if sourcePath == mod.GetPackagePath(stdPath) {
-				ns.RegisterGlobals(funcs)
+				ns.RegisterNatives(funcs)
 				break
 			}
 		}

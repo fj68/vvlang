@@ -12,21 +12,23 @@ import (
 )
 
 type State struct {
-	IsTestMode  bool
-	SourcePath  string
-	ModuleCache map[string]*VModule
-	Env         *Env
-	RetVals     stack.Stack[Value]
-	Defers      [][]ast.Expr
-	NewState    func(sourcePath string) *State
+	IsTestMode   bool
+	SourcePath   string
+	ModuleCache  map[string]*VModule
+	Env          *Env
+	RetVals      stack.Stack[Value]
+	Defers       [][]ast.Expr
+	NativeValues map[string]Value
+	NewState     func(sourcePath string) *State
 }
 
 func NewState(sourcePath string) *State {
 	return &State{
-		SourcePath:  sourcePath,
-		ModuleCache: make(map[string]*VModule),
-		Env:         NewEnv(nil),
-		NewState:    NewState,
+		SourcePath:   sourcePath,
+		ModuleCache:  make(map[string]*VModule),
+		Env:          NewEnv(nil),
+		NativeValues: make(map[string]Value),
+		NewState:     NewState,
 	}
 }
 
@@ -65,6 +67,15 @@ func (s *State) RegisterGlobal(name string, value Value) {
 func (s *State) RegisterGlobals(values map[string]Value) {
 	for name, value := range values {
 		s.RegisterGlobal(name, value)
+	}
+}
+func (s *State) RegisterNative(name string, value Value) {
+	s.NativeValues[name] = value
+}
+
+func (s *State) RegisterNatives(values map[string]Value) {
+	for name, value := range values {
+		s.RegisterNative(name, value)
 	}
 }
 
@@ -846,11 +857,25 @@ func (s *State) evalDeferStmt(stmt *ast.DeferStmt) error {
 	return nil
 }
 func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
-	_, err := s.Env.Get(stmt.Name)
-	if err != nil {
-		return fmt.Errorf("extern: %s", err)
+	if stmt.Type != "native" {
+		return fmt.Errorf("extern: unsupported type %s", stmt.Type)
 	}
-	// success: the name is provided by the environment
+
+	val, ok := s.NativeValues[stmt.Name]
+	if !ok {
+		return fmt.Errorf("extern native: %s not registered", stmt.Name)
+	}
+
+	s.Env.Set(stmt.Name, val)
+
+	if stmt.Exported {
+		// Mark as exported in the environment if the environment supports it,
+		// or handle it during module export collection.
+		// Currently VModule collection looks at the environment for names in module.Exports.
+		// So we just need to make sure the name is in module.Exports, but that's already
+		// handled by the parser (it populates module.Exports).
+		// However, we need to ensure the value is present in s.Env.
+	}
 	return nil
 }
 
