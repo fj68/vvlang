@@ -1,18 +1,2 @@
-pub extern 'native' fun len(xs)
-pub extern 'native' fun push(xs, x)
-
-pub fun each(xs, f)
-    let i = 0
-    while i < len(xs)
-        f(xs[i])
-        i = i + 1
-    end
-end
-
-pub fun map(xs, f)
-    let ys = []
-    each(xs, fun(x)
-        push(ys, f(x))
-    end)
-    return ys
-end
+pub extern "native" fun length(l)
+pub extern "native" fun push(l, v)

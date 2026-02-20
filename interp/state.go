@@ -314,9 +314,44 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalPrefixExpr(v)
 	case *ast.FieldAccessExpr:
 		return s.evalFieldAccessExpr(v)
+	case *ast.TypeExpr:
+		return s.evalTypeExpr(v)
+	case *ast.NotExpr:
+		return s.evalNotExpr(v)
 	default:
 		return nil, fmt.Errorf("unknown expr: %s", v.Inspect())
 	}
+}
+
+func (s *State) evalTypeExpr(expr *ast.TypeExpr) (Value, error) {
+	v, err := s.evalExpr(expr.Value)
+	if err != nil {
+		return nil, err
+	}
+	t := v.Type().String()
+	// Remap "number" to "int" or "float" based on value if necessary?
+	// The issue says: 'null', 'bool', 'int', 'string', 'float', 'list', 'record'
+	if t == "number" {
+		if n, ok := v.(VNumber); ok {
+			if float64(int64(n)) == float64(n) {
+				return VString("int"), nil
+			}
+			return VString("float"), nil
+		}
+	}
+	return VString(t), nil
+}
+
+func (s *State) evalNotExpr(expr *ast.NotExpr) (Value, error) {
+	v, err := s.evalExpr(expr.Value)
+	if err != nil {
+		return nil, err
+	}
+	b, ok := v.(VBool)
+	if !ok {
+		return nil, fmt.Errorf("argument for not() is expected bool, but got %s", v.Type())
+	}
+	return VBool(!bool(b)), nil
 }
 
 func (s *State) evalFunLiteralExpr(expr *ast.FunLiteralExpr) (Value, error) {
