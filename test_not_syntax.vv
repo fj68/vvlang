@@ -1,0 +1,6 @@
+let a = true
+print('not(true) =>', not(a))
+print('not(false) =>', not(not(a)))
+
+// The following should fail in the parser:
+// not true

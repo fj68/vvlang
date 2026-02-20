@@ -199,3 +199,12 @@ type NullLiteralExpr struct {
 func (expr *NullLiteralExpr) Inspect() string {
 	return "NullLiteralExpr{}"
 }
+
+type NotExpr struct {
+	Position
+	Expr Expr
+}
+
+func (expr *NotExpr) Inspect() string {
+	return fmt.Sprintf("NotExpr{%s}", expr.Expr.Inspect())
+}

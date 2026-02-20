@@ -12,21 +12,23 @@ import (
 )
 
 type State struct {
-	IsTestMode  bool
-	SourcePath  string
-	ModuleCache map[string]*VRecord
-	Env         *Env
-	RetVals     stack.Stack[Value]
-	Defers      [][]ast.Expr
-	NewState    func(sourcePath string) *State
+	IsTestMode   bool
+	SourcePath   string
+	ModuleCache  map[string]*VRecord
+	Env          *Env
+	RetVals      stack.Stack[Value]
+	Defers       [][]ast.Expr
+	NativeValues map[string]Value
+	NewState     func(sourcePath string) *State
 }
 
 func NewState(sourcePath string) *State {
 	return &State{
-		SourcePath:  sourcePath,
-		ModuleCache: make(map[string]*VRecord),
-		Env:         NewEnv(nil),
-		NewState:    NewState,
+		SourcePath:   sourcePath,
+		ModuleCache:  make(map[string]*VRecord),
+		Env:          NewEnv(nil),
+		NativeValues: make(map[string]Value),
+		NewState:     NewState,
 	}
 }
 
@@ -58,8 +60,19 @@ func Eval(sourcePath string, text []rune) error {
 	return s.Eval(text)
 }
 
+func (s *State) RegisterNative(name string, value Value) {
+	s.NativeValues[name] = value
+}
+
+func (s *State) RegisterNatives(values map[string]Value) {
+	for name, value := range values {
+		s.RegisterNative(name, value)
+	}
+}
+
 func (s *State) RegisterGlobal(name string, value Value) {
 	s.Env.Values[name] = value
+	s.NativeValues[name] = value
 }
 
 func (s *State) RegisterGlobals(values map[string]Value) {
@@ -314,6 +327,8 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalPrefixExpr(v)
 	case *ast.FieldAccessExpr:
 		return s.evalFieldAccessExpr(v)
+	case *ast.NotExpr:
+		return s.evalNotExpr(v)
 	default:
 		return nil, fmt.Errorf("unknown expr: %s", v.Inspect())
 	}
@@ -591,6 +606,18 @@ func (s *State) evalPrefixExpr(expr *ast.PrefixExpr) (Value, error) {
 	}
 }
 
+func (s *State) evalNotExpr(expr *ast.NotExpr) (Value, error) {
+	v, err := s.evalExpr(expr.Expr)
+	if err != nil {
+		return nil, err
+	}
+	b, ok := v.(VBool)
+	if !ok {
+		return nil, fmt.Errorf("argument for not() is expected bool, but got %s", v.Type())
+	}
+	return VBool(!bool(b)), nil
+}
+
 func (s *State) evalListLiteralExpr(expr *ast.ListLiteralExpr) (Value, error) {
 	var elements []Value
 	for _, elemExpr := range expr.Elements {
@@ -806,11 +833,11 @@ func (s *State) evalDeferStmt(stmt *ast.DeferStmt) error {
 	return nil
 }
 func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
-	_, err := s.Env.Get(stmt.Name)
-	if err != nil {
-		return fmt.Errorf("extern: %s", err)
+	value, ok := s.NativeValues[stmt.Name]
+	if !ok {
+		return fmt.Errorf("extern: value named '%s' not found", stmt.Name)
 	}
-	// success: the name is provided by the environment
+	s.Env.Set(stmt.Name, value)
 	return nil
 }
 

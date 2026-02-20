@@ -88,6 +88,7 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TLBrace:   p.parseListLiteralExpr,
 		lexer.TLBracket: p.parseRecordLiteralExpr,
 		lexer.TNull:     p.parseNullLiteralExpr,
+		lexer.TNot:      p.parseNotExpr,
 	}
 }
 
@@ -1005,6 +1006,32 @@ func (p *Parser) parseIndexOrSliceExpr(left ast.Expr) (ast.Expr, error) {
 		Left:  left,
 		Start: start,
 		End:   end,
+	}, nil
+}
+
+func (p *Parser) parseNotExpr() (ast.Expr, error) {
+	start := p.curToken.Pos
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	if err := p.expect(lexer.TLParen); err != nil {
+		return nil, err
+	}
+
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+
+	end := p.curToken.Pos
+	if err := p.expect(lexer.TRParen); err != nil {
+		return nil, err
+	}
+
+	return &ast.NotExpr{
+		Position: ast.Position{Start: &start, End: &end},
+		Expr:     expr,
 	}, nil
 }
 
