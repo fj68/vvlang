@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/fj68/vvlang/ast"
 	"github.com/fj68/vvlang/lexer"
@@ -140,6 +141,34 @@ func (p *Parser) expectNext(ty lexer.TokenType) error {
 	return nil
 }
 
+func (p *Parser) parseDocstring() map[string]string {
+	docs := make(map[string]string)
+	lang := "en"
+	for p.curToken.Type == lexer.TDocstring {
+		line := p.curToken.Text
+		if len(line) >= 6 && line[:6] == "@lang " {
+			lang = line[6:]
+			// Consume the @lang token and move on
+			if err := p.readToken(); err != nil {
+				break
+			}
+			continue
+		}
+		docs[lang] += line + "\n"
+		if err := p.readToken(); err != nil {
+			break
+		}
+	}
+	// Trim trailing newlines from each lang entry
+	for k, v := range docs {
+		docs[k] = strings.TrimRight(v, "\n")
+	}
+	if len(docs) == 0 {
+		return nil
+	}
+	return docs
+}
+
 func (p *Parser) parseProgram() (*ast.Module, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
@@ -147,6 +176,9 @@ func (p *Parser) parseProgram() (*ast.Module, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
+
+	// Collect module-level docstring (appears before imports / first statement)
+	moduleDocstring := p.parseDocstring()
 
 	header, err := p.parseProgramHeader()
 	if err != nil {
@@ -156,6 +188,7 @@ func (p *Parser) parseProgram() (*ast.Module, error) {
 	module := &ast.Module{
 		Statements: header,
 		Exports:    make(map[string]ast.Stmt),
+		Docstring:  moduleDocstring,
 	}
 
 	for {
@@ -240,6 +273,9 @@ func (p *Parser) parseImportStmt() (*ast.ImportStmt, error) {
 }
 
 func (p *Parser) parseToplevelStmt() ([]ast.Stmt, error) {
+	// Consume docstring preceding the declaration
+	docstring := p.parseDocstring()
+
 	if p.curToken.Type == lexer.TTest {
 		stmt, err := p.parseTestStmt()
 		if err != nil {
@@ -260,6 +296,7 @@ func (p *Parser) parseToplevelStmt() ([]ast.Stmt, error) {
 			switch s := stmt.(type) {
 			case *ast.VarDeclStmt:
 				s.Exported = true
+				s.Docstring = docstring
 			default:
 				return nil, fmt.Errorf("only variable and function declarations can be exported")
 			}

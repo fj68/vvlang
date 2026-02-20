@@ -231,8 +231,13 @@ func (v *VRecord) String() string {
 }
 
 func (v *VRecord) Equal(other Value) (bool, error) {
-	o, ok := other.(*VRecord)
-	if !ok {
+	var o *VRecord
+	switch tv := other.(type) {
+	case *VRecord:
+		o = tv
+	case *VModule:
+		o = tv.VRecord
+	default:
 		return false, fmt.Errorf("expected record, but got %s", other.Type())
 	}
 	if len(o.Fields) != len(v.Fields) {
@@ -256,6 +261,25 @@ func (v *VRecord) Equal(other Value) (bool, error) {
 
 func (v *VRecord) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare records")
+}
+
+// VModule wraps a VRecord with docstring metadata. It represents an imported module.
+type VModule struct {
+	*VRecord
+	Docstring       map[string]string
+	FieldDocstrings map[string]map[string]string
+}
+
+func (v *VModule) Type() ValueType {
+	return VTRecord // still reported as record for type() calls
+}
+
+func (v *VModule) Equal(other Value) (bool, error) {
+	return Value(v) == other, nil
+}
+
+func (v *VModule) LessThan(other Value) (bool, error) {
+	return false, fmt.Errorf("unable to compare modules")
 }
 
 type VNull struct{}

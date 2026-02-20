@@ -14,7 +14,7 @@ import (
 type State struct {
 	IsTestMode  bool
 	SourcePath  string
-	ModuleCache map[string]*VRecord
+	ModuleCache map[string]*VModule
 	Env         *Env
 	RetVals     stack.Stack[Value]
 	Defers      [][]ast.Expr
@@ -24,7 +24,7 @@ type State struct {
 func NewState(sourcePath string) *State {
 	return &State{
 		SourcePath:  sourcePath,
-		ModuleCache: make(map[string]*VRecord),
+		ModuleCache: make(map[string]*VModule),
 		Env:         NewEnv(nil),
 		NewState:    NewState,
 	}
@@ -763,8 +763,13 @@ func (s *State) evalFieldAccessExpr(expr *ast.FieldAccessExpr) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	record, ok := recordVal.(*VRecord)
-	if !ok {
+	var record *VRecord
+	switch tv := recordVal.(type) {
+	case *VRecord:
+		record = tv
+	case *VModule:
+		record = tv.VRecord
+	default:
 		return nil, fmt.Errorf("expected record for field access, but got %s", recordVal.Type())
 	}
 	fieldName := string(expr.Field)
@@ -860,7 +865,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 		return err
 	}
 
-	// Create a VRecord for exports
+	// Create a VModule for exports, carrying docstring metadata
 	fields := make(map[string]Value)
 	for name := range module.Exports {
 		val, err := modState.Env.Get(name)
@@ -869,7 +874,19 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 		}
 		fields[name] = val
 	}
-	modRecord := &VRecord{Fields: fields}
+
+	fieldDocstrings := make(map[string]map[string]string)
+	for _, stmt := range module.Statements {
+		if vd, ok := stmt.(*ast.VarDeclStmt); ok && vd.Exported && vd.Docstring != nil {
+			fieldDocstrings[vd.Name] = vd.Docstring
+		}
+	}
+
+	modRecord := &VModule{
+		VRecord:         &VRecord{Fields: fields},
+		Docstring:       module.Docstring,
+		FieldDocstrings: fieldDocstrings,
+	}
 
 	// Cache the result
 	s.ModuleCache[targetPath] = modRecord

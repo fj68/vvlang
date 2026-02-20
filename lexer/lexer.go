@@ -20,6 +20,11 @@ func (lex *Lexer) Next() (*Token, error) {
 		return lex.newToken(TEOF), nil
 	}
 
+	// Check for docstring before anything else
+	if lex.s.Peek(3) == "///" {
+		return lex.docstring()
+	}
+
 	r := lex.s.Current()
 
 	for sym2, ty := range Symbols2 {
@@ -84,12 +89,33 @@ func (lex *Lexer) skipWhitespaces() int {
 }
 
 func (lex *Lexer) skipComment() int {
+	// Check docstring marker first to avoid treating it as a regular comment
+	if lex.s.Peek(3) == "///" {
+		return 0 // Do not skip; Next() will emit TDocstring
+	}
 	for start, end := range Comments {
 		if lex.s.Peek(len(start)) == start {
 			return lex.comment(start, end)
 		}
 	}
 	return 0
+}
+
+// docstring reads a `///` line and emits a TDocstring token with the trimmed content.
+func (lex *Lexer) docstring() (*Token, error) {
+	lex.s.Skip(3) // skip `///`
+	// skip optional single space after ///
+	if !lex.s.IsEOF() && lex.s.Current() == ' ' {
+		lex.s.Skip(1)
+	}
+	// Read until end of line
+	for !lex.s.IsEOF() && lex.s.Current() != '\n' {
+		lex.s.Advance(1)
+	}
+	if !lex.s.IsEOF() {
+		lex.s.Skip(1) // skip the newline
+	}
+	return lex.newToken(TDocstring), nil
 }
 
 func (lex *Lexer) comment(start, end string) int {

@@ -64,9 +64,10 @@ func (stmt *VarAssignStmt) Inspect() string {
 }
 
 type VarDeclStmt struct {
-	Name     string
-	Body     Expr
-	Exported bool
+	Name      string
+	Body      Expr
+	Exported  bool
+	Docstring map[string]string
 }
 
 func (stmt *VarDeclStmt) Inspect() string {
@@ -153,6 +154,7 @@ func (stmt *ImportStmt) Inspect() string {
 type Module struct {
 	Statements []Stmt
 	Exports    map[string]Stmt
+	Docstring  map[string]string
 }
 
 func (m *Module) Inspect() string {
