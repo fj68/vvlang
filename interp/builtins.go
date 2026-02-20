@@ -17,6 +17,7 @@ var DefaultBuiltins = map[string]Value{
 	"floor":  VBuiltinFun(builtinFloor),
 	"string": VBuiltinFun(builtinString),
 	"len":    VBuiltinFun(builtinLen),
+	"push":   VBuiltinFun(builtinPush),
 }
 
 func builtinNot(s *State, args []Value) (Value, error) {
@@ -165,4 +166,16 @@ func builtinLen(s *State, args []Value) (Value, error) {
 		return nil, fmt.Errorf("argument for len() is expected string or array, but got fun")
 	}
 	return nil, fmt.Errorf("unknown value type: %s", args[0].Type().String())
+}
+
+func builtinPush(s *State, args []Value) (Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("too many / less arguments for push()")
+	}
+	list, ok := args[0].(*VList)
+	if !ok {
+		return nil, fmt.Errorf("argument for push() is expected list, but got %s", args[0].Type().String())
+	}
+	list.Elements = append(list.Elements, args[1])
+	return nil, nil
 }

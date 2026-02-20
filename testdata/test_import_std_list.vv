@@ -1,0 +1,15 @@
+import list from 'std/list.vv'
+
+let xs = [1, 2, 3]
+
+fun incr(x)
+    return x + 1
+end
+
+let ys = list.map(xs, incr)
+
+if not(ys[0] == 2)
+    print('fail')
+end
+
+print(ys[0])
