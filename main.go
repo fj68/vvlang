@@ -20,6 +20,16 @@ func main() {
 	}
 	s := interp.NewState(path)
 	s.RegisterGlobals(interp.DefaultBuiltins)
+	s.NewState = func(sourcePath string) *interp.State {
+		ns := interp.NewState(sourcePath)
+		ns.RegisterGlobals(interp.DefaultBuiltins)
+		ns.NewState = s.NewState
+		return ns
+	}
+	if err := s.EnsureSystemLibrary("std", stdlib); err != nil {
+		fmt.Println("EnsureSystemLibrary", err)
+		return
+	}
 	if err := s.Eval([]rune(string(text))); err != nil {
 		fmt.Println(err)
 		return

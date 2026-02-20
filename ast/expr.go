@@ -160,7 +160,7 @@ type IndexExpr struct {
 }
 
 func (expr *IndexExpr) Inspect() string {
-	return fmt.Sprintf("IndexExpr{%s[%s]}", expr.Left.Inspect(), expr.Index.Inspect())
+	return fmt.Sprintf("IndexExpr{%s, %s}", expr.Left.Inspect(), expr.Index.Inspect())
 }
 
 type SliceExpr struct {
@@ -179,7 +179,7 @@ func (expr *SliceExpr) Inspect() string {
 	if expr.End != nil {
 		endStr = expr.End.Inspect()
 	}
-	return fmt.Sprintf("SliceExpr{%s[%s:%s]}", expr.Left.Inspect(), startStr, endStr)
+	return fmt.Sprintf("SliceExpr{%s, %s, %s}", expr.Left.Inspect(), startStr, endStr)
 }
 
 type FieldAccessExpr struct {

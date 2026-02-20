@@ -1,0 +1,5 @@
+import math from './test_import_local_mod.vv'
+
+if not(math.add(1, 2) == 3) then
+    print('fail')
+end

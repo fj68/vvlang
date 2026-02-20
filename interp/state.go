@@ -2,10 +2,11 @@ package interp
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
-	"path/filepath"
 
 	"github.com/fj68/vvlang/ast"
+	"github.com/fj68/vvlang/mod"
 	"github.com/fj68/vvlang/parser"
 	"github.com/fj68/vvlang/stack"
 )
@@ -17,6 +18,7 @@ type State struct {
 	Env         *Env
 	RetVals     stack.Stack[Value]
 	Defers      [][]ast.Expr
+	NewState    func(sourcePath string) *State
 }
 
 func NewState(sourcePath string) *State {
@@ -24,7 +26,31 @@ func NewState(sourcePath string) *State {
 		SourcePath:  sourcePath,
 		ModuleCache: make(map[string]*VRecord),
 		Env:         NewEnv(nil),
+		NewState:    NewState,
 	}
+}
+
+func (s *State) EnsureSystemLibrary(name string, library fs.FS) error {
+	checksum, err := mod.CalculateChecksumLibrary(library)
+	if err != nil {
+		return err
+	}
+
+	cachedPath := mod.GetPackagePath(name)
+
+	cachedFs := os.DirFS(cachedPath)
+
+	cachedChecksum, err := mod.CalculateChecksumLibrary(cachedFs)
+	if err == nil && string(cachedChecksum) == checksum {
+		return nil
+	}
+
+	vf, err := mod.OpenVersionFile()
+	if err != nil {
+		return err
+	}
+
+	return mod.ExtractLibrary(library, vf)
 }
 
 func Eval(sourcePath string, text []rune) error {
@@ -82,6 +108,7 @@ func (s *State) popDeferScope() error {
 var ErrBreak = fmt.Errorf("break")
 var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
+var ErrReturnWithValue = fmt.Errorf("return with value")
 
 func (s *State) evalTestModule(module *ast.Module) (err error) {
 	s.IsTestMode = true
@@ -99,7 +126,7 @@ func (s *State) evalTestModule(module *ast.Module) (err error) {
 			continue
 		}
 		if err := s.evalStmt(stmt); err != nil {
-			if err == ErrReturn {
+			if err == ErrReturn || err == ErrReturnWithValue {
 				// Top-level return: stop program execution but do not treat as an error
 				return nil
 			}
@@ -120,7 +147,7 @@ func (s *State) evalModule(module *ast.Module) (err error) {
 
 	for _, stmt := range module.Statements {
 		if err := s.evalStmt(stmt); err != nil {
-			if err == ErrReturn {
+			if err == ErrReturn || err == ErrReturnWithValue {
 				// Top-level return: stop program execution but do not treat as an error
 				return nil
 			}
@@ -186,7 +213,7 @@ func (s *State) evalReturnStmt(stmt *ast.ReturnStmt) error {
 		return err
 	}
 	s.RetVals.Push(value)
-	return ErrReturn
+	return ErrReturnWithValue
 }
 
 func (s *State) evalIfStmt(stmt *ast.IfStmt) error {
@@ -364,11 +391,15 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (val Value, err error) {
 		s.Env.Values[f.Args[i]] = arg
 	}
 
-	if err := s.evalBody(f.Body); err != nil && err != ErrReturn {
+	if err = s.evalBody(f.Body); err != nil && err != ErrReturn && err != ErrReturnWithValue {
 		return nil, err
 	}
 
-	return s.RetVals.Pop(), nil
+	if err == ErrReturnWithValue {
+		return s.RetVals.Pop(), nil
+	}
+
+	return nil, nil
 }
 
 func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {
@@ -388,8 +419,8 @@ func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {
 		if err == ErrBreak {
 			return nil
 		}
-		if err == ErrReturn {
-			return ErrReturn
+		if err == ErrReturn || err == ErrReturnWithValue {
+			return err
 		}
 		if err != nil && err != ErrContinue {
 			return err
@@ -406,7 +437,11 @@ func (s *State) callBuiltinFun(f VBuiltinFun, args []Value) (Value, error) {
 }
 
 func (s *State) evalVarRefExpr(expr *ast.VarRefExpr) (Value, error) {
-	return s.Env.Get(expr.Name)
+	value, err := s.Env.Get(expr.Name)
+	if err != nil {
+		return nil, err
+	}
+	return value, nil
 }
 
 func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
@@ -785,10 +820,7 @@ func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
 }
 
 func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
-	// Resolve path relative to current module's source path
-	dir := filepath.Dir(s.SourcePath)
-	targetPath := filepath.Join(dir, stmt.Path)
-	targetPath, err := filepath.Abs(targetPath)
+	targetPath, err := mod.ResolveModulePath(s.SourcePath, stmt.Path)
 	if err != nil {
 		return err
 	}
@@ -816,7 +848,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 
 	// Create a new state for the module
 	// Pass the same ModuleCache to detect cycles across the whole project
-	modState := NewState(targetPath)
+	modState := s.NewState(targetPath)
 	modState.ModuleCache = s.ModuleCache
 
 	// To detect cycles: we can add a placeholder in the cache or check a "loading" set
