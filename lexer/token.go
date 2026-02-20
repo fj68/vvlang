@@ -16,6 +16,7 @@ const (
 	TLiteral
 	TInterpolated
 	TComment
+	TDocstring
 
 	// keywords
 	TFun
@@ -80,6 +81,8 @@ func (ty TokenType) String() string {
 		return "Interpolated"
 	case TComment:
 		return "Comment"
+	case TDocstring:
+		return "Docstring"
 
 		// keywords
 	case TFun:
