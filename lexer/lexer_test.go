@@ -50,7 +50,7 @@ func TestLexer(t *testing.T) {
 				{TDigit, "123"},
 				{TDigit, "45.6"},
 				{TLiteral, "single"},
-				{TLiteral, "double"},
+				{TInterpolated, "double"},
 			},
 		},
 		{
@@ -60,22 +60,28 @@ func TestLexer(t *testing.T) {
 				t    TokenType
 				text string
 			}{
-				{TLiteral, "hello {name}! {{escaped}}"},
+				{TInterpolated, "hello {name}! {{escaped}}"},
 			},
 		},
 		{
 			"prefix operators",
-			"not a type b str c",
+			"not(a) type(b) str(c)",
 			[]struct {
 				t    TokenType
 				text string
 			}{
 				{TNot, "not"},
+				{TLParen, "("},
 				{TIdent, "a"},
+				{TRParen, ")"},
 				{TType, "type"},
+				{TLParen, "("},
 				{TIdent, "b"},
-				{TIdent, "str"},
+				{TRParen, ")"},
+				{TStr, "str"},
+				{TLParen, "("},
 				{TIdent, "c"},
+				{TRParen, ")"},
 			},
 		},
 		{

@@ -141,8 +141,7 @@ func (s *State) evalTestModule(module *ast.Module) (err error) {
 		}
 		if err := s.evalStmt(stmt); err != nil {
 			if err == ErrReturn {
-				// Top-level return: stop program execution but do not treat as an error
-				return nil
+				return fmt.Errorf("top-level return is not allowed")
 			}
 			return err
 		}
@@ -162,8 +161,7 @@ func (s *State) evalModule(module *ast.Module) (err error) {
 	for _, stmt := range module.Statements {
 		if err := s.evalStmt(stmt); err != nil {
 			if err == ErrReturn {
-				// Top-level return: stop program execution but do not treat as an error
-				return nil
+				return fmt.Errorf("top-level return is not allowed")
 			}
 			return err
 		}

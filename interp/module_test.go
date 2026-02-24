@@ -24,7 +24,7 @@ let secret = 42
 	mainPath := filepath.Join(tmpDir, "main.vv")
 	mainCode := `
 import math from './math.vv'
-return math.square(math.pi)
+let result = math.square(math.pi)
 `
 	if err := os.WriteFile(mainPath, []byte(mainCode), 0644); err != nil {
 		t.Fatal(err)
@@ -35,7 +35,10 @@ return math.square(math.pi)
 		t.Fatal(err)
 	}
 
-	res := s.RetVals.Pop()
+	res, err := s.Env.Get("result")
+	if err != nil {
+		t.Fatalf("expected result: %v", err)
+	}
 	num, ok := res.(VNumber)
 	if !ok {
 		t.Fatalf("expected VNumber, got %T", res)
@@ -63,7 +66,7 @@ let secret = 42
 	mainPath := filepath.Join(tmpDir, "main.vv")
 	mainCode := `
 import math from './math.vv'
-return math.secret
+let result = math.secret
 `
 	if err := os.WriteFile(mainPath, []byte(mainCode), 0644); err != nil {
 		t.Fatal(err)
@@ -100,7 +103,7 @@ pub fun circle_area(r) return c.pi * r * r end
 	mainPath := filepath.Join(tmpDir, "main.vv")
 	mainCode := `
 import math from './math.vv'
-return math.circle_area(2)
+let result = math.circle_area(2)
 `
 	if err := os.WriteFile(mainPath, []byte(mainCode), 0644); err != nil {
 		t.Fatal(err)
@@ -111,7 +114,10 @@ return math.circle_area(2)
 		t.Fatal(err)
 	}
 
-	res := s.RetVals.Pop()
+	res, err := s.Env.Get("result")
+	if err != nil {
+		t.Fatalf("expected result: %v", err)
+	}
 	num, ok := res.(VNumber)
 	if !ok {
 		t.Fatalf("expected VNumber, got %T", res)

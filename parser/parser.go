@@ -381,11 +381,7 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 	}
 
 	if p.curToken.Type == lexer.TReturn {
-		stmt, err := p.parseReturnStmt()
-		if err != nil {
-			return nil, err
-		}
-		return []ast.Stmt{stmt}, nil
+		return nil, fmt.Errorf("return statement is not allowed here (must be inside a function or block)")
 	}
 
 	if p.curToken.Type == lexer.TBreak {
