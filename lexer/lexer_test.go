@@ -2,37 +2,166 @@ package lexer
 
 import (
 	"testing"
-
-	"github.com/fj68/vvlang/ast"
 )
 
 func TestLexer(t *testing.T) {
-	text := "fun incr(v, n) /* just return v + n */ return v + n end"
-	expected := []*Token{
-		{TFun, "fun", ast.Pos{0, 3, 0, 3}},
-		{TIdent, "incr", ast.Pos{4, 8, 0, 8}},
-		{TLParen, "(", ast.Pos{8, 9, 0, 9}},
-		{TIdent, "v", ast.Pos{9, 10, 0, 10}},
-		{TComma, ",", ast.Pos{10, 11, 0, 11}},
-		{TIdent, "n", ast.Pos{12, 13, 0, 13}},
-		{TRParen, ")", ast.Pos{13, 14, 0, 14}},
-		{TReturn, "return", ast.Pos{39, 45, 0, 45}},
-		{TIdent, "v", ast.Pos{46, 47, 0, 47}},
-		{TPlus, "+", ast.Pos{48, 49, 0, 49}},
-		{TIdent, "n", ast.Pos{50, 51, 0, 51}},
-		{TEnd, "end", ast.Pos{52, 55, 0, 55}},
+	tests := []struct {
+		name     string
+		input    string
+		expected []struct {
+			t    TokenType
+			text string
+		}
+	}{
+		{
+			"basic function and assignment",
+			"fun incr(v, n) x = v + n return x end",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TFun, "fun"},
+				{TIdent, "incr"},
+				{TLParen, "("},
+				{TIdent, "v"},
+				{TComma, ","},
+				{TIdent, "n"},
+				{TRParen, ")"},
+				{TIdent, "x"},
+				{TAssign, "="},
+				{TIdent, "v"},
+				{TPlus, "+"},
+				{TIdent, "n"},
+				{TReturn, "return"},
+				{TIdent, "x"},
+				{TEnd, "end"},
+			},
+		},
+		{
+			"literals and booleans",
+			"true false null 123 45.6 'single' \"double\"",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TTrue, "true"},
+				{TFalse, "false"},
+				{TNull, "null"},
+				{TDigit, "123"},
+				{TDigit, "45.6"},
+				{TLiteral, "single"},
+				{TLiteral, "double"},
+			},
+		},
+		{
+			"string with braces (still TLiteral in this branch)",
+			"\"hello {name}! {{escaped}}\"",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TLiteral, "hello {name}! {{escaped}}"},
+			},
+		},
+		{
+			"prefix operators",
+			"not a type b str c",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TNot, "not"},
+				{TIdent, "a"},
+				{TType, "type"},
+				{TIdent, "b"},
+				{TIdent, "str"},
+				{TIdent, "c"},
+			},
+		},
+		{
+			"module, imports and extern",
+			"pub import x from 'y' extern 'native' fun f(a, b) extern 'native' let v",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TPub, "pub"},
+				{TImport, "import"},
+				{TIdent, "x"},
+				{TFrom, "from"},
+				{TLiteral, "y"},
+				{TExtern, "extern"},
+				{TLiteral, "native"},
+				{TFun, "fun"},
+				{TIdent, "f"},
+				{TLParen, "("},
+				{TIdent, "a"},
+				{TComma, ","},
+				{TIdent, "b"},
+				{TRParen, ")"},
+				{TExtern, "extern"},
+				{TLiteral, "native"},
+				{TLet, "let"},
+				{TIdent, "v"},
+			},
+		},
+		{
+			"record and list",
+			"[1, 2] { a = b }",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TLBrace, "["},
+				{TDigit, "1"},
+				{TComma, ","},
+				{TDigit, "2"},
+				{TRBrace, "]"},
+				{TLBracket, "{"},
+				{TIdent, "a"},
+				{TAssign, "="},
+				{TIdent, "b"},
+				{TRBracket, "}"},
+			},
+		},
+		{
+			"comments",
+			"// line\n/* block */ x",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TIdent, "x"},
+			},
+		},
 	}
-	lex := New([]rune(text))
-	for i := 0; ; i++ {
-		tok, err := lex.Next()
-		if err != nil {
-			t.Fatal(err)
-		}
-		if tok.Type == TEOF {
-			break
-		}
-		if !tok.Eq(expected[i]) {
-			t.Fatalf("%d\n\texpected: %s\n\tactual : %s", i, expected[i], tok)
-		}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			lex := New([]rune(tt.input))
+			for i, exp := range tt.expected {
+				tok, err := lex.Next()
+				if err != nil {
+					t.Fatalf("%d: %v", i, err)
+				}
+				if tok.Type == TEOF {
+					t.Fatalf("%d: unexpected EOF", i)
+				}
+				if tok.Type != exp.t {
+					t.Errorf("%d: type mismatch: expected=%v, actual=%v", i, exp.t, tok.Type)
+				}
+				if tok.Text != exp.text {
+					t.Errorf("%d: text mismatch: expected=%q, actual=%q", i, exp.text, tok.Text)
+				}
+			}
+			// Check if TEOF follows
+			tok, err := lex.Next()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tok.Type != TEOF {
+				t.Errorf("expected TEOF, but got %v", tok.Type)
+			}
+		})
 	}
 }
