@@ -35,20 +35,60 @@ func GetVersionPath() string {
 	return filepath.Join(GetVVPath(), "files.json")
 }
 
+// FindProjectRoot looks for a vv.mod file in the current directory or its parents.
+func FindProjectRoot(startPath string) (string, error) {
+	curr, err := filepath.Abs(startPath)
+	if err != nil {
+		return "", err
+	}
+	if info, err := os.Stat(curr); err == nil && !info.IsDir() {
+		curr = filepath.Dir(curr)
+	}
+
+	for {
+		if _, err := os.Stat(filepath.Join(curr, "vv.mod")); err == nil {
+			return curr, nil
+		}
+		parent := filepath.Dir(curr)
+		if parent == curr {
+			break
+		}
+		curr = parent
+	}
+	return "", os.ErrNotExist
+}
+
 func ResolveModulePath(sourcePath, path string) (target string, err error) {
 	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
 		dir := filepath.Dir(sourcePath)
 		target, err = filepath.Abs(filepath.Join(dir, path))
-	} else {
-		target, err = filepath.Abs(GetPackagePath(path))
-	}
-	if err != nil {
-		return
-	}
-	// We return the target path even if Stat fails, so the caller can decide
-	// whether to download it (if it's a remote module) or report an error.
-	if _, err = os.Stat(target); err != nil {
+		if err != nil {
+			return "", err
+		}
+		_, err = os.Stat(target)
 		return target, err
 	}
-	return
+
+	// 1. Check .vv-modules in the current directory/source directory
+	sourceDir := filepath.Dir(sourcePath)
+	target = filepath.Join(sourceDir, ".vv-modules", path)
+	if _, err = os.Stat(target); err == nil {
+		return target, nil
+	}
+
+	// 2. Search upwards for vv.mod and its .vv-modules
+	if root, rErr := FindProjectRoot(sourceDir); rErr == nil {
+		target = filepath.Join(root, ".vv-modules", path)
+		if _, err = os.Stat(target); err == nil {
+			return target, nil
+		}
+	}
+
+	// 3. Fallback to $VVPATH/.cache
+	target, err = filepath.Abs(GetPackagePath(path))
+	if err != nil {
+		return "", err
+	}
+	_, err = os.Stat(target)
+	return target, err
 }

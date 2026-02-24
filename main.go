@@ -9,16 +9,15 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: vv [run|get|clean] path")
+		fmt.Println("usage: vv [run|get|clean|vendor] path")
 		return
 	}
 	switch os.Args[1] {
 	case "get":
 		cmd.Get()
-	case "clean":
-		cmd.Clean()
+	case "vendor":
+		cmd.Vendor()
 	default:
 		cmd.Run()
 	}
 }
-

@@ -140,7 +140,7 @@ func TestGet(t *testing.T) {
 		t.Fatalf("OpenVersionFile() error = %v", err)
 	}
 	relPath := filepath.Join("github.com", "user", "repo", "test.vv")
-	if _, ok := vf.Files[relPath]; !ok {
+	if _, ok := vf.Files[filepath.ToSlash(relPath)]; !ok {
 		t.Errorf("file not found in files.json: %s", relPath)
 	}
 }
