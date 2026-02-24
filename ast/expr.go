@@ -217,3 +217,12 @@ type NotExpr struct {
 func (expr *NotExpr) Inspect() string {
 	return fmt.Sprintf("NotExpr{%s}", expr.Value.Inspect())
 }
+
+type StrExpr struct {
+	Position
+	Value Expr
+}
+
+func (expr *StrExpr) Inspect() string {
+	return fmt.Sprintf("StrExpr{%s}", expr.Value.Inspect())
+}
