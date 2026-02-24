@@ -6,14 +6,40 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/fj68/vvlang/ast"
+	"github.com/fj68/vvlang/parser"
 )
 
 // Vendor copies a module from the global cache to the local .vv-modules directory.
-// If path is empty, it should ideally vendor all dependencies, but for now we require a path.
+// If path is empty, it vendors all project dependencies recursively.
 func Vendor(path string) error {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	projectRoot, err := FindProjectRoot(cwd)
+	if err != nil {
+		projectRoot = cwd
+	}
+
 	if path == "" {
-		// TODO: Implement vendoring all dependencies by walking the project and finding imports.
-		return fmt.Errorf("vv vendor: please specify a module path (e.g., vv vendor github.com/user/repo@v1.0.0)")
+		fmt.Println("Collecting dependencies...")
+		deps, err := CollectDependencies(projectRoot)
+		if err != nil {
+			return err
+		}
+		if len(deps) == 0 {
+			fmt.Println("No remote dependencies found.")
+			return nil
+		}
+		for _, dep := range deps {
+			if err := Vendor(dep); err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 
 	rm, err := ParseRemotePath(path)
@@ -33,15 +59,7 @@ func Vendor(path string) error {
 	}
 
 	// 2. Identify the destination (project root/.vv-modules)
-	cwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	projectRoot, err := FindProjectRoot(cwd)
-	if err != nil {
-		// If vv.mod doesn't exist, use CWD as project root and we'll create vv.mod there.
-		projectRoot = cwd
-	}
+	// projectRoot already identified at start of Vendor()
 
 	// Destination path: strip version suffix so imports work
 	destBase := filepath.Join(rm.Domain, rm.User, rm.Repo)
@@ -134,4 +152,98 @@ func updateVVMod(projectRoot string) error {
 		return err
 	}
 	return os.WriteFile(vvmodPath, data, 0644)
+}
+
+func CollectDependencies(projectRoot string) ([]string, error) {
+	foundModules := make(map[string]bool)
+	visitedFiles := make(map[string]bool)
+
+	var scan func(path string) error
+	scan = func(path string) error {
+		path, err := filepath.Abs(path)
+		if err != nil {
+			return err
+		}
+		if visitedFiles[path] {
+			return nil
+		}
+		visitedFiles[path] = true
+
+		if strings.Contains(path, ".vv-modules") {
+			return nil
+		}
+
+		text, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		module, err := parser.Parse([]rune(string(text)))
+		if err != nil {
+			return fmt.Errorf("error parsing %s: %v", path, err)
+		}
+
+		for _, stmt := range module.Statements {
+			if imp, ok := stmt.(*ast.ImportStmt); ok {
+				if strings.HasPrefix(imp.Path, "./") || strings.HasPrefix(imp.Path, "../") {
+					// Relative import: scan the imported file
+					target, err := ResolveModulePath(path, imp.Path)
+					if err == nil {
+						if err := scan(target); err != nil {
+							return err
+						}
+					}
+				} else if _, err := ParseRemotePath(imp.Path); err == nil {
+					// Remote module
+					rm, _ := ParseRemotePath(imp.Path)
+					modName := fmt.Sprintf("%s/%s/%s", rm.Domain, rm.User, rm.Repo)
+					if rm.Version != "" {
+						modName += "@" + rm.Version
+					}
+
+					if !foundModules[modName] {
+						foundModules[modName] = true
+						// Also scan the files in the cached module for cascading dependencies
+						cachedPath, err := ResolveModulePath(path, imp.Path)
+						if err == nil {
+							// For remote modules, we walk the cached directory
+							err = filepath.Walk(cachedPath, func(subPath string, info os.FileInfo, err error) error {
+								if err != nil {
+									return err
+								}
+								if !info.IsDir() && strings.HasSuffix(subPath, ".vv") {
+									return scan(subPath)
+								}
+								return nil
+							})
+							if err != nil {
+								return err
+							}
+						}
+					}
+				}
+			}
+		}
+		return nil
+	}
+
+	// Initial project walk to find all entry points
+	err := filepath.Walk(projectRoot, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && strings.HasSuffix(path, ".vv") && !strings.Contains(path, ".vv-modules") {
+			return scan(path)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var result []string
+	for mod := range foundModules {
+		result = append(result, mod)
+	}
+	return result, nil
 }

@@ -3,6 +3,7 @@ package mod
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 )
 
@@ -109,5 +110,42 @@ func TestVendor(t *testing.T) {
 	expected := filepath.Join(destDir, "lib.vv")
 	if resolved != expected {
 		t.Errorf("ResolveModulePath() = %v, want %v", resolved, expected)
+	}
+}
+
+func TestCollectDependenciesCascading(t *testing.T) {
+	vvpath := t.TempDir()
+	t.Setenv("VVPATH", vvpath)
+
+	// Setup cached modules
+	// ModA -> ModB
+	modAPath := filepath.Join(vvpath, ".cache", "github.com", "user", "modA")
+	modBPath := filepath.Join(vvpath, ".cache", "github.com", "user", "modB")
+	os.MkdirAll(modAPath, 0755)
+	os.MkdirAll(modBPath, 0755)
+
+	os.WriteFile(filepath.Join(modAPath, "a.vv"), []byte(`import b from "github.com/user/modB/b.vv"`), 0644)
+	os.WriteFile(filepath.Join(modBPath, "b.vv"), []byte(`print("hello from B")`), 0644)
+
+	// Setup project
+	projectRoot := t.TempDir()
+	os.WriteFile(filepath.Join(projectRoot, "main.vv"), []byte(`import a from "github.com/user/modA/a.vv"`), 0644)
+
+	deps, err := CollectDependencies(projectRoot)
+	if err != nil {
+		t.Fatalf("CollectDependencies() error = %v", err)
+	}
+
+	sort.Strings(deps)
+	expected := []string{"github.com/user/modA", "github.com/user/modB"}
+	sort.Strings(expected)
+
+	if len(deps) != len(expected) {
+		t.Errorf("got %d deps, want %d", len(deps), len(expected))
+	}
+	for i := range deps {
+		if deps[i] != expected[i] {
+			t.Errorf("deps[%d] = %v, want %v", i, deps[i], expected[i])
+		}
 	}
 }
