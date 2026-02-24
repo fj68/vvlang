@@ -59,11 +59,10 @@ func Vendor(path string) error {
 	}
 
 	// 2. Identify the destination (project root/.vv-modules)
-	// projectRoot already identified at start of Vendor()
 
 	// Destination path: strip version suffix so imports work
 	destBase := filepath.Join(rm.Domain, rm.User, rm.Repo)
-	destDir := filepath.Join(projectRoot, ".vv-modules", destBase)
+	destDir := filepath.Join(projectRoot, VendorDir, destBase)
 
 	// 3. Copy files from cache to .vv-modules
 	fmt.Printf("Vendoring %s to %s...\n", path, destDir)
@@ -112,8 +111,8 @@ func copyFile(src, dst string) error {
 }
 
 func updateVVMod(projectRoot string) error {
-	vvmodPath := filepath.Join(projectRoot, "vv.mod")
-	vendorDir := filepath.Join(projectRoot, ".vv-modules")
+	vvmodPath := filepath.Join(projectRoot, ProjectModFile)
+	vendorDir := filepath.Join(projectRoot, VendorDir)
 
 	vf := &VersionFile{
 		Files: make(map[string]string),
@@ -137,9 +136,9 @@ func updateVVMod(projectRoot string) error {
 			if err != nil {
 				return err
 			}
-			// Prefix with .vv-modules for the key in vv.mod?
-			// Or just store it as is. Let's match files.json style.
-			vf.Files[filepath.ToSlash(filepath.Join(".vv-modules", rel))] = sum
+			// Prefix with VendorDir for the key in vv.mod?
+			// Or just store it as is. Let's match GlobalSumFile style.
+			vf.Files[filepath.ToSlash(filepath.Join(VendorDir, rel))] = sum
 			return nil
 		})
 		if err != nil {
@@ -169,7 +168,7 @@ func CollectDependencies(projectRoot string) ([]string, error) {
 		}
 		visitedFiles[path] = true
 
-		if strings.Contains(path, ".vv-modules") {
+		if strings.Contains(path, VendorDir) {
 			return nil
 		}
 
@@ -232,7 +231,7 @@ func CollectDependencies(projectRoot string) ([]string, error) {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && strings.HasSuffix(path, ".vv") && !strings.Contains(path, ".vv-modules") {
+		if !info.IsDir() && strings.HasSuffix(path, ".vv") && !strings.Contains(path, VendorDir) {
 			return scan(path)
 		}
 		return nil

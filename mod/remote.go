@@ -97,7 +97,7 @@ func Get(path string) error {
 	if rm.Version != "" {
 		repoDirName += "@" + rm.Version
 	}
-	
+
 	// The base path for the repository in the cache
 	cacheBase := filepath.Join(rm.Domain, rm.User, repoDirName)
 	fullCacheDir := GetPackagePath(cacheBase)
@@ -113,7 +113,7 @@ func Get(path string) error {
 
 	// Clone URL
 	repoURL := fmt.Sprintf("https://%s/%s/%s.git", rm.Domain, rm.User, rm.Repo)
-	
+
 	fmt.Printf("Downloading %s...\n", repoURL)
 
 	// Git clone
@@ -128,7 +128,7 @@ func Get(path string) error {
 		}
 	}
 
-	// Update files.json with checksums for the downloaded files
+	// Update GlobalSumFile with checksums for the downloaded files
 	vf, err := OpenVersionFile()
 	if err != nil {
 		return err
@@ -175,7 +175,7 @@ func Clean(path string) error {
 	if rm.Version != "" {
 		repoDirName += "@" + rm.Version
 	}
-	
+
 	cacheBase := filepath.Join(rm.Domain, rm.User, repoDirName)
 	fullCacheDir := GetPackagePath(cacheBase)
 
@@ -198,7 +198,7 @@ func Clean(path string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	prefix := filepath.ToSlash(rel)
 	for k := range vf.Files {
 		if strings.HasPrefix(k, prefix) {

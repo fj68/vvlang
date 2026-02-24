@@ -14,7 +14,7 @@ func TestFindProjectRoot(t *testing.T) {
 	if err := os.MkdirAll(projectRoot, 0755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(projectRoot, "vv.mod"), []byte("{}"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(projectRoot, ProjectModFile), []byte("{}"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -68,7 +68,7 @@ func TestVendor(t *testing.T) {
 	t.Setenv("VVPATH", vvpath)
 
 	// 1. Setup cache
-	repoPath := filepath.Join(vvpath, ".cache", "github.com", "user", "repo@v1.0.0")
+	repoPath := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "repo@v1.0.0")
 	if err := os.MkdirAll(repoPath, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -93,13 +93,13 @@ func TestVendor(t *testing.T) {
 	}
 
 	// 4. Verify results
-	destDir := filepath.Join(projectRoot, ".vv-modules", "github.com", "user", "repo")
+	destDir := filepath.Join(projectRoot, VendorDir, "github.com", "user", "repo")
 	if _, err := os.Stat(filepath.Join(destDir, "lib.vv")); err != nil {
 		t.Errorf("vendored file not found: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(projectRoot, "vv.mod")); err != nil {
-		t.Errorf("vv.mod not found: %v", err)
+	if _, err := os.Stat(filepath.Join(projectRoot, ProjectModFile)); err != nil {
+		t.Errorf("%s not found: %v", ProjectModFile, err)
 	}
 
 	// 5. Test resolution prioritizing vendored
@@ -119,8 +119,8 @@ func TestCollectDependenciesCascading(t *testing.T) {
 
 	// Setup cached modules
 	// ModA -> ModB
-	modAPath := filepath.Join(vvpath, ".cache", "github.com", "user", "modA")
-	modBPath := filepath.Join(vvpath, ".cache", "github.com", "user", "modB")
+	modAPath := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "modA")
+	modBPath := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "modB")
 	os.MkdirAll(modAPath, 0755)
 	os.MkdirAll(modBPath, 0755)
 

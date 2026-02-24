@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+const (
+	VendorDir      = ".vv-modules"
+	ProjectModFile = "vv.mod"
+	GlobalSumFile  = "vv.sum"
+	RemoteCacheDir = ".cache"
+)
+
 // EnsureGlobalModuleCache ensures that the $VVPATH/.cache directory exists.
 func EnsureGlobalModuleCache() error {
 	cacheDir := GetCachePath()
@@ -24,7 +31,7 @@ func GetVVPath() string {
 }
 
 func GetCachePath() string {
-	return filepath.Join(GetVVPath(), ".cache")
+	return filepath.Join(GetVVPath(), RemoteCacheDir)
 }
 
 func GetPackagePath(name string) string {
@@ -32,10 +39,10 @@ func GetPackagePath(name string) string {
 }
 
 func GetVersionPath() string {
-	return filepath.Join(GetVVPath(), "files.json")
+	return filepath.Join(GetVVPath(), GlobalSumFile)
 }
 
-// FindProjectRoot looks for a vv.mod file in the current directory or its parents.
+// FindProjectRoot looks for a ProjectModFile in the current directory or its parents.
 func FindProjectRoot(startPath string) (string, error) {
 	curr, err := filepath.Abs(startPath)
 	if err != nil {
@@ -46,7 +53,7 @@ func FindProjectRoot(startPath string) (string, error) {
 	}
 
 	for {
-		if _, err := os.Stat(filepath.Join(curr, "vv.mod")); err == nil {
+		if _, err := os.Stat(filepath.Join(curr, ProjectModFile)); err == nil {
 			return curr, nil
 		}
 		parent := filepath.Dir(curr)
@@ -69,16 +76,16 @@ func ResolveModulePath(sourcePath, path string) (target string, err error) {
 		return target, err
 	}
 
-	// 1. Check .vv-modules in the current directory/source directory
+	// 1. Check VendorDir in the current directory/source directory
 	sourceDir := filepath.Dir(sourcePath)
-	target = filepath.Join(sourceDir, ".vv-modules", path)
+	target = filepath.Join(sourceDir, VendorDir, path)
 	if _, err = os.Stat(target); err == nil {
 		return target, nil
 	}
 
-	// 2. Search upwards for vv.mod and its .vv-modules
+	// 2. Search upwards for ProjectModFile and its VendorDir
 	if root, rErr := FindProjectRoot(sourceDir); rErr == nil {
-		target = filepath.Join(root, ".vv-modules", path)
+		target = filepath.Join(root, VendorDir, path)
 		if _, err = os.Stat(target); err == nil {
 			return target, nil
 		}
