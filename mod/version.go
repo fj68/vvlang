@@ -11,7 +11,7 @@ import (
 )
 
 type VersionFile struct {
-	Packages map[string]string `json:"packages"`
+	Files map[string]string `json:"files"`
 }
 
 func OpenVersionFile() (*VersionFile, error) {
@@ -21,7 +21,7 @@ func OpenVersionFile() (*VersionFile, error) {
 	path := GetVersionPath()
 	if _, err := os.Stat(path); err != nil {
 		return &VersionFile{
-			Packages: make(map[string]string),
+			Files: make(map[string]string),
 		}, nil
 	}
 	data, err := os.ReadFile(path)
@@ -29,7 +29,7 @@ func OpenVersionFile() (*VersionFile, error) {
 		return nil, err
 	}
 	versionFile := &VersionFile{
-		Packages: make(map[string]string),
+		Files: make(map[string]string),
 	}
 	if err := json.Unmarshal(data, versionFile); err != nil {
 		return nil, err

@@ -32,7 +32,7 @@ func GetPackagePath(name string) string {
 }
 
 func GetVersionPath() string {
-	return filepath.Join(GetVVPath(), ".version")
+	return filepath.Join(GetVVPath(), "files.json")
 }
 
 func ResolveModulePath(sourcePath, path string) (target string, err error) {
@@ -45,8 +45,10 @@ func ResolveModulePath(sourcePath, path string) (target string, err error) {
 	if err != nil {
 		return
 	}
+	// We return the target path even if Stat fails, so the caller can decide
+	// whether to download it (if it's a remote module) or report an error.
 	if _, err = os.Stat(target); err != nil {
-		return
+		return target, err
 	}
 	return
 }

@@ -882,7 +882,15 @@ func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
 func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 	targetPath, err := mod.ResolveModulePath(s.SourcePath, stmt.Path)
 	if err != nil {
-		return err
+		if os.IsNotExist(err) {
+			// Try to download if it looks like a remote module
+			if getErr := mod.Get(stmt.Path); getErr != nil {
+				// If download fails, return original error (or getErr)
+				return fmt.Errorf("module not found and download failed: %v (download error: %v)", err, getErr)
+			}
+		} else {
+			return err
+		}
 	}
 
 	// Check if already in cache (successful load or currently loading)

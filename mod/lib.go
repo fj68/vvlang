@@ -27,7 +27,7 @@ func WriteToCache(path string, data []byte, vf *VersionFile) error {
 		return err
 	}
 
-	vf.Packages[path] = checksum
+	vf.Files[path] = checksum
 	return nil
 }
 
