@@ -17,6 +17,8 @@ func main() {
 		cmd.Get()
 	case "vendor":
 		cmd.Vendor()
+	case "clean":
+		cmd.Clean()
 	default:
 		cmd.Run()
 	}
