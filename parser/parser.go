@@ -93,6 +93,7 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TNot:          p.parseNotExpr,
 		lexer.TStr:          p.parseStrExpr,
 		lexer.TInterpolated: p.parseInterpolatedStringLiteralExpr,
+		lexer.TLParen:       p.parseGroupedExpr,
 	}
 }
 
@@ -1380,4 +1381,17 @@ func (p *Parser) parseAssertStmt() (*ast.AssertStmt, error) {
 	return &ast.AssertStmt{
 		Cond: cond,
 	}, nil
+}
+func (p *Parser) parseGroupedExpr() (ast.Expr, error) {
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TRParen); err != nil {
+		return nil, err
+	}
+	return expr, nil
 }
