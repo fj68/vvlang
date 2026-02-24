@@ -79,18 +79,20 @@ func Parse(text []rune) (*ast.Module, error) {
 
 func (p *Parser) registerPrefixParsers() {
 	p.prefixParsers = map[lexer.TokenType]PrefixParser{
-		lexer.TDigit:    p.parseDigitLiteralExpr,
-		lexer.TTrue:     p.parseBoolLiteralExpr,
-		lexer.TFalse:    p.parseBoolLiteralExpr,
-		lexer.TLiteral:  p.parseStringLiteralExpr,
-		lexer.THyphen:   p.parsePrefixExpr,
-		lexer.TIdent:    p.parseVarRefExpr,
-		lexer.TFun:      p.parseFunLiteralExpr,
-		lexer.TLBrace:   p.parseListLiteralExpr,
-		lexer.TLBracket: p.parseRecordLiteralExpr,
-		lexer.TNull:     p.parseNullLiteralExpr,
-		lexer.TType:     p.parseTypeExpr,
-		lexer.TNot:      p.parseNotExpr,
+		lexer.TDigit:        p.parseDigitLiteralExpr,
+		lexer.TTrue:         p.parseBoolLiteralExpr,
+		lexer.TFalse:        p.parseBoolLiteralExpr,
+		lexer.TLiteral:      p.parseStringLiteralExpr,
+		lexer.THyphen:       p.parsePrefixExpr,
+		lexer.TIdent:        p.parseVarRefExpr,
+		lexer.TFun:          p.parseFunLiteralExpr,
+		lexer.TLBrace:       p.parseListLiteralExpr,
+		lexer.TLBracket:     p.parseRecordLiteralExpr,
+		lexer.TNull:         p.parseNullLiteralExpr,
+		lexer.TType:         p.parseTypeExpr,
+		lexer.TNot:          p.parseNotExpr,
+		lexer.TStr:          p.parseStrExpr,
+		lexer.TInterpolated: p.parseInterpolatedStringLiteralExpr,
 	}
 }
 
@@ -126,6 +128,16 @@ func (p *Parser) readToken() error {
 func (p *Parser) expect(ty lexer.TokenType) error {
 	if p.curToken.Type != ty {
 		return fmt.Errorf("expected %s, but got %s", ty, p.curToken.Type)
+	}
+	if err := p.readToken(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *Parser) expectString() error {
+	if p.curToken.Type != lexer.TLiteral && p.curToken.Type != lexer.TInterpolated {
+		return fmt.Errorf("expected string literal, but got %s", p.curToken.Type)
 	}
 	if err := p.readToken(); err != nil {
 		return err
@@ -268,7 +280,7 @@ func (p *Parser) parseImportStmt() (*ast.ImportStmt, error) {
 		return nil, err
 	}
 	path := p.curToken.Text
-	if err := p.expect(lexer.TLiteral); err != nil {
+	if err := p.expectString(); err != nil {
 		return nil, err
 	}
 	return &ast.ImportStmt{Alias: alias, Path: path}, nil
@@ -527,7 +539,7 @@ func (p *Parser) parseExternStmt() (*ast.ExternStmt, error) {
 	}
 
 	extType := p.curToken.Text
-	if err := p.expect(lexer.TLiteral); err != nil {
+	if err := p.expectString(); err != nil {
 		return nil, err
 	}
 
@@ -1096,6 +1108,105 @@ func (p *Parser) parseNotExpr() (ast.Expr, error) {
 	}, nil
 }
 
+func (p *Parser) parseStrExpr() (ast.Expr, error) {
+	pos := p.curToken.Pos
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TLParen); err != nil {
+		return nil, err
+	}
+	expr, err := p.parseExpr(PLowest)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TRParen); err != nil {
+		return nil, err
+	}
+	return &ast.StrExpr{
+		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
+		Value:    expr,
+	}, nil
+}
+
+func (p *Parser) parseInterpolatedStringLiteralExpr() (ast.Expr, error) {
+	pos := p.curToken.Pos
+	text := p.curToken.Text
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	texts := []string{}
+	values := []ast.Expr{}
+
+	runes := []rune(text)
+	last := 0
+	var currentText strings.Builder
+
+	for i := 0; i < len(runes); i++ {
+		if runes[i] == '{' {
+			if i+1 < len(runes) && runes[i+1] == '{' {
+				currentText.WriteString(string(runes[last:i]))
+				currentText.WriteRune('{')
+				i++
+				last = i + 1
+				continue
+			}
+			// Start of interpolation
+			currentText.WriteString(string(runes[last:i]))
+			texts = append(texts, currentText.String())
+			currentText.Reset()
+
+			i++
+			start := i
+			braceCount := 1
+			for i < len(runes) && braceCount > 0 {
+				switch runes[i] {
+				case '{':
+					braceCount++
+				case '}':
+					braceCount--
+				}
+				if braceCount > 0 {
+					i++
+				}
+			}
+			if braceCount > 0 {
+				return nil, fmt.Errorf("missing closing brace in interpolated string")
+			}
+			exprText := string(runes[start:i])
+
+			subParser := New([]rune(exprText))
+			subParser.readToken()
+			subParser.readToken()
+			subExpr, err := subParser.parseExpr(PLowest)
+			if err != nil {
+				return nil, err
+			}
+			values = append(values, subExpr)
+			last = i + 1
+		} else if runes[i] == '}' {
+			if i+1 < len(runes) && runes[i+1] == '}' {
+				currentText.WriteString(string(runes[last:i]))
+				currentText.WriteRune('}')
+				i++
+				last = i + 1
+				continue
+			}
+			// Lone } is just a character if not closing an interpolation
+			// (but our loop only sees this if it's NOT inside one)
+		}
+	}
+	currentText.WriteString(string(runes[last:]))
+	texts = append(texts, currentText.String())
+
+	return &ast.InterpolatedStringLiteralExpr{
+		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
+		Texts:    texts,
+		Values:   values,
+	}, nil
+}
+
 func (p *Parser) parseDigitLiteralExpr() (ast.Expr, error) {
 	value, err := strconv.ParseFloat(p.curToken.Text, 64)
 	if err != nil {
@@ -1242,7 +1353,7 @@ func (p *Parser) parseTestStmt() (*ast.TestStmt, error) {
 		return nil, err
 	}
 	name := p.curToken.Text
-	if err := p.expect(lexer.TLiteral); err != nil {
+	if err := p.expectString(); err != nil {
 		return nil, err
 	}
 	body, err := p.parseBody()

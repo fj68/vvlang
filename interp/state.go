@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"strings"
 
 	"github.com/fj68/vvlang/ast"
 	"github.com/fj68/vvlang/mod"
@@ -332,6 +333,10 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalTypeExpr(v)
 	case *ast.NotExpr:
 		return s.evalNotExpr(v)
+	case *ast.StrExpr:
+		return s.evalStrExpr(v)
+	case *ast.InterpolatedStringLiteralExpr:
+		return s.evalInterpolatedStringLiteralExpr(v)
 	default:
 		return nil, fmt.Errorf("unknown expr: %s", v.Inspect())
 	}
@@ -366,6 +371,28 @@ func (s *State) evalNotExpr(expr *ast.NotExpr) (Value, error) {
 		return nil, fmt.Errorf("argument for not() is expected bool, but got %s", v.Type())
 	}
 	return VBool(!bool(b)), nil
+}
+
+func (s *State) evalStrExpr(expr *ast.StrExpr) (Value, error) {
+	v, err := s.evalExpr(expr.Value)
+	if err != nil {
+		return nil, err
+	}
+	return VString(v.Str()), nil
+}
+
+func (s *State) evalInterpolatedStringLiteralExpr(expr *ast.InterpolatedStringLiteralExpr) (Value, error) {
+	var b strings.Builder
+	b.WriteString(expr.Texts[0])
+	for i, valueExpr := range expr.Values {
+		v, err := s.evalExpr(valueExpr)
+		if err != nil {
+			return nil, err
+		}
+		b.WriteString(v.Str())
+		b.WriteString(expr.Texts[i+1])
+	}
+	return VString(b.String()), nil
 }
 
 func (s *State) evalFunLiteralExpr(expr *ast.FunLiteralExpr) (Value, error) {
@@ -931,7 +958,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 	// Pass the same ModuleCache to detect cycles across the whole project
 	modState := s.NewState(targetPath)
 	modState.ModuleCache = s.ModuleCache
-	modState.IsTestMode = s.IsTestMode // propagate test mode to imported modules
+	modState.IsTestMode = s.IsTestMode         // propagate test mode to imported modules
 	modState.BuiltinModules = s.BuiltinModules // propagate builtin modules to imported modules
 
 	// To detect cycles: we can add a placeholder in the cache or check a "loading" set

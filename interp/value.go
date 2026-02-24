@@ -46,6 +46,7 @@ func (ty ValueType) String() string {
 type Value interface {
 	Type() ValueType
 	String() string
+	Str() string
 	Equal(Value) (bool, error)
 	LessThan(Value) (bool, error)
 }
@@ -58,6 +59,10 @@ func (v VBool) Type() ValueType {
 
 func (v VBool) String() string {
 	return fmt.Sprintf("%t", bool(v))
+}
+
+func (v VBool) Str() string {
+	return v.String()
 }
 
 func (v VBool) Equal(other Value) (bool, error) {
@@ -80,6 +85,10 @@ func (v VNumber) Type() ValueType {
 
 func (v VNumber) String() string {
 	return fmt.Sprintf("%g", float64(v))
+}
+
+func (v VNumber) Str() string {
+	return v.String()
 }
 
 func (v VNumber) Equal(other Value) (bool, error) {
@@ -106,6 +115,10 @@ func (v VString) Type() ValueType {
 
 func (v VString) String() string {
 	return fmt.Sprintf("\"%s\"", string(v))
+}
+
+func (v VString) Str() string {
+	return string(v)
 }
 
 func (v VString) Equal(other Value) (bool, error) {
@@ -140,7 +153,11 @@ func (v *VUserFun) Type() ValueType {
 }
 
 func (v *VUserFun) String() string {
-	return "fun"
+	return "<function>"
+}
+
+func (v *VUserFun) Str() string {
+	return v.String()
 }
 
 func (v *VUserFun) Equal(other Value) (bool, error) {
@@ -158,7 +175,11 @@ func (v VBuiltinFun) Type() ValueType {
 }
 
 func (v VBuiltinFun) String() string {
-	return "fun"
+	return "<function>"
+}
+
+func (v VBuiltinFun) Str() string {
+	return v.String()
 }
 
 func (v VBuiltinFun) Equal(other Value) (bool, error) {
@@ -180,9 +201,13 @@ func (v *VList) Type() ValueType {
 func (v *VList) String() string {
 	var elements []string
 	for _, elem := range v.Elements {
-		elements = append(elements, elem.String())
+		elements = append(elements, elem.Str())
 	}
 	return fmt.Sprintf("[%s]", strings.Join(elements, ", "))
+}
+
+func (v *VList) Str() string {
+	return v.String()
 }
 
 func (v *VList) Equal(other Value) (bool, error) {
@@ -225,9 +250,13 @@ func (v *VRecord) String() string {
 	sort.Strings(keys)
 	var parts []string
 	for _, k := range keys {
-		parts = append(parts, fmt.Sprintf("%s = %s", k, v.Fields[k].String()))
+		parts = append(parts, fmt.Sprintf("%s = %s", k, v.Fields[k].Str()))
 	}
-	return fmt.Sprintf("{%s}", strings.Join(parts, ", "))
+	return fmt.Sprintf("{ %s }", strings.Join(parts, ", "))
+}
+
+func (v *VRecord) Str() string {
+	return v.String()
 }
 
 func (v *VRecord) Equal(other Value) (bool, error) {
@@ -282,6 +311,10 @@ func (v *VModule) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare modules")
 }
 
+func (v *VModule) Str() string {
+	return v.VRecord.Str()
+}
+
 type VNull struct{}
 
 func (v VNull) Type() ValueType {
@@ -290,6 +323,10 @@ func (v VNull) Type() ValueType {
 
 func (v VNull) String() string {
 	return "null"
+}
+
+func (v VNull) Str() string {
+	return v.String()
 }
 
 func (v VNull) Equal(other Value) (bool, error) {

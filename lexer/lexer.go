@@ -180,7 +180,7 @@ func (lex *Lexer) interpolated() (*Token, error) {
 
 	lex.s.Skip(1) // skip end marker
 
-	return lex.newToken(TLiteral), nil
+	return lex.newToken(TInterpolated), nil
 }
 
 func (lex *Lexer) scanEscapeSequence() {
