@@ -175,22 +175,14 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name:  "return top level",
-			input: "return 1",
-			expected: []ast.Stmt{
-				&ast.ReturnStmt{
-					Value: &ast.NumberLiteralExpr{Value: 1},
-				},
-			},
+			name:        "return top level",
+			input:       "return 1",
+			expectedErr: "return statement is not allowed here (must be inside a function or block)",
 		},
 		{
-			name:  "return no value",
-			input: "return",
-			expected: []ast.Stmt{
-				&ast.ReturnStmt{
-					Value: nil,
-				},
-			},
+			name:        "return no value",
+			input:       "return",
+			expectedErr: "return statement is not allowed here (must be inside a function or block)",
 		},
 		{
 			name:  "complex nested",

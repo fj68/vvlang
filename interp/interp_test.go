@@ -22,28 +22,28 @@ func TestInterp(t *testing.T) {
 		// State basic eval
 		// --------------------------------------------------------------------
 		{
-			name:     "state basic eval",
-			input:    "fun add(a, b) return a + b end x = 1 return add(x, 0.5)",
-			expected: VNumber(1.5),
+			name:        "state basic eval",
+			input:       "fun add(a, b) return a + b end x = 1 let result = add(x, 0.5)",
+			expectedEnv: map[string]Value{"result": VNumber(1.5)},
 		},
 
 		// --------------------------------------------------------------------
 		// While loops & breaks
 		// --------------------------------------------------------------------
 		{
-			name:     "while loop increments",
-			input:    "i = 0 while i < 3 i = i + 1 end return i",
-			expected: VNumber(3),
+			name:        "while loop increments",
+			input:       "i = 0 while i < 3 i = i + 1 end let result = i",
+			expectedEnv: map[string]Value{"result": VNumber(3)},
 		},
 		{
-			name:     "while break",
-			input:    "i = 0 while true if i == 2 break end i = i + 1 end return i",
-			expected: VNumber(2),
+			name:        "while break",
+			input:       "i = 0 while true if i == 2 break end i = i + 1 end let result = i",
+			expectedEnv: map[string]Value{"result": VNumber(2)},
 		},
 		{
-			name:     "while continue",
-			input:    "i = 0 j = 0 while i < 5 i = i + 1 if i == 2 continue end j = j + 1 end return j",
-			expected: VNumber(4),
+			name:        "while continue",
+			input:       "i = 0 j = 0 while i < 5 i = i + 1 if i == 2 continue end j = j + 1 end let result = j",
+			expectedEnv: map[string]Value{"result": VNumber(4)},
 		},
 
 		// --------------------------------------------------------------------
@@ -218,7 +218,7 @@ end
 		},
 		{
 			name:  "extern fun with args",
-			input: "extern 'native' fun add(a, b) return add(1, 2)",
+			input: "extern 'native' fun add(a, b) let result = add(1, 2)",
 			globals: map[string]Value{
 				"add": VBuiltinFun(func(s *State, args []Value) (Value, error) {
 					if len(args) != 2 {
@@ -227,7 +227,7 @@ end
 					return VNumber(float64(args[0].(VNumber) + args[1].(VNumber))), nil
 				}),
 			},
-			expected: VNumber(3),
+			expectedEnv: map[string]Value{"result": VNumber(3)},
 		},
 
 		// --------------------------------------------------------------------
@@ -235,33 +235,37 @@ end
 		// --------------------------------------------------------------------
 		{
 			name:  "record literal eval",
-			input: "return { name = 'value', key = 8 }",
-			expected: &VRecord{
-				Fields: map[string]Value{
-					"name": VString("value"),
-					"key":  VNumber(8),
+			input: "let result = { name = 'value', key = 8 }",
+			expectedEnv: map[string]Value{
+				"result": &VRecord{
+					Fields: map[string]Value{
+						"name": VString("value"),
+						"key":  VNumber(8),
+					},
 				},
 			},
 		},
 		{
 			name:  "record literal eval trailing comma",
-			input: "return { name = 'value', key = 8, }",
-			expected: &VRecord{
-				Fields: map[string]Value{
-					"name": VString("value"),
-					"key":  VNumber(8),
+			input: "let result = { name = 'value', key = 8, }",
+			expectedEnv: map[string]Value{
+				"result": &VRecord{
+					Fields: map[string]Value{
+						"name": VString("value"),
+						"key":  VNumber(8),
+					},
 				},
 			},
 		},
 		{
-			name:     "record field access",
-			input:    "r = { name = 'value', key = 8 }\nreturn r.name",
-			expected: VString("value"),
+			name:        "record field access",
+			input:       "r = { name = 'value', key = 8 }\nlet result = r.name",
+			expectedEnv: map[string]Value{"result": VString("value")},
 		},
 		{
-			name:     "record field access number",
-			input:    "r = { name = 'value', key = 8 }\nreturn r.key",
-			expected: VNumber(8),
+			name:        "record field access number",
+			input:       "r = { name = 'value', key = 8 }\nlet result = r.key",
+			expectedEnv: map[string]Value{"result": VNumber(8)},
 		},
 		{
 			name: "nested records with chained field access",
@@ -271,9 +275,9 @@ fun get_alice(r)
   return r.alice
 end
 alice_name = get_alice(admins).name
-return alice_name
+let result = alice_name
 `,
-			expected: VString("Alice"),
+			expectedEnv: map[string]Value{"result": VString("Alice")},
 		},
 
 		// --------------------------------------------------------------------
@@ -282,35 +286,35 @@ return alice_name
 		{
 			name: "simple destructuring",
 			input: `let { a, b } = { a = 1, b = 2 }
-return { x = a, y = b }`,
-			expected: &VRecord{
+let result = { x = a, y = b }`,
+			expectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
 					"x": VNumber(1),
 					"y": VNumber(2),
 				},
-			},
+			}},
 		},
 		{
 			name: "destructuring with alias",
 			input: `let { a as x, b as y } = { a = 1, b = 2 }
-return { r1 = x, r2 = y }`,
-			expected: &VRecord{
+let result = { r1 = x, r2 = y }`,
+			expectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
 					"r1": VNumber(1),
 					"r2": VNumber(2),
 				},
-			},
+			}},
 		},
 		{
 			name: "mixed punning and alias",
 			input: `let { a, b as y } = { a = 1, b = 2 }
-return { r1 = a, r2 = y }`,
-			expected: &VRecord{
+let result = { r1 = a, r2 = y }`,
+			expectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
 					"r1": VNumber(1),
 					"r2": VNumber(2),
 				},
-			},
+			}},
 		},
 		{
 			name: "destructuring from function return",
@@ -318,13 +322,13 @@ return { r1 = a, r2 = y }`,
   return { value = 100, error = null }
 end
 let { value, error } = some_func()
-return { v = value, e = error }`,
-			expected: &VRecord{
+let result = { v = value, e = error }`,
+			expectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
 					"v": VNumber(100),
 					"e": VNull{},
 				},
-			},
+			}},
 		},
 		{
 			name:        "missing field",
@@ -341,59 +345,59 @@ return { v = value, e = error }`,
 		// Str & interpolation
 		// --------------------------------------------------------------------
 		{
-			name:     "str(number)",
-			input:    `return str(123)`,
-			expected: VString("123"),
+			name:        "str(number)",
+			input:       `let result = str(123)`,
+			expectedEnv: map[string]Value{"result": VString("123")},
 		},
 		{
-			name:     "str(bool)",
-			input:    `return str(true)`,
-			expected: VString("true"),
+			name:        "str(bool)",
+			input:       `let result = str(true)`,
+			expectedEnv: map[string]Value{"result": VString("true")},
 		},
 		{
-			name:     "str(list)",
-			input:    `return str([1, 2])`,
-			expected: VString("[1, 2]"),
+			name:        "str(list)",
+			input:       `let result = str([1, 2])`,
+			expectedEnv: map[string]Value{"result": VString("[1, 2]")},
 		},
 		{
-			name:     "str(record)",
-			input:    `return str({a=1})`,
-			expected: VString("{ a = 1 }"),
+			name:        "str(record)",
+			input:       `let result = str({a=1})`,
+			expectedEnv: map[string]Value{"result": VString("{ a = 1 }")},
 		},
 		{
-			name:     "str(null)",
-			input:    `return str(null)`,
-			expected: VString("null"),
+			name:        "str(null)",
+			input:       `let result = str(null)`,
+			expectedEnv: map[string]Value{"result": VString("null")},
 		},
 		{
-			name:     "str(var)",
-			input:    "let x = 8\n return str(x)",
-			expected: VString("8"),
+			name:        "str(var)",
+			input:       "let x = 8\n let result = str(x)",
+			expectedEnv: map[string]Value{"result": VString("8")},
 		},
 		{
-			name:     "interpolation basic",
-			input:    "let name = \"world\"\nreturn \"hello, {name}!\"",
-			expected: VString("hello, world!"),
+			name:        "interpolation basic",
+			input:       "let name = \"world\"\nlet result = \"hello, {name}!\"",
+			expectedEnv: map[string]Value{"result": VString("hello, world!")},
 		},
 		{
-			name:     "interpolation math",
-			input:    "let a = 1\nlet b = 2\nreturn \"{a} + {b} = {a + b}\"",
-			expected: VString("1 + 2 = 3"),
+			name:        "interpolation math",
+			input:       "let a = 1\nlet b = 2\nlet result = \"{a} + {b} = {a + b}\"",
+			expectedEnv: map[string]Value{"result": VString("1 + 2 = 3")},
 		},
 		{
-			name:     "interpolation list",
-			input:    "let l = [1, 2]\nreturn \"list: {l}\"",
-			expected: VString("list: [1, 2]"),
+			name:        "interpolation list",
+			input:       "let l = [1, 2]\nlet result = \"list: {l}\"",
+			expectedEnv: map[string]Value{"result": VString("list: [1, 2]")},
 		},
 		{
-			name:     "interpolation record",
-			input:    "let r = { a = 1, b = \"s\" }\nreturn \"record: {r}\"",
-			expected: VString("record: { a = 1, b = s }"),
+			name:        "interpolation record",
+			input:       "let r = { a = 1, b = \"s\" }\nlet result = \"record: {r}\"",
+			expectedEnv: map[string]Value{"result": VString("record: { a = 1, b = s }")},
 		},
 		{
-			name:     "interpolation nested braces syntax",
-			input:    `return "nested: {{1}} {2}"`,
-			expected: VString("nested: {1} 2"),
+			name:        "interpolation nested braces syntax",
+			input:       `let result = "nested: {{1}} {2}"`,
+			expectedEnv: map[string]Value{"result": VString("nested: {1} 2")},
 		},
 
 		// --------------------------------------------------------------------
@@ -410,9 +414,9 @@ end`,
 			undefinedEnv: []string{"y"},
 		},
 		{
-			name:     "top level return value",
-			input:    "return 1",
-			expected: VNumber(1),
+			name:        "top level return value",
+			input:       "return 1",
+			expectedErr: "return statement is not allowed here (must be inside a function or block)",
 		},
 
 		// --------------------------------------------------------------------
@@ -420,46 +424,46 @@ end`,
 		// --------------------------------------------------------------------
 		{
 			name:  "list literal eval",
-			input: "return [0, 1, 2]",
-			expected: &VList{
+			input: "let result = [0, 1, 2]",
+			expectedEnv: map[string]Value{"result": &VList{
 				Elements: []Value{VNumber(0), VNumber(1), VNumber(2)},
-			},
+			}},
 		},
 		{
 			name:  "list literal eval trailing comma",
-			input: "return [0, 1, 2, ]",
-			expected: &VList{
+			input: "let result = [0, 1, 2, ]",
+			expectedEnv: map[string]Value{"result": &VList{
 				Elements: []Value{VNumber(0), VNumber(1), VNumber(2)},
-			},
+			}},
 		},
 		{
 			name:  "list literal empty",
-			input: "return []",
-			expected: &VList{
+			input: "let result = []",
+			expectedEnv: map[string]Value{"result": &VList{
 				Elements: []Value{},
-			},
+			}},
 		},
 		{
 			name:  "list literal mixed",
-			input: "return [42, 'hello', true]",
-			expected: &VList{
+			input: "let result = [42, 'hello', true]",
+			expectedEnv: map[string]Value{"result": &VList{
 				Elements: []Value{VNumber(42), VString("hello"), VBool(true)},
-			},
+			}},
 		},
 
 		// --------------------------------------------------------------------
 		// Test blocks
 		// --------------------------------------------------------------------
 		{
-			name:     "test block is not run in normal eval",
-			input:    "let x = 1\ntest 'not run'\n  x = 2\nend\nreturn x",
-			expected: VNumber(1),
+			name:        "test block is not run in normal eval",
+			input:       "let x = 1\ntest 'not run'\n  x = 2\nend\nlet result = x",
+			expectedEnv: map[string]Value{"result": VNumber(1)},
 		},
 		{
-			name:     "test block is run in eval test mode",
-			input:    "let x = 1\ntest 'run'\n  let x = 2\n  assert x == 2\n  return x\nend\nreturn x",
-			expected: VNumber(2),
-			evalTest: true,
+			name:        "test block is run in eval test mode",
+			input:       "test 'run'\n  let x = 2\n  assert x == 2\nend\n",
+			expectedEnv: map[string]Value{"x": VNumber(2)},
+			evalTest:    true,
 		},
 	}
 
