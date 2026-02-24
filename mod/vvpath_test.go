@@ -34,7 +34,7 @@ func TestResolveModulePath(t *testing.T) {
 			name:       "remote path (not cached)",
 			sourcePath: filepath.Join(tmpDir, "main.vv"),
 			importPath: "github.com/user/repo/lib.vv",
-			wantSuffix: filepath.Join(".cache", "github.com", "user", "repo", "lib.vv"),
+			wantSuffix: filepath.Join(RemoteCacheDir, "github.com", "user", "repo", "lib.vv"),
 			expectErr:  true,
 		},
 	}
@@ -45,7 +45,7 @@ func TestResolveModulePath(t *testing.T) {
 			if (err != nil) != tt.expectErr {
 				t.Errorf("ResolveModulePath() error = %v, expectErr %v", err, tt.expectErr)
 			}
-			
+
 			if len(got) < len(tt.wantSuffix) || got[len(got)-len(tt.wantSuffix):] != tt.wantSuffix {
 				t.Errorf("ResolveModulePath() = %v, want suffix %v", got, tt.wantSuffix)
 			}

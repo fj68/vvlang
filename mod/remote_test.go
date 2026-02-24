@@ -129,19 +129,19 @@ func TestGet(t *testing.T) {
 	}
 
 	// Check if the file is cached
-	cachedFile := filepath.Join(vvpath, ".cache", "github.com", "user", "repo", "test.vv")
+	cachedFile := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "repo", "test.vv")
 	if _, err := os.Stat(cachedFile); err != nil {
 		t.Errorf("file not cached: %v", err)
 	}
 
-	// Check files.json
+	// Check GlobalSumFile
 	vf, err := OpenVersionFile()
 	if err != nil {
 		t.Fatalf("OpenVersionFile() error = %v", err)
 	}
 	relPath := filepath.Join("github.com", "user", "repo", "test.vv")
-	if _, ok := vf.Files[relPath]; !ok {
-		t.Errorf("file not found in files.json: %s", relPath)
+	if _, ok := vf.Files[filepath.ToSlash(relPath)]; !ok {
+		t.Errorf("file not found in %s: %s", GlobalSumFile, relPath)
 	}
 }
 
@@ -150,7 +150,7 @@ func TestClean(t *testing.T) {
 	t.Setenv("VVPATH", vvpath)
 
 	// Create a dummy cached file
-	repoDir := filepath.Join(vvpath, ".cache", "github.com", "user", "repo")
+	repoDir := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "repo")
 	if err := os.MkdirAll(repoDir, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -159,7 +159,7 @@ func TestClean(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Add to files.json
+	// Add to GlobalSumFile
 	vf, err := OpenVersionFile()
 	if err != nil {
 		t.Fatal(err)
@@ -180,12 +180,12 @@ func TestClean(t *testing.T) {
 		t.Errorf("repo directory not removed: %v", err)
 	}
 
-	// Check files.json
+	// Check GlobalSumFile
 	vf, err = OpenVersionFile()
 	if err != nil {
 		t.Fatalf("OpenVersionFile() error = %v", err)
 	}
 	if _, ok := vf.Files[filepath.ToSlash(relPath)]; ok {
-		t.Errorf("file not removed from files.json: %s", relPath)
+		t.Errorf("file not removed from %s: %s", GlobalSumFile, relPath)
 	}
 }
