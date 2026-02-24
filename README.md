@@ -407,10 +407,6 @@ end
 console.print(apply(5, incr))  // 6
 ```
 
-### return
-
-vv allows top level `return`.
-
 ### defer
 
 Like Swift (and unlike Go), `defer` in vv is block scoped.
@@ -542,15 +538,8 @@ func main() {
         import console from 'std/console.vv'
         extern "native" fun hello()
         hello()
-        return 42
     `
     s.Eval([]rune(code))
-
-    // 5. Get return value
-    if s.RetVals.Len() > 0 {
-        val := s.RetVals.Pop()
-        fmt.Printf("Return value: %v\n", val)
-	}
 }
 ```
 
