@@ -6,7 +6,6 @@ import (
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/interp/builtins"
-	"github.com/fj68/vvlang/mod"
 	"github.com/fj68/vvlang/lib"
 )
 
@@ -68,20 +67,8 @@ func run(path string) error {
 		},
 	}
 
-	s.NewState = func(sourcePath string) *interp.State {
-		ns := interp.NewState(sourcePath)
+	s.RegisterBuiltinModules(moduleBuiltins)
 
-		// Register module-specific built-ins
-		for stdPath, funcs := range moduleBuiltins {
-			if sourcePath == mod.GetPackagePath(stdPath) {
-				ns.RegisterNatives(funcs)
-				break
-			}
-		}
-
-		ns.NewState = s.NewState
-		return ns
-	}
 	if err := s.EnsureSystemLibrary("std", lib.Std); err != nil {
 		return err
 	}

@@ -12,23 +12,25 @@ import (
 )
 
 type State struct {
-	IsTestMode   bool
-	SourcePath   string
-	ModuleCache  map[string]*VModule
-	Env          *Env
-	RetVals      stack.Stack[Value]
-	Defers       [][]ast.Expr
-	NativeValues map[string]Value
-	NewState     func(sourcePath string) *State
+	IsTestMode     bool
+	SourcePath     string
+	ModuleCache    map[string]*VModule
+	Env            *Env
+	RetVals        stack.Stack[Value]
+	Defers         [][]ast.Expr
+	NativeValues   map[string]Value
+	BuiltinModules map[string]map[string]Value
+	NewState       func(sourcePath string) *State
 }
 
 func NewState(sourcePath string) *State {
 	return &State{
-		SourcePath:   sourcePath,
-		ModuleCache:  make(map[string]*VModule),
-		Env:          NewEnv(nil),
-		NativeValues: make(map[string]Value),
-		NewState:     NewState,
+		SourcePath:     sourcePath,
+		ModuleCache:    make(map[string]*VModule),
+		Env:            NewEnv(nil),
+		NativeValues:   make(map[string]Value),
+		BuiltinModules: make(map[string]map[string]Value),
+		NewState:       NewState,
 	}
 }
 
@@ -60,15 +62,6 @@ func Eval(sourcePath string, text []rune) error {
 	return s.Eval(text)
 }
 
-func (s *State) RegisterGlobal(name string, value Value) {
-	s.Env.Values[name] = value
-}
-
-func (s *State) RegisterGlobals(values map[string]Value) {
-	for name, value := range values {
-		s.RegisterGlobal(name, value)
-	}
-}
 func (s *State) RegisterNative(name string, value Value) {
 	s.NativeValues[name] = value
 }
@@ -76,6 +69,16 @@ func (s *State) RegisterNative(name string, value Value) {
 func (s *State) RegisterNatives(values map[string]Value) {
 	for name, value := range values {
 		s.RegisterNative(name, value)
+	}
+}
+
+func (s *State) RegisterBuiltinModule(name string, module map[string]Value) {
+	s.BuiltinModules[name] = module
+}
+
+func (s *State) RegisterBuiltinModules(modules map[string]map[string]Value) {
+	for name, module := range modules {
+		s.RegisterBuiltinModule(name, module)
 	}
 }
 
@@ -928,6 +931,8 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 	// Pass the same ModuleCache to detect cycles across the whole project
 	modState := s.NewState(targetPath)
 	modState.ModuleCache = s.ModuleCache
+	modState.IsTestMode = s.IsTestMode // propagate test mode to imported modules
+	modState.BuiltinModules = s.BuiltinModules // propagate builtin modules to imported modules
 
 	// To detect cycles: we can add a placeholder in the cache or check a "loading" set
 	// For simplicity, let's use the cache with a nil value as a "currently loading" marker
@@ -937,6 +942,14 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 			delete(s.ModuleCache, targetPath)
 		}
 	}()
+
+	// Register module-specific built-ins
+	for stdPath, funcs := range modState.BuiltinModules {
+		if targetPath == mod.GetPackagePath(stdPath) {
+			modState.RegisterNatives(funcs)
+			break
+		}
+	}
 
 	// Evaluate the module
 	if err := modState.evalModule(module); err != nil {
