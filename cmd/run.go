@@ -37,9 +37,9 @@ func run(path string) error {
 	}
 	s := interp.NewState(path)
 
-	s.RegisterBuiltinModules(lib.BuiltinModules)
+	s.RegisterBuiltinModules(lib.Std.Natives)
 
-	if err := s.EnsureSystemLibrary(lib.Name, lib.Std); err != nil {
+	if err := s.EnsureSystemLibrary(lib.Std.Name, lib.Std.FS); err != nil {
 		return err
 	}
 	if err := s.Eval([]rune(string(text))); err != nil {

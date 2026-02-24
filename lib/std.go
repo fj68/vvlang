@@ -8,11 +8,9 @@ import (
 )
 
 //go:embed std
-var Std embed.FS
+var embedded embed.FS
 
-var Name = "std"
-
-var BuiltinModules = map[string]map[string]interp.Value{
+var natives = map[string]map[string]interp.Value{
 	"std/sys.vv": {
 		"help": interp.VBuiltinFun(builtins.Help),
 	},
@@ -41,3 +39,8 @@ var BuiltinModules = map[string]map[string]interp.Value{
 	},
 }
 
+var Std = &Lib{
+	Name: "std",
+	FS: embedded,
+	Natives: natives,
+}
