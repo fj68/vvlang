@@ -1,4 +1,5 @@
 import list from 'std/list.vv'
+import console from 'std/console.vv'
 
 let xs = [1, 2, 3]
 
@@ -9,7 +10,7 @@ end
 let ys = list.map(xs, incr)
 
 if not(ys[0] == 2)
-    print('fail')
+    console.print('fail')
 end
 
-print(ys[0])
+console.print(ys[0])

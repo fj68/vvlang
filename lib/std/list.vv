@@ -1,2 +1,18 @@
 pub extern "native" fun length(l)
 pub extern "native" fun push(l, v)
+
+pub fun each(xs, f)
+    let i = 0
+    while i < length(xs)
+        f(xs[i])
+        i = i + 1
+    end
+end
+
+pub fun map(xs, f)
+  let rs = []
+  each(xs, fun (x)
+    push(rs, f(x))
+  end)
+  return rs
+end

@@ -2,15 +2,15 @@ package cmd
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/interp/builtins"
 	"github.com/fj68/vvlang/mod"
+	"github.com/fj68/vvlang/lib"
 )
 
-func Run(stdlib fs.FS) {
+func Run() {
 	if len(os.Args) < 2 {
 		fmt.Println("usage: vv [path]")
 		return
@@ -27,12 +27,12 @@ func Run(stdlib fs.FS) {
 		path = os.Args[1]
 	}
 
-	if err := run(path, stdlib); err != nil {
+	if err := run(path); err != nil {
 		fmt.Println(err)
 	}
 }
 
-func run(path string, stdlib fs.FS) error {
+func run(path string) error {
 	text, err := os.ReadFile(path)
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func run(path string, stdlib fs.FS) error {
 		ns.NewState = s.NewState
 		return ns
 	}
-	if err := s.EnsureSystemLibrary("std", stdlib); err != nil {
+	if err := s.EnsureSystemLibrary("std", lib.Std); err != nil {
 		return err
 	}
 	if err := s.Eval([]rune(string(text))); err != nil {

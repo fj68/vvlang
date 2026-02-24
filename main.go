@@ -18,7 +18,7 @@ func main() {
 	case "clean":
 		cmd.Clean()
 	default:
-		cmd.Run(stdlib)
+		cmd.Run()
 	}
 }
 
