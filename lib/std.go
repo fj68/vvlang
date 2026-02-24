@@ -10,6 +10,8 @@ import (
 //go:embed std
 var Std embed.FS
 
+var Name = "std"
+
 var BuiltinModules = map[string]map[string]interp.Value{
 	"std/sys.vv": {
 		"help": interp.VBuiltinFun(builtins.Help),

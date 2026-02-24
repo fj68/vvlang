@@ -39,7 +39,7 @@ func run(path string) error {
 
 	s.RegisterBuiltinModules(lib.BuiltinModules)
 
-	if err := s.EnsureSystemLibrary("std", lib.Std); err != nil {
+	if err := s.EnsureSystemLibrary(lib.Name, lib.Std); err != nil {
 		return err
 	}
 	if err := s.Eval([]rune(string(text))); err != nil {
