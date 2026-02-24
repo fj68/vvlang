@@ -4,7 +4,7 @@ import (
 	"embed"
 
 	"github.com/fj68/vvlang/interp"
-	"github.com/fj68/vvlang/interp/builtins"
+	"github.com/fj68/vvlang/lib/std"
 )
 
 //go:embed std
@@ -12,30 +12,30 @@ var embedded embed.FS
 
 var natives = map[string]map[string]interp.Value{
 	"std/sys.vv": {
-		"help": interp.VBuiltinFun(builtins.Help),
+		"help": interp.VBuiltinFun(std.Help),
 	},
 	"std/console.vv": {
-		"print": interp.VBuiltinFun(builtins.Print),
+		"print": interp.VBuiltinFun(std.Print),
 	},
 	"std/math.vv": {
-		"floor": interp.VBuiltinFun(builtins.Floor),
-		"ceil":  interp.VBuiltinFun(builtins.Ceil),
+		"floor": interp.VBuiltinFun(std.Floor),
+		"ceil":  interp.VBuiltinFun(std.Ceil),
 	},
 	"std/string.vv": {
-		"length": interp.VBuiltinFun(builtins.StringLength),
+		"length": interp.VBuiltinFun(std.StringLength),
 	},
 	"std/list.vv": {
-		"length": interp.VBuiltinFun(builtins.ListLength),
-		"push":   interp.VBuiltinFun(builtins.Push),
+		"length": interp.VBuiltinFun(std.ListLength),
+		"push":   interp.VBuiltinFun(std.Push),
 	},
 	"std/float.vv": {
-		"to_string": interp.VBuiltinFun(builtins.FloatToString),
+		"to_string": interp.VBuiltinFun(std.FloatToString),
 	},
 	"std/int.vv": {
-		"to_string": interp.VBuiltinFun(builtins.IntToString),
+		"to_string": interp.VBuiltinFun(std.IntToString),
 	},
 	"std/bool.vv": {
-		"to_string": interp.VBuiltinFun(builtins.BoolToString),
+		"to_string": interp.VBuiltinFun(std.BoolToString),
 	},
 }
 
