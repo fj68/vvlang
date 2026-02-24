@@ -8,6 +8,31 @@ import (
 	"strings"
 )
 
+type GitClient interface {
+	Clone(url, path string) error
+	Checkout(repoPath, version string) error
+}
+
+type CommandGitClient struct{}
+
+func (c *CommandGitClient) Clone(url, path string) error {
+	cmd := exec.Command("git", "clone", url, path)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("git clone failed: %s\n%s", err, string(out))
+	}
+	return nil
+}
+
+func (c *CommandGitClient) Checkout(repoPath, version string) error {
+	cmd := exec.Command("git", "-C", repoPath, "checkout", version)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("git checkout %s failed: %s\n%s", version, err, string(out))
+	}
+	return nil
+}
+
+var gitClient GitClient = &CommandGitClient{}
+
 // We use a map as a set because it's O(1) for lookups and we don't care about the values.
 var allowedDomains = map[string]bool{
 	"github.com":    true,
@@ -36,14 +61,14 @@ func ParseRemotePath(path string) (*RemoteModule, error) {
 	}
 
 	user := parts[1]
-	repoPart := parts[2]
+	repoAndVersion := parts[2]
+	repo := repoAndVersion
 	version := ""
 
-	// Check for version tag in repo name
-	if strings.Contains(repoPart, "@") {
-		repoSplit := strings.SplitN(repoPart, "@", 2)
-		repoPart = repoSplit[0]
-		version = repoSplit[1]
+	if strings.Contains(repoAndVersion, "@") {
+		split := strings.SplitN(repoAndVersion, "@", 2)
+		repo = split[0]
+		version = split[1]
 	}
 
 	file := ""
@@ -54,7 +79,7 @@ func ParseRemotePath(path string) (*RemoteModule, error) {
 	return &RemoteModule{
 		Domain:  domain,
 		User:    user,
-		Repo:    repoPart,
+		Repo:    repo,
 		Version: version,
 		File:    file,
 	}, nil
@@ -92,16 +117,14 @@ func Get(path string) error {
 	fmt.Printf("Downloading %s...\n", repoURL)
 
 	// Git clone
-	cmd := exec.Command("git", "clone", repoURL, fullCacheDir)
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf("git clone failed: %s\n%s", err, string(out))
+	if err := gitClient.Clone(repoURL, fullCacheDir); err != nil {
+		return err
 	}
 
 	// Checkout version if specified
 	if rm.Version != "" {
-		cmd := exec.Command("git", "-C", fullCacheDir, "checkout", rm.Version)
-		if out, err := cmd.CombinedOutput(); err != nil {
-			return fmt.Errorf("git checkout %s failed: %s\n%s", rm.Version, err, string(out))
+		if err := gitClient.Checkout(fullCacheDir, rm.Version); err != nil {
+			return err
 		}
 	}
 
@@ -123,7 +146,7 @@ func Get(path string) error {
 			return nil
 		}
 
-		sum, err := CalculateChecksum(path)
+		sum, err := CalculateFileChecksum(path)
 		if err != nil {
 			return err
 		}
@@ -137,6 +160,50 @@ func Get(path string) error {
 	})
 	if err != nil {
 		return err
+	}
+
+	return vf.Write()
+}
+
+func Clean(path string) error {
+	rm, err := ParseRemotePath(path)
+	if err != nil {
+		return err
+	}
+
+	repoDirName := rm.Repo
+	if rm.Version != "" {
+		repoDirName += "@" + rm.Version
+	}
+	
+	cacheBase := filepath.Join(rm.Domain, rm.User, repoDirName)
+	fullCacheDir := GetPackagePath(cacheBase)
+
+	if _, err := os.Stat(fullCacheDir); os.IsNotExist(err) {
+		return nil // Not cached, nothing to do
+	}
+
+	fmt.Printf("Cleaning %s...\n", fullCacheDir)
+
+	if err := os.RemoveAll(fullCacheDir); err != nil {
+		return err
+	}
+
+	vf, err := OpenVersionFile()
+	if err != nil {
+		return err
+	}
+
+	rel, err := filepath.Rel(GetCachePath(), fullCacheDir)
+	if err != nil {
+		return err
+	}
+	
+	prefix := filepath.ToSlash(rel)
+	for k := range vf.Files {
+		if strings.HasPrefix(k, prefix) {
+			delete(vf.Files, k)
+		}
 	}
 
 	return vf.Write()

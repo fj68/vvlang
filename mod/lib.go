@@ -22,7 +22,7 @@ func WriteToCache(path string, data []byte, vf *VersionFile) error {
 		return err
 	}
 
-	checksum, err := CalculateChecksum(fullPath)
+	checksum, err := CalculateFileChecksum(fullPath)
 	if err != nil {
 		return err
 	}

@@ -883,10 +883,20 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 	targetPath, err := mod.ResolveModulePath(s.SourcePath, stmt.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			// Try to download if it looks like a remote module
-			if getErr := mod.Get(stmt.Path); getErr != nil {
-				// If download fails, return original error (or getErr)
-				return fmt.Errorf("module not found and download failed: %v (download error: %v)", err, getErr)
+			// Check if it's a remote module path.
+			// For now, we can infer this if it doesn't start with ./ or ../
+			// A more robust check might be needed in mod.IsRemotePath()
+			if _, err := mod.ParseRemotePath(stmt.Path); err == nil {
+				if getErr := mod.Get(stmt.Path); getErr != nil {
+					return fmt.Errorf("module '%s' not found locally and download failed: %v", stmt.Path, getErr)
+				}
+				// After successful download, resolve path again
+				targetPath, err = mod.ResolveModulePath(s.SourcePath, stmt.Path)
+				if err != nil {
+					return fmt.Errorf("could not resolve module '%s' after download: %v", stmt.Path, err)
+				}
+			} else {
+				return fmt.Errorf("module not found: %s", stmt.Path)
 			}
 		} else {
 			return err

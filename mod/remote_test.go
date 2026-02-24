@@ -1,7 +1,10 @@
 package mod
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -60,6 +63,17 @@ func TestParseRemotePath(t *testing.T) {
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name: "github with multiple subdirectories",
+			path: "github.com/user/repo/lib/subdir/file.vv",
+			want: &RemoteModule{
+				Domain:  "github.com",
+				User:    "user",
+				Repo:    "repo",
+				Version: "",
+				File:    "lib/subdir/file.vv",
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -73,5 +87,105 @@ func TestParseRemotePath(t *testing.T) {
 				t.Errorf("ParseRemotePath() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+type MockGitClient struct {
+	CloneFunc    func(url, path string) error
+	CheckoutFunc func(repoPath, version string) error
+}
+
+func (m *MockGitClient) Clone(url, path string) error {
+	return m.CloneFunc(url, path)
+}
+
+func (m *MockGitClient) Checkout(repoPath, version string) error {
+	return m.CheckoutFunc(repoPath, version)
+}
+
+func TestGet(t *testing.T) {
+	vvpath := t.TempDir()
+	t.Setenv("VVPATH", vvpath)
+
+	originalGitClient := gitClient
+	defer func() { gitClient = originalGitClient }()
+
+	mock := &MockGitClient{
+		CloneFunc: func(url, path string) error {
+			if err := os.MkdirAll(path, 0755); err != nil {
+				return err
+			}
+			return os.WriteFile(filepath.Join(path, "test.vv"), []byte("test"), 0644)
+		},
+		CheckoutFunc: func(repoPath, version string) error {
+			return nil
+		},
+	}
+	gitClient = mock
+
+	path := "github.com/user/repo/test.vv"
+	if err := Get(path); err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+
+	// Check if the file is cached
+	cachedFile := filepath.Join(vvpath, ".cache", "github.com", "user", "repo", "test.vv")
+	if _, err := os.Stat(cachedFile); err != nil {
+		t.Errorf("file not cached: %v", err)
+	}
+
+	// Check files.json
+	vf, err := OpenVersionFile()
+	if err != nil {
+		t.Fatalf("OpenVersionFile() error = %v", err)
+	}
+	relPath := filepath.Join("github.com", "user", "repo", "test.vv")
+	if _, ok := vf.Files[relPath]; !ok {
+		t.Errorf("file not found in files.json: %s", relPath)
+	}
+}
+
+func TestClean(t *testing.T) {
+	vvpath := t.TempDir()
+	t.Setenv("VVPATH", vvpath)
+
+	// Create a dummy cached file
+	repoDir := filepath.Join(vvpath, ".cache", "github.com", "user", "repo")
+	if err := os.MkdirAll(repoDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	cachedFile := filepath.Join(repoDir, "test.vv")
+	if err := os.WriteFile(cachedFile, []byte("test"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Add to files.json
+	vf, err := OpenVersionFile()
+	if err != nil {
+		t.Fatal(err)
+	}
+	relPath := strings.TrimPrefix(cachedFile, GetCachePath()+string(filepath.Separator))
+	vf.Files[filepath.ToSlash(relPath)] = "checksum"
+	if err := vf.Write(); err != nil {
+		t.Fatal(err)
+	}
+
+	path := "github.com/user/repo/test.vv"
+	if err := Clean(path); err != nil {
+		t.Fatalf("Clean() error = %v", err)
+	}
+
+	// Check if the file is removed
+	if _, err := os.Stat(repoDir); !os.IsNotExist(err) {
+		t.Errorf("repo directory not removed: %v", err)
+	}
+
+	// Check files.json
+	vf, err = OpenVersionFile()
+	if err != nil {
+		t.Fatalf("OpenVersionFile() error = %v", err)
+	}
+	if _, ok := vf.Files[filepath.ToSlash(relPath)]; ok {
+		t.Errorf("file not removed from files.json: %s", relPath)
 	}
 }

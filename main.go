@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fj68/vvlang/cmd"
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/interp/builtins"
 	"github.com/fj68/vvlang/mod"
@@ -11,10 +12,20 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("usage: main [path]")
+		fmt.Println("usage: vv [run path | get path | clean path]")
 		return
 	}
-	path := os.Args[1]
+	switch os.Args[1] {
+	case "get":
+		cmd.Get()
+	case "clean":
+		cmd.Clean()
+	default:
+		run(os.Args[1])
+	}
+}
+
+func run(path string) {
 	text, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println(err)

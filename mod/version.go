@@ -54,8 +54,23 @@ func (vf *VersionFile) Write() error {
 	return err
 }
 
-// CalculateChecksum computes the checksum of all files in a physical directory.
-func CalculateChecksum(dir string) (string, error) {
+// CalculateFileChecksum computes the MD5 checksum of a single file.
+func CalculateFileChecksum(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	hash := md5.New()
+	if _, err := io.Copy(hash, f); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+
+// CalculateDirectoryChecksum computes the checksum of all files in a physical directory.
+func CalculateDirectoryChecksum(dir string) (string, error) {
 	hash := md5.New()
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
