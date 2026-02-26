@@ -188,7 +188,7 @@ func (p *Parser) parseDocstring() map[string]string {
 	for p.curToken.Type == lexer.TDocstring {
 		line := p.curToken.Text
 		if len(line) >= 6 && line[:6] == "@lang " {
-			lang = line[6:]
+			lang = strings.TrimSpace(line[6:])
 			// Consume the @lang token and move on
 			if err := p.readToken(); err != nil {
 				break

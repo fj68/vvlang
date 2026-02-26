@@ -1,0 +1,41 @@
+{{define "title"}}Index{{end}}
+
+{{define "content"}}
+<h1>Modules</h1>
+{{range .Categories}}
+<div class='category'>
+    <h2>{{.Name}}</h2>
+    <ul>
+        {{range .Modules}}
+        <li>
+            <a href='{{.Path}}/index.html'>{{.Name}}</a>
+            {{if .Summary}} — <span class='summary'>{{.Summary}}</span>{{end}}
+        </li>
+        {{end}}
+    </ul>
+</div>
+{{end}}
+<style>
+    .category h2 {
+        background: #eee;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 1.2rem;
+    }
+
+    .summary {
+        color: #666;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 1rem;
+    }
+
+    li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{{end}}
