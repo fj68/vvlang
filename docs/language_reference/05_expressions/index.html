@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5. Expressions - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .nav {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Index</a></p>
+    <h1>5. Operators and Expressions</h1>
+
+
+    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
+        <h2 style="margin-top: 0;">In this chapter</h2>
+        <ul>
+            <li><a href="#arithmetic-operators">Arithmetic Operators</a></li>
+            <li><a href="#comparison-operators">Comparison Operators</a></li>
+            <li><a href="#logical-operators">Logical Operators</a></li>
+            <li><a href="#prefix-and-infix-expressions">Prefix and Infix Expressions</a></li>
+        </ul>
+    </div>
+    <h2 id="arithmetic-operators">Arithmetic Operators</h2>
+    <p><code>vv</code> supports standard arithmetic operations on numbers:</p>
+    <ul>
+        <li>Addition: <code>+</code></li>
+        <li>Subtraction: <code>-</code></li>
+        <li>Multiplication: <code>*</code></li>
+        <li>Division: <code>/</code></li>
+    </ul>
+
+    <h2 id="comparison-operators">Comparison Operators</h2>
+    <p>Comparison operations evaluate to a boolean value (<code>true</code> or <code>false</code>):</p>
+    <ul>
+        <li>Equal: <code>==</code></li>
+        <li>Less Than: <code>&lt;</code></li>
+        <li>Less Than or Equal: <code>&lt;=</code></li>
+    </ul>
+
+    <h2 id="logical-operators">Logical Operators</h2>
+    <p>Logical operators work on boolean values.</p>
+    <ul>
+        <li>Logical NOT: <code>not(expr)</code></li>
+        <li>Logical AND: <code>and</code></li>
+        <li>Logical OR: <code>or</code></li>
+    </ul>
+
+    <h2 id="prefix-and-infix-expressions">Prefix and Infix Expressions</h2>
+    <p>Expressions can be combined using prefix (e.g., <code>not(true)</code>, <code>-5</code>) and infix (e.g.,
+        <code>1 + 2</code>, <code>a == b</code>) operators.
+    </p>
+
+    <div class="nav">
+        <a href="../04_variables/index.html">← Previous: 4. Variables and Declarations</a>
+        <a href="../06_control_flow/index.html">Next: 6. Control Flow →</a>
+    </div>
+</body>
+
+</html>

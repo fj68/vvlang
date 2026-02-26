@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3. Types and Literals - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .nav {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Index</a></p>
+    <h1>3. Types and Literals</h1>
+
+
+    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
+        <h2 style="margin-top: 0;">In this chapter</h2>
+        <ul>
+            <li><a href="#booleans">Booleans</a></li>
+            <li><a href="#numbers">Numbers</a></li>
+            <li><a href="#characters-and-strings">Characters and Strings</a></li>
+            <li><a href="#lists">Lists</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#indexing">Indexing</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#slicing">Slicing</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#length">Length</a></li>
+            <li><a href="#records">Records</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#field-access">Field Access</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#destructuring">Destructuring</a></li>
+            <li><a href="#null">Null</a></li>
+        </ul>
+    </div>
+    <h2 id="booleans">Booleans</h2>
+    <p>The boolean type has two possible values: <code>true</code> and <code>false</code>.</p>
+
+    <h2 id="numbers">Numbers</h2>
+    <p><code>vv</code> supports 64-bit floating-point numbers.</p>
+    <pre><code>let int_num = 42
+let float_num = 3.14159</code></pre>
+
+    <h2 id="characters-and-strings">Characters and Strings</h2>
+    <p>A single character is represented using single quotes.</p>
+    <pre><code>let c = 'A'</code></pre>
+    <p>Strings are represented using double quotes. Strings are entirely treated as a list of characters. String
+        interpolation is supported using the <code>{}</code> syntax.</p>
+    <pre><code>let name = "World"
+let greeting = "Hello, {name}!"</code></pre>
+
+    <h2 id="lists">Lists</h2>
+    <p>Lists are ordered collections of elements. They are defined using square brackets <code>[]</code>. A trailing
+        comma is allowed after the last element.</p>
+    <pre><code>let numbers = [1, 2, 3, 4]
+let letters = [
+    "a",
+    "b",
+    "c",
+]
+let empty_list = []</code></pre>
+
+    <h3 id="indexing">Indexing</h3>
+    <p>Elements in a list can be accessed using 0-based indexing.</p>
+    <pre><code>let first = numbers[0] // 1</code></pre>
+
+    <h3 id="slicing">Slicing</h3>
+    <p>A sub-list can be extracted using the slice syntax <code>list[start:end]</code>. Both start and end indices are
+        optional. If the start index is omitted (e.g., <code>[:end]</code>), slicing begins from the first element
+        (index 0). If the end index is omitted (e.g., <code>[start:]</code>), slicing continues to the end of the list.
+    </p>
+    <pre><code>let sub = numbers[1:3] // [2, 3]
+let first_two = numbers[:2] // [1, 2]
+let from_second = numbers[1:] // [2, 3, 4]</code></pre>
+
+    <h3 id="length">Length</h3>
+    <p>The number of elements in a list can be obtained using the <code>len()</code> syntax.</p>
+    <pre><code>let count = len(numbers) // 4</code></pre>
+
+    <h2 id="records">Records</h2>
+    <p>Records are collections of key-value pairs (also known as dictionaries or objects). They are defined using curly
+        braces <code>{}</code> with <code>key = value</code> pairs. A trailing comma is allowed after the last pair.</p>
+    <pre><code>let person = {
+    name = "Alice",
+    age = 30,
+}</code></pre>
+
+    <h3 id="field-access">Field Access</h3>
+    <p>Values in a record can be accessed using dot notation.</p>
+    <pre><code>let person_name = person.name // "Alice"</code></pre>
+
+    <h3 id="destructuring">Destructuring</h3>
+    <p>Destructuring is a convenient way to extract multiple fields from a record into local variables in a single
+        declaration.
+        This allows you to assign field values to variables with the same name as the record's keys.</p>
+    <pre><code>let person = { name = "Alice", age = 30 }
+let { name, age } = person
+
+// You can now use `name` and `age` directly
+console.print(name) // "Alice"
+console.print(age)  // 30</code></pre>
+
+    <p>If you want to use a different name for a variable, you can use the <code>as</code> keyword to alias a field to
+        a different name. This is useful for avoiding name conflicts or providing clearer variable names.</p>
+    <pre><code>let { name as person_name, age as person_age } = person
+
+console.print(person_name) // "Alice"
+console.print(person_age)  // 30</code></pre>
+
+    <h2 id="null">Null</h2>
+    <p>The <code>null</code> value represents the intentional absence of any object value.</p>
+    <pre><code>let empty = null</code></pre>
+
+    <div class="nav">
+        <a href="../02_lexical_structure/index.html">← Previous: 2. Lexical Structure</a>
+        <a href="../04_variables/index.html">Next: 4. Variables and Declarations →</a>
+    </div>
+</body>
+
+</html>

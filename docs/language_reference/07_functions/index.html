@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7. Functions - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .nav {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Index</a></p>
+    <h1>7. Functions</h1>
+
+
+    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
+        <h2 style="margin-top: 0;">In this chapter</h2>
+        <ul>
+            <li><a href="#defining-functions">Defining Functions</a></li>
+            <li><a href="#recursive-functions">Recursive Functions</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#mutually-recursive-functions">Mutually Recursive Functions</a>
+            </li>
+            <li><a href="#tail-call-optimization-tco">Tail Call Optimization (TCO)</a></li>
+            <li><a href="#function-calls">Function Calls</a></li>
+            <li><a href="#returning-values">Returning Values</a></li>
+        </ul>
+    </div>
+    <h2 id="defining-functions">Defining Functions</h2>
+    <p>Functions in <code>vv</code> are first-class citizens. You can define named functions using the
+        <code>fun name(...)</code> syntax. The function body is closed with the <code>end</code> keyword.
+    </p>
+    <pre><code>fun add(a, b)
+    return a + b
+end</code></pre>
+
+    <p>You can also define anonymous functions (function literals) and assign them to variables:</p>
+    <pre><code>let multiply = fun(a, b)
+    return a * b
+end</code></pre>
+
+    <h2 id="recursive-functions">Recursive Functions</h2>
+    <p>To define a function that calls itself, use the <code>fun rec</code> syntax with a named function. Note that
+        anonymous functions (function literals) cannot be recursive.</p>
+    <pre><code>fun rec factorial(n)
+    if n &lt;= 1
+        return 1
+    end
+    return n * factorial(n - 1)
+end</code></pre>
+
+    <h3 id="mutually-recursive-functions">Mutually Recursive Functions</h3>
+    <p>Multiple recursive functions that depend on each other can be defined simultaneously using the <code>and</code>
+        keyword.</p>
+    <pre><code>fun rec is_even(n)
+    if n == 0
+        return true
+    end
+    return is_odd(n - 1)
+and is_odd(n)
+    if n == 0
+        return false
+    end
+    return is_even(n - 1)
+end</code></pre>
+
+    <h2 id="tail-call-optimization-tco">Tail Call Optimization (TCO)</h2>
+    <p><code>vv</code> supports <a href="https://en.wikipedia.org/wiki/Tail_call" target="_blank">Tail Call
+            Optimization</a> for recursive functions. If the recursive call is the last action
+        in the function (a tail call), the interpreter will optimize it to avoid consuming additional call stack frames,
+        preventing stack overflow errors on deep recursion.</p>
+    <p>The following example demonstrates TCO. Notice that the <code>not()</code> operation happens <em>before</em> the
+        recursive call, ensuring the recursive call itself remains in the tail position. The recursive helper can also
+        be defined inside the outer function:</p>
+    <pre><code>fun is_even(n)
+    fun rec is_even_tail(n, is_even_acc)
+        if n == 0
+            return is_even_acc
+        end
+        // The recursive call is the very last operation, so TCO applies.
+        return is_even_tail(n - 1, not(is_even_acc))
+    end
+
+    return is_even_tail(n, true)
+end</code></pre>
+
+    <p>In contrast, the following example does <strong>not</strong> benefit from TCO because the recursive call is not
+        the last operation. The multiplication happens <em>after</em> the recursive call returns:</p>
+    <pre><code>fun rec factorial(n)
+    if n &lt;= 1
+        return 1
+    end
+    // TCO does NOT apply here because of the `n * ...` operation.
+    return n * factorial(n - 1)
+end</code></pre>
+
+    <p>To make the <code>factorial</code> function benefit from TCO, you can use an accumulator variable to keep the
+        recursive call in the tail position:</p>
+    <pre><code>fun factorial(n)
+    fun rec factorial_tail(n, acc)
+        if n &lt;= 1
+            return acc
+        end
+        return factorial_tail(n - 1, n * acc)
+    end
+
+    return factorial_tail(n, 1)
+end</code></pre>
+
+    <h2 id="function-calls">Function Calls</h2>
+    <p>Functions are called using parentheses, passing arguments inside.</p>
+    <pre><code>let result = add(5, 3) // 8</code></pre>
+
+    <h2 id="returning-values">Returning Values</h2>
+    <p>The <code>return</code> statement immediately exits the function and evaluates the expression as the function's
+        return value. If no return statement is reached, the function implicitly returns <code>null</code>.</p>
+
+    <div class="nav">
+        <a href="../06_control_flow/index.html">← Previous: 6. Control Flow</a>
+        <a href="../08_resource_management/index.html">Next: 8. Resource Management →</a>
+    </div>
+</body>
+
+</html>

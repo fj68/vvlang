@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2. Lexical Structure - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .nav {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Index</a></p>
+    <h1>2. Lexical Structure</h1>
+
+
+    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
+        <h2 style="margin-top: 0;">In this chapter</h2>
+        <ul>
+            <li><a href="#comments-and-docstrings">Comments and Docstrings</a></li>
+            <li><a href="#identifiers">Identifiers</a></li>
+            <li><a href="#keywords">Keywords</a></li>
+            <li><a href="#operators-and-punctuation">Operators and Punctuation</a></li>
+        </ul>
+    </div>
+    <h2 id="comments-and-docstrings">Comments and Docstrings</h2>
+    <p>Line comments in <code>vv</code> start with <code>//</code> and continue to the end of the line.</p>
+    <pre><code>// This is a comment</code></pre>
+    <p>Docstrings are special comments that start with <code>///</code>. They are used to document modules, variables,
+        and functions. Docstrings must be placed immediately before the declaration they describe.</p>
+
+    <h3>Module Docstring</h3>
+    <p>A module docstring must be at the very top of the file, before any imports or declarations.</p>
+    <pre><code>/// This module provides utility functions for mathematical operations.
+/// It is the entry point for the math library.
+
+import console from "std/console.vv"</code></pre>
+
+    <h3>Variable Docstring</h3>
+    <p>Place a docstring immediately before a <code>let</code> declaration.</p>
+    <pre><code>/// The current version of the application.
+let version = "1.2.3"</code></pre>
+
+    <h3>Function Docstring</h3>
+    <p>Place a docstring immediately before a <code>fun</code> declaration. You can also use tags like
+        <code>@param</code> or <code>@return</code> within the docstring for clearer documentation.
+    </p>
+    <pre><code>/// Calculates the area of a circle.
+/// @param radius The radius of the circle.
+/// @return The calculated area.
+fun calculate_area(radius)
+    return 3.14159 * radius * radius
+end</code></pre>
+
+    <h3>Multilingual Docstrings</h3>
+    <p>Docstrings can support multiple languages within a single block. By default, docstrings are associated with the
+        <code>en</code> (English) language. You can switch the language for subsequent lines using the
+        <code>@lang &lt;code&gt;</code> tag.</p>
+    <pre><code>/// @lang en
+/// Returns the sum of two numbers.
+/// @lang jp
+/// 2つの数値の合計を返します。
+fun add(a, b)
+    return a + b
+end</code></pre>
+
+    <h2 id="identifiers">Identifiers</h2>
+    <p>Identifiers are used to name variables, functions, and parameters. They must start with a letter or underscore,
+        followed by any number of letters, digits, or underscores.</p>
+
+    <h2 id="keywords">Keywords</h2>
+    <p>The following keywords are reserved and cannot be used as identifiers:</p>
+    <ul>
+        <li><code>let</code>, <code>fun</code>, <code>return</code>, <code>if</code>, <code>else</code>,
+            <code>while</code>, <code>break</code>, <code>continue</code>
+        </li>
+        <li><code>true</code>, <code>false</code>, <code>null</code></li>
+        <li><code>and</code>, <code>or</code>, <code>not</code></li>
+        <li><code>export</code>, <code>import</code>, <code>as</code></li>
+        <li><code>defer</code>, <code>assert</code>, <code>test</code>, <code>extern</code></li>
+    </ul>
+
+    <h2 id="operators-and-punctuation">Operators and Punctuation</h2>
+    <p><code>vv</code> uses standard punctuation for operations (<code>+</code>, <code>-</code>, <code>*</code>,
+        <code>/</code>, <code>==</code>, etc.) and structural elements (<code>{</code>, <code>}</code>,
+        <code>[</code>, <code>]</code>, <code>(</code>, <code>)</code>, <code>,</code>, <code>:</code>, <code>.</code>).
+    </p>
+
+    <div class="nav">
+        <a href="../01_introduction/index.html">← Previous: 1. Introduction</a>
+        <a href="../03_types_and_literals/index.html">Next: 3. Types and Literals →</a>
+    </div>
+</body>
+
+</html>

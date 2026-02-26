@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6. Control Flow - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .nav {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Index</a></p>
+    <h1>6. Control Flow</h1>
+
+
+    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
+        <h2 style="margin-top: 0;">In this chapter</h2>
+        <ul>
+            <li><a href="#conditional-statements-if-else">Conditional Statements (`if` / `else`)</a></li>
+            <li><a href="#loops-while">Loops (`while`)</a></li>
+            <li><a href="#loop-control-break-continue">Loop Control (`break`, `continue`)</a></li>
+        </ul>
+    </div>
+    <h2 id="conditional-statements-if-else">Conditional Statements (`if` / `else`)</h2>
+    <p><code>if</code> statements execute a block of code if a condition is true. The block is closed with the
+        <code>end</code> keyword. The <code>else</code> branch is optional.
+    </p>
+    <pre><code>import console from "std/console.vv"
+
+if x == 10
+    console.print("Ten")
+else
+    console.print("Not ten")
+end</code></pre>
+
+    <h2 id="loops-while">Loops (`while`)</h2>
+    <p><code>while</code> loops execute a block of code repeatedly as long as a condition is true. The loop is closed
+        with the <code>end</code> keyword.</p>
+    <pre><code>import console from "std/console.vv"
+
+let i = 0
+while i &lt; 5
+    console.print(i)
+    i = i + 1
+end</code></pre>
+
+    <h2 id="loop-control-break-continue">Loop Control (`break`, `continue`)</h2>
+    <p>Inside a loop, you can use <code>break</code> to exit the loop entirely, or <code>continue</code> to skip to the
+        next iteration.</p>
+    <pre><code>let i = 0
+while i &lt; 10
+    if i == 5
+        break // Stop at 5
+    end
+    i = i + 1
+end</code></pre>
+
+    <div class="nav">
+        <a href="../05_expressions/index.html">← Previous: 5. Operators and Expressions</a>
+        <a href="../07_functions/index.html">Next: 7. Functions →</a>
+    </div>
+</body>
+
+</html>
