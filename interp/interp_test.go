@@ -452,6 +452,40 @@ end`,
 		},
 
 		// --------------------------------------------------------------------
+		// len() syntax
+		// --------------------------------------------------------------------
+		{
+			name:        "len of string",
+			input:       "let s = 'hello'\nlet n = len(s)",
+			expectedEnv: map[string]Value{"n": VNumber(5)},
+		},
+		{
+			name:        "len of unicode string",
+			input:       "let s = 'こんにちは'\nlet n = len(s)",
+			expectedEnv: map[string]Value{"n": VNumber(5)},
+		},
+		{
+			name:        "len of empty string",
+			input:       "let n = len('')",
+			expectedEnv: map[string]Value{"n": VNumber(0)},
+		},
+		{
+			name:        "len of list",
+			input:       "let xs = [1, 2, 3]\nlet n = len(xs)",
+			expectedEnv: map[string]Value{"n": VNumber(3)},
+		},
+		{
+			name:        "len of empty list",
+			input:       "let n = len([])",
+			expectedEnv: map[string]Value{"n": VNumber(0)},
+		},
+		{
+			name:        "len invalid type",
+			input:       "let n = len(123)",
+			expectedErr: "argument for len() is expected string or list, but got number",
+		},
+
+		// --------------------------------------------------------------------
 		// Test blocks
 		// --------------------------------------------------------------------
 		{

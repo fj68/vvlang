@@ -327,12 +327,8 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalPrefixExpr(v)
 	case *ast.FieldAccessExpr:
 		return s.evalFieldAccessExpr(v)
-	case *ast.TypeExpr:
-		return s.evalTypeExpr(v)
-	case *ast.NotExpr:
-		return s.evalNotExpr(v)
-	case *ast.StrExpr:
-		return s.evalStrExpr(v)
+	case *ast.BuiltinCallExpr:
+		return s.evalBuiltinCallExpr(v)
 	case *ast.InterpolatedStringLiteralExpr:
 		return s.evalInterpolatedStringLiteralExpr(v)
 	default:
@@ -340,7 +336,22 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 	}
 }
 
-func (s *State) evalTypeExpr(expr *ast.TypeExpr) (Value, error) {
+func (s *State) evalBuiltinCallExpr(expr *ast.BuiltinCallExpr) (Value, error) {
+	switch expr.Op {
+	case "not":
+		return s.evalNotExpr(expr)
+	case "type":
+		return s.evalTypeExpr(expr)
+	case "str":
+		return s.evalStrExpr(expr)
+	case "len":
+		return s.evalLenExpr(expr)
+	default:
+		return nil, fmt.Errorf("unknown builtin op: %s", expr.Op)
+	}
+}
+
+func (s *State) evalTypeExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	v, err := s.evalExpr(expr.Value)
 	if err != nil {
 		return nil, err
@@ -359,7 +370,7 @@ func (s *State) evalTypeExpr(expr *ast.TypeExpr) (Value, error) {
 	return VString(t), nil
 }
 
-func (s *State) evalNotExpr(expr *ast.NotExpr) (Value, error) {
+func (s *State) evalNotExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	v, err := s.evalExpr(expr.Value)
 	if err != nil {
 		return nil, err
@@ -371,12 +382,27 @@ func (s *State) evalNotExpr(expr *ast.NotExpr) (Value, error) {
 	return VBool(!bool(b)), nil
 }
 
-func (s *State) evalStrExpr(expr *ast.StrExpr) (Value, error) {
+func (s *State) evalStrExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	v, err := s.evalExpr(expr.Value)
 	if err != nil {
 		return nil, err
 	}
 	return VString(v.Str()), nil
+}
+
+func (s *State) evalLenExpr(expr *ast.BuiltinCallExpr) (Value, error) {
+	v, err := s.evalExpr(expr.Value)
+	if err != nil {
+		return nil, err
+	}
+	switch tv := v.(type) {
+	case VString:
+		return VNumber(len([]rune(string(tv)))), nil
+	case *VList:
+		return VNumber(len(tv.Elements)), nil
+	default:
+		return nil, fmt.Errorf("argument for len() is expected string or list, but got %s", v.Type())
+	}
 }
 
 func (s *State) evalInterpolatedStringLiteralExpr(expr *ast.InterpolatedStringLiteralExpr) (Value, error) {
