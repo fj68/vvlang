@@ -135,15 +135,17 @@ func (s *State) evalTestModule(module *ast.Module) (err error) {
 	}()
 
 	for _, stmt := range module.Statements {
-		if _, ok := stmt.(*ast.TestStmt); !ok {
-			// run only test stmts, and skip other top-level stmts during test evaluation
-			continue
-		}
-		if err := s.evalStmt(stmt); err != nil {
-			if err == ErrReturn {
-				return fmt.Errorf("top-level return is not allowed")
+		switch stmt.(type) {
+		case *ast.TestStmt, *ast.VarDeclStmt, *ast.ExternStmt, *ast.ImportStmt:
+			if err := s.evalStmt(stmt); err != nil {
+				if err == ErrReturn {
+					return fmt.Errorf("top-level return is not allowed")
+				}
+				return err
 			}
-			return err
+		default:
+			// skip other top-level stmts during test evaluation
+			continue
 		}
 	}
 	return nil
