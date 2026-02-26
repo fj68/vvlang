@@ -1,9 +1,9 @@
 import console from 'std/console.vv'
 
-let str = 'hello'
-console.print(str[0])
-console.print(str[1:4])
-console.print(str[:2])
+let s = 'hello'
+console.print(s[0])
+console.print(s[1:4])
+console.print(s[:2])
 
 let x = 0
 console.print(x)
