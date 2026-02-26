@@ -14,6 +14,24 @@ func (s *State) evalReturnStmt(stmt *ast.ReturnStmt) error {
 		s.RetVals.Push(VNull{})
 		return ErrReturn
 	}
+
+	// Tail call optimization check
+	if call, ok := stmt.Value.(*ast.FunCallExpr); ok {
+		f, err := s.evalExpr(call.Fun)
+		if err != nil {
+			return err
+		}
+		if uf, isUserFun := f.(*VUserFun); isUserFun {
+			// We must construct the VTailCall with evaluated arguments
+			args, err := s.evalArgs(call.Args)
+			if err != nil {
+				return err
+			}
+			s.RetVals.Push(&VTailCall{Fun: uf, Args: args})
+			return ErrReturn
+		}
+	}
+
 	value, err := s.evalExpr(stmt.Value)
 	if err != nil {
 		return err
@@ -54,6 +72,28 @@ func (s *State) evalVarDeclStmt(stmt *ast.VarDeclStmt) error {
 		return err
 	}
 	s.Env.Set(stmt.Name, v)
+	return nil
+}
+
+func (s *State) evalRecFunDeclStmt(stmt *ast.RecFunDeclStmt) error {
+	recEnv := NewEnv(s.Env)
+	oldEnv := s.Env
+	s.Env = recEnv
+	defer func() { s.Env = oldEnv }()
+
+	var funs []Value
+	for _, decl := range stmt.Funs {
+		v, err := s.evalExpr(decl.Body)
+		if err != nil {
+			return err
+		}
+		funs = append(funs, v)
+		recEnv.Set(decl.Name, v)
+	}
+
+	for i, decl := range stmt.Funs {
+		oldEnv.Set(decl.Name, funs[i])
+	}
 	return nil
 }
 

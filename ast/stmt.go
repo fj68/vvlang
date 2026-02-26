@@ -134,6 +134,34 @@ func (stmt *VarDeclStmt) Equals(other Stmt) bool {
 	return stmt.Name == o.Name && stmt.Body.Equals(o.Body) && stmt.Exported == o.Exported
 }
 
+type RecFunDeclStmt struct {
+	Funs []*VarDeclStmt
+}
+
+func (stmt *RecFunDeclStmt) Inspect() string {
+	var funs []string
+	for _, f := range stmt.Funs {
+		funs = append(funs, f.Inspect())
+	}
+	return fmt.Sprintf("RecFunDeclStmt{[%s]}", strings.Join(funs, ", "))
+}
+
+func (stmt *RecFunDeclStmt) Equals(other Stmt) bool {
+	o, ok := other.(*RecFunDeclStmt)
+	if !ok {
+		return false
+	}
+	if len(stmt.Funs) != len(o.Funs) {
+		return false
+	}
+	for i := range stmt.Funs {
+		if !stmt.Funs[i].Equals(o.Funs[i]) {
+			return false
+		}
+	}
+	return true
+}
+
 type AssignStmt struct {
 	Name string
 	Body Expr

@@ -48,7 +48,7 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 	}
 
 	if p.curToken.Type == lexer.TFun {
-		if p.peekToken.Type == lexer.TIdent {
+		if p.peekToken.Type == lexer.TIdent || p.peekToken.Type == lexer.TRec {
 			return p.parseFunDeclStmt()
 		}
 	}
@@ -178,7 +178,7 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		switch p.curToken.Type {
 		case lexer.TEOF:
 			return nil, fmt.Errorf("unexpected eof while reading body")
-		case lexer.TEnd, lexer.TElse:
+		case lexer.TEnd, lexer.TElse, lexer.TAnd:
 			return body, nil
 		}
 		stmts, err := p.parseBodyStmt()
@@ -190,23 +190,64 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 }
 
 func (p *Parser) parseFunDeclStmt() ([]ast.Stmt, error) {
-	// Named function declaration: `fun name(args) ... end`
-	// converted to `VarDeclStmt{"name", FunLiteralExpr{args, body}}`
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
-	name := p.curToken.Text
-	if err := p.readToken(); err != nil {
-		return nil, err
+
+	isRec := false
+	if p.curToken.Type == lexer.TRec {
+		isRec = true
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
 	}
-	expr, err := p.parseFunLiteralExpr()
-	if err != nil {
-		return nil, err
+
+	var funs []*ast.VarDeclStmt
+	for {
+		name := p.curToken.Text
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+
+		if err := p.expect(lexer.TLParen); err != nil {
+			return nil, err
+		}
+
+		args, err := p.parseFunLiteralArgs()
+		if err != nil {
+			return nil, err
+		}
+
+		body, err := p.parseBody()
+		if err != nil {
+			return nil, err
+		}
+
+		funs = append(funs, &ast.VarDeclStmt{
+			Name: name,
+			Body: &ast.FunLiteralExpr{
+				Args: args,
+				Body: body,
+			},
+		})
+
+		if isRec && p.curToken.Type == lexer.TAnd {
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			continue
+		}
+
+		if err := p.expect(lexer.TEnd); err != nil {
+			return nil, err
+		}
+		break
 	}
-	return []ast.Stmt{&ast.VarDeclStmt{
-		Name: name,
-		Body: expr,
-	}}, nil
+
+	if isRec {
+		return []ast.Stmt{&ast.RecFunDeclStmt{Funs: funs}}, nil
+	}
+	return []ast.Stmt{funs[0]}, nil
 }
 
 func (p *Parser) parseBlockStmt() (*ast.BlockStmt, error) {
