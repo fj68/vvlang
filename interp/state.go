@@ -907,6 +907,50 @@ func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
 	return nil
 }
 
+func (s *State) checkCycles(targetPath string, visited map[string]bool) error {
+	if visited[targetPath] {
+		return fmt.Errorf("cyclic dependency detected: %s", targetPath)
+	}
+	visited[targetPath] = true
+	defer delete(visited, targetPath)
+
+	// If it's already in the ModuleCache and not nil, it's evaluated and safe
+	if mod, ok := s.ModuleCache[targetPath]; ok && mod != nil {
+		return nil
+	}
+
+	text, err := os.ReadFile(targetPath)
+	if err != nil {
+		return err
+	}
+
+	p := parser.New([]rune(string(text)))
+	imports, err := p.ParseImportStmtsOnly()
+	if err != nil {
+		return err
+	}
+
+	for _, imp := range imports {
+		subPath, err := mod.ResolveModulePath(targetPath, imp.Path)
+		if err != nil {
+			// If resolution fails here, it will fail during evaluation too.
+			// But check if it's a remote path that might need downloading.
+			if _, remoteErr := mod.ParseRemotePath(imp.Path); remoteErr == nil {
+				// We don't download during cycle check for simplicity.
+				// If it's not downloaded, we can't check its cycles yet.
+				// It will be handled during actual import.
+				continue
+			}
+			return err
+		}
+		if err := s.checkCycles(subPath, visited); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 	targetPath, err := mod.ResolveModulePath(s.SourcePath, stmt.Path)
 	if err != nil {
@@ -932,13 +976,21 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 	}
 
 	// Check if already in cache (successful load or currently loading)
-	if mod, ok := s.ModuleCache[targetPath]; ok {
-		if mod == nil {
+	if modVal, ok := s.ModuleCache[targetPath]; ok {
+		if modVal == nil {
 			return fmt.Errorf("cyclic dependency detected: %s", targetPath)
 		}
 		// If we find it in the cache, it's already evaluated
-		s.Env.Set(stmt.Alias, mod)
+		s.Env.Set(stmt.Alias, modVal)
 		return nil
+	}
+
+	// Pre-scan for cycles using ParseImportStmtsOnly
+	visited := make(map[string]bool)
+	// Add current module to visited to detect cycles back to it
+	visited[s.SourcePath] = true
+	if err := s.checkCycles(targetPath, visited); err != nil {
+		return err
 	}
 
 	// Read and parse the target file

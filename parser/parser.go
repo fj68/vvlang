@@ -116,6 +116,29 @@ func (p *Parser) Parse() (*ast.Module, error) {
 	return p.parseProgram()
 }
 
+func (p *Parser) ParseImportStmtsOnly() ([]*ast.ImportStmt, error) {
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+
+	// Collect module-level docstring (appears before imports / first statement)
+	// We call parseDocstring to skip it, as in parseProgram.
+	_ = p.parseDocstring()
+
+	var imports []*ast.ImportStmt
+	for p.curToken.Type == lexer.TImport {
+		stmt, err := p.parseImportStmt()
+		if err != nil {
+			return nil, err
+		}
+		imports = append(imports, stmt)
+	}
+	return imports, nil
+}
+
 func (p *Parser) readToken() error {
 	tok, err := p.lex.Next()
 	if err != nil {
