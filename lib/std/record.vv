@@ -1,0 +1,23 @@
+import list from "./list.vv"
+
+extern "native" fun get(r, k)
+extern "native" fun set(r, k, v)
+extern "native" fun to_list(r)
+
+pub fun keys(r)
+  list.map(to_list(r), fun (i, kv)
+    kv[0]
+  end)
+end
+
+pub fun values(r)
+  list.map(to_list(r), fun (i, kv)
+    kv[1]
+  end)
+end
+
+pub fun has(r, k)
+  list.some(keys(r), fun (i, x)
+    x == k
+  end)
+end

@@ -21,6 +21,11 @@ func CharIsDigit(s *interp.State, args []interp.Value) (interp.Value, error) {
 	return interp.VBool(unicode.IsDigit(rune(v))), nil
 }
 
+func CharIsSpace(s *interp.State, args []interp.Value) (interp.Value, error) {
+	v := args[0].(interp.VChar)
+	return interp.VBool(unicode.IsSpace(rune(v))), nil
+}
+
 func CharToBytes(s *interp.State, args []interp.Value) (interp.Value, error) {
 	v := args[0].(interp.VChar)
 	bytes := []byte(string(rune(v)))

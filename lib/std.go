@@ -28,11 +28,15 @@ var natives = map[string]map[string]interp.Value{
 		"to_upper": interp.VBuiltinFun(std.CharToUpper),
 		"to_lower": interp.VBuiltinFun(std.CharToLower),
 		"is_digit": interp.VBuiltinFun(std.CharIsDigit),
+		"is_space": interp.VBuiltinFun(std.CharIsSpace),
 		"to_bytes": interp.VBuiltinFun(std.CharToBytes),
 	},
 	"std/list.vv": {
-		"length": interp.VBuiltinFun(std.ListLength),
-		"push":   interp.VBuiltinFun(std.Push),
+		"push":    interp.VBuiltinFun(std.Push),
+		"pop":     interp.VBuiltinFun(std.Pop),
+		"shift":   interp.VBuiltinFun(std.Shift),
+		"unshift": interp.VBuiltinFun(std.Unshift),
+		"replace": interp.VBuiltinFun(std.Replace),
 	},
 	"std/float.vv": {
 		"to_string": interp.VBuiltinFun(std.FloatToString),

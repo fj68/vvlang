@@ -33,6 +33,7 @@ const (
 var precedences = map[lexer.TokenType]Precedence{
 	lexer.TIdent:    PLowest,
 	lexer.TEqual:    PEquals,
+	lexer.TLessEq:   PLess,
 	lexer.TLess:     PLess,
 	lexer.TPlus:     PSum,
 	lexer.THyphen:   PSum,

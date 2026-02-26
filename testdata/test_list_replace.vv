@@ -1,0 +1,7 @@
+import list from 'std/list.vv'
+import console from 'std/console.vv'
+
+let xs = [1, 2, 3]
+let ys = [2]
+let zs = [9]
+console.print(list.replace(xs, ys, zs))
