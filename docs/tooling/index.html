@@ -37,22 +37,26 @@
             font-family: monospace;
         }
 
-        pre {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-
-        pre code {
-            background-color: transparent;
-            padding: 0;
-        }
-
         .command {
             border-left: 4px solid #3498db;
-            padding-left: 1rem;
-            margin-bottom: 2rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        .command:hover {
+            background: #f0f0f0;
+        }
+
+        .command h2 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .command p {
+            margin-bottom: 0;
         }
     </style>
 </head>
@@ -60,102 +64,51 @@
 <body>
     <p><a href="../index.html">← Back to Index</a></p>
     <h1>vv Tooling & CLI</h1>
-    <p>The <code>vv</code> command line tool is the primary way to interact with the language. It provides commands for
-        running scripts, testing, and managing modules.</p>
+    <p>The <code>vv</code> command line tool provides several subcommands for development, testing, and package
+        management.</p>
 
-    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
-        <h2 style="margin-top: 0;">Commands</h2>
-        <ul>
-            <li><a href="#run">vv run</a></li>
-            <li><a href="#test">vv test</a></li>
-            <li><a href="#get">vv get</a></li>
-            <li><a href="#vendor">vv vendor</a></li>
-            <li><a href="#clean">vv clean</a></li>
-        </ul>
-    </div>
+    <div class="command-list" style="margin-top: 2rem;">
+        <a href="vv-run/index.html" style="text-decoration: none; color: inherit;">
+            <div class="command">
+                <h2>vv run</h2>
+                <p>Run <code>.vv</code> scripts and programs.</p>
+            </div>
+        </a>
 
-    <div id="run" class="command">
-        <h2>vv run</h2>
-        <p>Runs a <code>.vv</code> script. You can specify the path to the script. If the first argument is not a known
-            command, it is treated as a script path.</p>
-        <pre><code>vv run main.vv
-# or simply
-vv main.vv</code></pre>
-    </div>
+        <a href="vv-test/index.html" style="text-decoration: none; color: inherit;">
+            <div class="command">
+                <h2>vv test</h2>
+                <p>Run tests with built-in test discovery.</p>
+            </div>
+        </a>
 
-    <div id="test" class="command">
-        <h2>vv test</h2>
-        <p>Runs tests in the specified directory or file. If no path is provided, it defaults to the current directory.
-            It recursively searches for <code>.vv</code> files and executes <code>test</code> blocks.</p>
-        <pre><code>vv test
-vv test ./tests/my_test.vv</code></pre>
-    </div>
+        <a href="vv-doc/index.html" style="text-decoration: none; color: inherit;">
+            <div class="command">
+                <h2>vv doc</h2>
+                <p>Generate HTML documentation from source code.</p>
+            </div>
+        </a>
 
-    <div id="get" class="command">
-        <h2>vv get</h2>
-        <p>Downloads and installs a remote module into the global module cache. Modules are cloned as Git repositories.
-        </p>
-        <pre><code>vv get github.com/user/repo
-vv get github.com/user/repo@v1.0.0</code></pre>
+        <a href="vv-get/index.html" style="text-decoration: none; color: inherit;">
+            <div class="command">
+                <h2>vv get</h2>
+                <p>Download and install remote modules.</p>
+            </div>
+        </a>
 
-        <h3>Module Storage</h3>
-        <p>By default, modules are stored in a global cache directory determined by the <code>VVPATH</code> environment
-            variable. If <code>VVPATH</code> is not set, it defaults to <code>~/.vv</code> (e.g.,
-            <code>C:\Users\Name\.vv</code> on Windows or <code>/home/name/.vv</code> on Unix).
-        </p>
-        <p>The cache structure follows the remote path:
-            <code>$VVPATH/.cache/&lt;domain&gt;/&lt;user&gt;/&lt;repo&gt;[@version]</code>.
-        </p>
+        <a href="vv-vendor/index.html" style="text-decoration: none; color: inherit;">
+            <div class="command">
+                <h2>vv vendor</h2>
+                <p>Vendor dependencies for reproducible builds.</p>
+            </div>
+        </a>
 
-        <h3>Resolution Order</h3>
-        <p>When you import a module, <code>vv</code> searches for it in the following order:</p>
-        <ol>
-            <li><strong>Local Vendor</strong>: A <code>.vv-modules</code> directory in the same folder as the importing
-                file.</li>
-            <li><strong>Project Vendor</strong>: A <code>.vv-modules</code> directory at the project root (where
-                <code>vv.mod</code> is located).
-            </li>
-            <li><strong>Global Cache</strong>: The <code>.cache</code> directory inside your <code>$VVPATH</code>.</li>
-        </ol>
-        <p>The <code>vv.sum</code> file in your <code>$VVPATH</code> maintains checksums for all files in the global
-            cache to ensure integrity.</p>
-    </div>
-
-    <div id="vendor" class="command">
-        <h2>vv vendor</h2>
-        <p>Copies all dependencies into a local <code>.vv-modules</code> directory. This is useful for ensuring
-            reproducible builds without relying on external network access.</p>
-        <pre><code>vv vendor</code></pre>
-
-        <h3>Project Integrity with <code>vv.mod</code></h3>
-        <p>When you run <code>vv vendor</code> without arguments, it perform the following actions:</p>
-        <ol>
-            <li><strong>Dependency Discovery</strong>: Recursively scans all <code>.vv</code> files in your project to
-                find every imported remote module.</li>
-            <li><strong>Local Copying</strong>: Copies these modules from your global <code>$VVPATH/.cache</code> into
-                the project's <code>.vv-modules</code> directory.</li>
-            <li><strong>Locking</strong>: Creates (or updates) a <code>vv.mod</code> file at your project root.</li>
-        </ol>
-        <p>The <code>vv.mod</code> file acts as a <strong>lock file</strong>. It contains cryptographic checksums for
-            every file in the <code>.vv-modules</code> directory, ensuring that your dependencies haven't been tampered
-            with or accidentally modified.</p>
-    </div>
-
-    <div id="clean" class="command">
-        <h2>vv clean</h2>
-        <p>Removes a specific module from your global cache and clears its associated checksums.</p>
-        <pre><code>vv clean github.com/user/repo
-vv clean github.com/user/repo@v1.0.0</code></pre>
-
-        <h3>Global Cache Maintenance</h3>
-        <p>Running <code>vv clean</code> performs the following cleanup operations:</p>
-        <ul>
-            <li><strong>Directory Removal</strong>: Deletes the module's repository folder within
-                <code>$VVPATH/.cache</code>.</li>
-            <li><strong>Checksum Cleanup</strong>: Removes all entries for that module from the global
-                <code>vv.sum</code> file.</li>
-        </ul>
-        <p>This is useful if you want to force a re-download of a module or free up space in your global cache.</p>
+        <a href="vv-clean/index.html" style="text-decoration: none; color: inherit;">
+            <div class="command">
+                <h2>vv clean</h2>
+                <p>Manage the global module cache.</p>
+            </div>
+        </a>
     </div>
 
 </body>
