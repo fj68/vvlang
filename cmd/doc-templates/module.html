@@ -1,0 +1,19 @@
+{{define "title"}}{{ .ModName }}{{end}}
+
+{{define "content"}}
+<h1>Module <code>{{ .ModName }}</code></h1>
+
+{{if .Docstring}}
+<div class='docstring module-doc'>{{.Docstring}}</div>
+{{end}}
+
+<h2>Exports</h2>
+{{range .Exports}}
+<div class='export-item'>
+    <h3 id='{{.Name}}'><span class='kind'>{{.Kind}}</span> <code>{{.Name}}{{.Arguments}}</code></h3>
+    {{if .Doc}}
+    <div class='docstring'>{{.Doc}}</div>
+    {{end}}
+</div>
+{{end}}
+{{end}}

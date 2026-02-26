@@ -21,6 +21,8 @@ func main() {
 		cmd.Clean()
 	case "test":
 		cmd.Test()
+	case "doc":
+		cmd.Doc()
 	default:
 		cmd.Run()
 	}
