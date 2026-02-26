@@ -112,32 +112,59 @@ func (s *State) evalArgs(exprs []ast.Expr) ([]Value, error) {
 	return args, nil
 }
 
-func (s *State) callUserFun(f *VUserFun, args []Value) (val Value, err error) {
-	if len(f.Args) != len(args) {
-		return nil, fmt.Errorf("not enough or too much arguments")
+func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
+	s.StackDepth++
+	if s.StackDepth > s.MaxRecursionDepth {
+		s.StackDepth--
+		return nil, fmt.Errorf("call stack size overflow (max depth %d)", s.MaxRecursionDepth)
 	}
+	defer func() { s.StackDepth-- }()
 
-	oldEnv := s.Env
-	s.Env = NewEnv(f.CapturedEnv)
-	defer func() { s.Env = oldEnv }()
-
-	s.pushDeferScope()
-	defer func() {
-		deferErr := s.popDeferScope()
-		if err == nil {
-			err = deferErr
+	for {
+		if len(f.Args) != len(args) {
+			return nil, fmt.Errorf("not enough or too much arguments")
 		}
-	}()
 
-	for i, arg := range args {
-		s.Env.Values[f.Args[i]] = arg
+		retVal, tc, err := func() (val Value, tc *VTailCall, err error) {
+			oldEnv := s.Env
+			s.Env = NewEnv(f.CapturedEnv)
+			defer func() { s.Env = oldEnv }()
+
+			s.pushDeferScope()
+			defer func() {
+				deferErr := s.popDeferScope()
+				if err == nil {
+					err = deferErr
+				}
+			}()
+
+			for i, arg := range args {
+				s.Env.Values[f.Args[i]] = arg
+			}
+
+			if err = s.evalBody(f.Body); err != nil && err != ErrReturn {
+				return nil, nil, err
+			}
+
+			v := s.RetVals.Pop()
+			if tailCall, ok := v.(*VTailCall); ok {
+				return nil, tailCall, nil
+			}
+			return v, nil, nil
+		}()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if tc != nil {
+			f = tc.Fun
+			args = tc.Args
+			continue
+		}
+
+		return retVal, nil
 	}
-
-	if err = s.evalBody(f.Body); err != nil && err != ErrReturn {
-		return nil, err
-	}
-
-	return s.RetVals.Pop(), nil
 }
 
 func (s *State) callBuiltinFun(f VBuiltinFun, args []Value) (Value, error) {

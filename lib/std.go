@@ -12,8 +12,10 @@ var embedded embed.FS
 
 var natives = map[string]map[string]interp.Value{
 	"std/sys.vv": {
-		"help":    interp.VBuiltinFun(std.Help),
-		"phys_eq": interp.VBuiltinFun(std.PhysEq),
+		"help":                    interp.VBuiltinFun(std.Help),
+		"phys_eq":                 interp.VBuiltinFun(std.PhysEq),
+		"set_max_recursion_depth": interp.VBuiltinFun(std.SetMaxRecursionDepth),
+		"get_max_recursion_depth": interp.VBuiltinFun(std.GetMaxRecursionDepth),
 	},
 	"std/console.vv": {
 		"print": interp.VBuiltinFun(std.Print),

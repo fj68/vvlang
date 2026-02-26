@@ -12,25 +12,28 @@ import (
 )
 
 type State struct {
-	IsTestMode     bool
-	SourcePath     string
-	ModuleCache    map[string]*VModule
-	Env            *Env
-	RetVals        stack.Stack[Value]
-	Defers         [][]ast.Expr
-	NativeValues   map[string]Value
-	BuiltinModules map[string]map[string]Value
-	NewState       func(sourcePath string) *State
+	IsTestMode        bool
+	SourcePath        string
+	ModuleCache       map[string]*VModule
+	Env               *Env
+	RetVals           stack.Stack[Value]
+	Defers            [][]ast.Expr
+	NativeValues      map[string]Value
+	BuiltinModules    map[string]map[string]Value
+	NewState          func(sourcePath string) *State
+	MaxRecursionDepth int
+	StackDepth        int
 }
 
 func NewState(sourcePath string) *State {
 	return &State{
-		SourcePath:     sourcePath,
-		ModuleCache:    make(map[string]*VModule),
-		Env:            NewEnv(nil),
-		NativeValues:   make(map[string]Value),
-		BuiltinModules: make(map[string]map[string]Value),
-		NewState:       NewState,
+		SourcePath:        sourcePath,
+		ModuleCache:       make(map[string]*VModule),
+		Env:               NewEnv(nil),
+		NativeValues:      make(map[string]Value),
+		BuiltinModules:    make(map[string]map[string]Value),
+		NewState:          NewState,
+		MaxRecursionDepth: 1000,
 	}
 }
 
@@ -135,7 +138,7 @@ func (s *State) evalTestModule(module *ast.Module) (err error) {
 
 	for _, stmt := range module.Statements {
 		switch stmt.(type) {
-		case *ast.TestStmt, *ast.VarDeclStmt, *ast.ExternStmt, *ast.ImportStmt:
+		case *ast.TestStmt, *ast.VarDeclStmt, *ast.ExternStmt, *ast.ImportStmt, *ast.RecFunDeclStmt:
 			if err := s.evalStmt(stmt); err != nil {
 				if err == ErrReturn {
 					return fmt.Errorf("top-level return is not allowed")
@@ -187,6 +190,8 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalReturnStmt(v)
 	case *ast.VarDeclStmt:
 		return s.evalVarDeclStmt(v)
+	case *ast.RecFunDeclStmt:
+		return s.evalRecFunDeclStmt(v)
 	case *ast.AssignStmt:
 		return s.evalAssignStmt(v)
 	case *ast.BlockStmt:

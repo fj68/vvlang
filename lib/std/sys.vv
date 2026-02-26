@@ -1,1 +1,4 @@
 pub extern "native" fun help()
+pub extern "native" fun phys_eq(a, b)
+pub extern "native" fun set_max_recursion_depth(depth)
+pub extern "native" fun get_max_recursion_depth()

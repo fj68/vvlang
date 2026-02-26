@@ -20,6 +20,7 @@ const (
 
 	// keywords
 	TFun
+	TRec
 	TBegin
 	TReturn
 	TEnd
@@ -91,6 +92,8 @@ func (ty TokenType) String() string {
 		// keywords
 	case TFun:
 		return "Fun"
+	case TRec:
+		return "Rec"
 	case TBegin:
 		return "Begin"
 	case TReturn:
@@ -237,6 +240,7 @@ var Symbols2 = map[string]TokenType{
 
 var Keywords = map[string]TokenType{
 	"fun":      TFun,
+	"rec":      TRec,
 	"begin":    TBegin,
 	"return":   TReturn,
 	"end":      TEnd,

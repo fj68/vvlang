@@ -83,3 +83,22 @@ func PhysEq(s *interp.State, args []interp.Value) (interp.Value, error) {
 	}
 	return interp.VBool(args[0] == args[1]), nil
 }
+
+func SetMaxRecursionDepth(s *interp.State, args []interp.Value) (interp.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("set_max_recursion_depth() takes 1 argument")
+	}
+	depth, ok := args[0].(interp.VNumber)
+	if !ok {
+		return nil, fmt.Errorf("set_max_recursion_depth() argument must be a number, got %s", args[0].Type())
+	}
+	s.MaxRecursionDepth = int(depth)
+	return interp.VNull{}, nil
+}
+
+func GetMaxRecursionDepth(s *interp.State, args []interp.Value) (interp.Value, error) {
+	if len(args) != 0 {
+		return nil, fmt.Errorf("get_max_recursion_depth() takes 0 arguments")
+	}
+	return interp.VNumber(s.MaxRecursionDepth), nil
+}

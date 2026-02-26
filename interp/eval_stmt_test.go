@@ -277,6 +277,43 @@ end
 			ExpectedEnv: map[string]Value{"x": VNumber(1)},
 			EvalTest:    true,
 		},
+		{
+			Name: "basic recursion with TCO",
+			Input: `
+fun rec sum(n, acc)
+	if n == 0 return acc end
+	return sum(n - 1, acc + n)
+end
+let result = sum(1500, 0)
+`,
+			ExpectedEnv: map[string]Value{"result": VNumber(1125750)},
+		},
+		{
+			Name: "mutual recursion with and",
+			Input: `
+fun rec is_even(n)
+	if n == 0 return true end
+	return is_odd(n - 1)
+and is_odd(n)
+	if n == 0 return false end
+	return is_even(n - 1)
+end
+let e = is_even(4)
+let o = is_even(105)
+`,
+			ExpectedEnv: map[string]Value{"e": VBool(true), "o": VBool(false)},
+		},
+		{
+			Name: "recursion depth overflow",
+			Input: `
+fun rec stack_overflow(n)
+	if n == 0 return 0 end
+	return stack_overflow(n - 1) + 1
+end
+let result = stack_overflow(1500)
+`,
+			ExpectedErr: "call stack size overflow (max depth 1000)",
+		},
 	}
 
 	for _, tc := range tests {

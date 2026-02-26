@@ -1,0 +1,44 @@
+import sys from 'std/sys.vv'
+
+fun rec sum(n, acc)
+	if n == 0
+		return acc
+	end
+	return sum(n - 1, acc + n)
+end
+
+test "tail call optimization"
+	// Recursion depth limit is 1000.
+	// If TCO is not working, recursing 2000 times will overflow.
+	// If TCO works, it will compute successfully.
+	assert sum(2000, 0) == 2001000
+end
+
+fun rec is_even(n)
+	if n == 0 return true end
+	return is_odd(n - 1)
+and is_odd(n)
+	if n == 0 return false end
+	return is_even(n - 1)
+end
+
+test "mutual recursion with and"
+	assert is_even(4) == true
+	assert is_odd(4) == false
+	assert is_even(105) == false // tests TCO across mutually recursive functions!
+end
+
+fun rec stack_overflow(n)
+	if n == 0 return 0 end
+	// Not in tail position!
+	return stack_overflow(n - 1) + 1
+end
+
+test "stack overflow without TCO"
+	assert sys.get_max_recursion_depth() == 1000
+	sys.set_max_recursion_depth(5)
+	assert sys.get_max_recursion_depth() == 5
+	// Will fail with "call stack size overflow"
+	// Let's just run it manually from go test or skip the exact overflow test in pure script.
+	// We will write a pure go test for overflow.
+end

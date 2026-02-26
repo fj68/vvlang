@@ -20,6 +20,7 @@ const (
 	VTList
 	VTRecord
 	VTNull
+	VTTailCall
 )
 
 type ptrPair struct {
@@ -44,6 +45,8 @@ func (ty ValueType) String() string {
 		return "record"
 	case VTNull:
 		return "null"
+	case VTTailCall:
+		return "tailcall"
 	}
 	return "unknown"
 }
@@ -432,6 +435,32 @@ func (v VNull) Equal(other Value) (bool, error) {
 func (v VNull) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare null")
 }
+
+type VTailCall struct {
+	Fun  *VUserFun
+	Args []Value
+}
+
+func (v *VTailCall) Type() ValueType {
+	return VTTailCall
+}
+
+func (v *VTailCall) String() string {
+	return "<tailcall>"
+}
+
+func (v *VTailCall) Str() string {
+	return v.String()
+}
+
+func (v *VTailCall) Equal(other Value) (bool, error) {
+	return false, fmt.Errorf("cannot compare tail calls")
+}
+
+func (v *VTailCall) LessThan(other Value) (bool, error) {
+	return false, fmt.Errorf("unable to compare tail calls")
+}
+
 func StringToValue(s string) Value {
 	runes := []rune(s)
 	elems := make([]Value, len(runes))
