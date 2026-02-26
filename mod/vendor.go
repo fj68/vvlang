@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/fj68/vvlang/ast"
 	"github.com/fj68/vvlang/parser"
 )
 
@@ -177,47 +176,46 @@ func CollectDependencies(projectRoot string) ([]string, error) {
 			return err
 		}
 
-		module, err := parser.Parse([]rune(string(text)))
+		p := parser.New([]rune(string(text)))
+		imports, err := p.ParseImportStmtsOnly()
 		if err != nil {
-			return fmt.Errorf("error parsing %s: %v", path, err)
+			return fmt.Errorf("error parsing imports in %s: %v", path, err)
 		}
 
-		for _, stmt := range module.Statements {
-			if imp, ok := stmt.(*ast.ImportStmt); ok {
-				if strings.HasPrefix(imp.Path, "./") || strings.HasPrefix(imp.Path, "../") {
-					// Relative import: scan the imported file
-					target, err := ResolveModulePath(path, imp.Path)
-					if err == nil {
-						if err := scan(target); err != nil {
-							return err
-						}
+		for _, imp := range imports {
+			if strings.HasPrefix(imp.Path, "./") || strings.HasPrefix(imp.Path, "../") {
+				// Relative import: scan the imported file
+				target, err := ResolveModulePath(path, imp.Path)
+				if err == nil {
+					if err := scan(target); err != nil {
+						return err
 					}
-				} else if _, err := ParseRemotePath(imp.Path); err == nil {
-					// Remote module
-					rm, _ := ParseRemotePath(imp.Path)
-					modName := fmt.Sprintf("%s/%s/%s", rm.Domain, rm.User, rm.Repo)
-					if rm.Version != "" {
-						modName += "@" + rm.Version
-					}
+				}
+			} else if _, err := ParseRemotePath(imp.Path); err == nil {
+				// Remote module
+				rm, _ := ParseRemotePath(imp.Path)
+				modName := fmt.Sprintf("%s/%s/%s", rm.Domain, rm.User, rm.Repo)
+				if rm.Version != "" {
+					modName += "@" + rm.Version
+				}
 
-					if !foundModules[modName] {
-						foundModules[modName] = true
-						// Also scan the files in the cached module for cascading dependencies
-						cachedPath, err := ResolveModulePath(path, imp.Path)
-						if err == nil {
-							// For remote modules, we walk the cached directory
-							err = filepath.Walk(cachedPath, func(subPath string, info os.FileInfo, err error) error {
-								if err != nil {
-									return err
-								}
-								if !info.IsDir() && strings.HasSuffix(subPath, ".vv") {
-									return scan(subPath)
-								}
-								return nil
-							})
+				if !foundModules[modName] {
+					foundModules[modName] = true
+					// Also scan the files in the cached module for cascading dependencies
+					cachedPath, err := ResolveModulePath(path, imp.Path)
+					if err == nil {
+						// For remote modules, we walk the cached directory
+						err = filepath.Walk(cachedPath, func(subPath string, info os.FileInfo, err error) error {
 							if err != nil {
 								return err
 							}
+							if !info.IsDir() && strings.HasSuffix(subPath, ".vv") {
+								return scan(subPath)
+							}
+							return nil
+						})
+						if err != nil {
+							return err
 						}
 					}
 				}
