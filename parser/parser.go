@@ -89,10 +89,10 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TLBrace:       p.parseListLiteralExpr,
 		lexer.TLBracket:     p.parseRecordLiteralExpr,
 		lexer.TNull:         p.parseNullLiteralExpr,
-		lexer.TType:         p.parseTypeExpr,
-		lexer.TNot:          p.parseNotExpr,
-		lexer.TStr:          p.parseStrExpr,
-		lexer.TLen:          p.parseLenExpr,
+		lexer.TType:         p.parseBuiltinCallExpr,
+		lexer.TNot:          p.parseBuiltinCallExpr,
+		lexer.TStr:          p.parseBuiltinCallExpr,
+		lexer.TLen:          p.parseBuiltinCallExpr,
 		lexer.TInterpolated: p.parseInterpolatedStringLiteralExpr,
 		lexer.TLParen:       p.parseGroupedExpr,
 	}
@@ -1087,7 +1087,8 @@ func (p *Parser) parseNullLiteralExpr() (ast.Expr, error) {
 	return &ast.NullLiteralExpr{}, nil
 }
 
-func (p *Parser) parseTypeExpr() (ast.Expr, error) {
+func (p *Parser) parseBuiltinCallExpr() (ast.Expr, error) {
+	op := p.curToken.Text
 	pos := p.curToken.Pos
 	if err := p.readToken(); err != nil {
 		return nil, err
@@ -1102,71 +1103,9 @@ func (p *Parser) parseTypeExpr() (ast.Expr, error) {
 	if err := p.expect(lexer.TRParen); err != nil {
 		return nil, err
 	}
-	return &ast.TypeExpr{
+	return &ast.BuiltinCallExpr{
 		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
-		Value:    expr,
-	}, nil
-}
-
-func (p *Parser) parseNotExpr() (ast.Expr, error) {
-	pos := p.curToken.Pos
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	if err := p.expect(lexer.TLParen); err != nil {
-		return nil, err
-	}
-	expr, err := p.parseExpr(PLowest)
-	if err != nil {
-		return nil, err
-	}
-	if err := p.expect(lexer.TRParen); err != nil {
-		return nil, err
-	}
-	return &ast.NotExpr{
-		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
-		Value:    expr,
-	}, nil
-}
-
-func (p *Parser) parseLenExpr() (ast.Expr, error) {
-	pos := p.curToken.Pos
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	if err := p.expect(lexer.TLParen); err != nil {
-		return nil, err
-	}
-	expr, err := p.parseExpr(PLowest)
-	if err != nil {
-		return nil, err
-	}
-	if err := p.expect(lexer.TRParen); err != nil {
-		return nil, err
-	}
-	return &ast.LenExpr{
-		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
-		Value:    expr,
-	}, nil
-}
-
-func (p *Parser) parseStrExpr() (ast.Expr, error) {
-	pos := p.curToken.Pos
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	if err := p.expect(lexer.TLParen); err != nil {
-		return nil, err
-	}
-	expr, err := p.parseExpr(PLowest)
-	if err != nil {
-		return nil, err
-	}
-	if err := p.expect(lexer.TRParen); err != nil {
-		return nil, err
-	}
-	return &ast.StrExpr{
-		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
+		Op:       op,
 		Value:    expr,
 	}, nil
 }

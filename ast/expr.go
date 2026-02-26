@@ -390,70 +390,20 @@ func (expr *NullLiteralExpr) Equals(other Expr) bool {
 	return ok
 }
 
-type TypeExpr struct {
+type BuiltinCallExpr struct {
 	Position
+	Op    string
 	Value Expr
 }
 
-func (expr *TypeExpr) Inspect() string {
-	return fmt.Sprintf("TypeExpr{%s}", expr.Value.Inspect())
+func (expr *BuiltinCallExpr) Inspect() string {
+	return fmt.Sprintf("BuiltinCallExpr{\"%s\", %s}", expr.Op, expr.Value.Inspect())
 }
 
-func (expr *TypeExpr) Equals(other Expr) bool {
-	o, ok := other.(*TypeExpr)
+func (expr *BuiltinCallExpr) Equals(other Expr) bool {
+	o, ok := other.(*BuiltinCallExpr)
 	if !ok {
 		return false
 	}
-	return expr.Value.Equals(o.Value)
-}
-
-type NotExpr struct {
-	Position
-	Value Expr
-}
-
-func (expr *NotExpr) Inspect() string {
-	return fmt.Sprintf("NotExpr{%s}", expr.Value.Inspect())
-}
-
-func (expr *NotExpr) Equals(other Expr) bool {
-	o, ok := other.(*NotExpr)
-	if !ok {
-		return false
-	}
-	return expr.Value.Equals(o.Value)
-}
-
-type StrExpr struct {
-	Position
-	Value Expr
-}
-
-func (expr *StrExpr) Inspect() string {
-	return fmt.Sprintf("StrExpr{%s}", expr.Value.Inspect())
-}
-
-func (expr *StrExpr) Equals(other Expr) bool {
-	o, ok := other.(*StrExpr)
-	if !ok {
-		return false
-	}
-	return expr.Value.Equals(o.Value)
-}
-
-type LenExpr struct {
-	Position
-	Value Expr
-}
-
-func (expr *LenExpr) Inspect() string {
-	return fmt.Sprintf("LenExpr{%s}", expr.Value.Inspect())
-}
-
-func (expr *LenExpr) Equals(other Expr) bool {
-	o, ok := other.(*LenExpr)
-	if !ok {
-		return false
-	}
-	return expr.Value.Equals(o.Value)
+	return expr.Op == o.Op && expr.Value.Equals(o.Value)
 }

@@ -388,13 +388,15 @@ func TestLenParsing(t *testing.T) {
 	}{
 		{
 			input: "len(xs)",
-			expected: &ast.LenExpr{
+			expected: &ast.BuiltinCallExpr{
+				Op:    "len",
 				Value: &ast.VarRefExpr{Name: "xs"},
 			},
 		},
 		{
 			input: "len([1, 2, 3])",
-			expected: &ast.LenExpr{
+			expected: &ast.BuiltinCallExpr{
+				Op: "len",
 				Value: &ast.ListLiteralExpr{
 					Elements: []ast.Expr{
 						&ast.NumberLiteralExpr{Value: 1},
