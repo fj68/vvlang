@@ -14,5 +14,5 @@ func BoolToString(s *interp.State, args []interp.Value) (interp.Value, error) {
 	if !ok {
 		return nil, fmt.Errorf("argument for to_string() is expected bool, but got %s", args[0].Type())
 	}
-	return interp.VString(fmt.Sprintf("%t", v)), nil
+	return interp.StringToValue(fmt.Sprintf("%t", bool(v))), nil
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"unsafe"
 
 	"github.com/fj68/vvlang/ast"
 )
@@ -13,7 +14,7 @@ type ValueType int
 const (
 	VTBool ValueType = iota
 	VTNumber
-	VTString
+	VTChar
 	VTUserFun
 	VTBuiltinFun
 	VTList
@@ -21,14 +22,18 @@ const (
 	VTNull
 )
 
+type ptrPair struct {
+	a, b unsafe.Pointer
+}
+
 func (ty ValueType) String() string {
 	switch ty {
 	case VTBool:
 		return "bool"
 	case VTNumber:
 		return "number"
-	case VTString:
-		return "string"
+	case VTChar:
+		return "char"
 	case VTUserFun:
 		return "fun"
 	case VTBuiltinFun:
@@ -107,34 +112,34 @@ func (v VNumber) LessThan(other Value) (bool, error) {
 	return float64(v) < float64(x), nil
 }
 
-type VString string
+type VChar rune
 
-func (v VString) Type() ValueType {
-	return VTString
+func (v VChar) Type() ValueType {
+	return VTChar
 }
 
-func (v VString) String() string {
-	return fmt.Sprintf("\"%s\"", string(v))
+func (v VChar) String() string {
+	return fmt.Sprintf("'%c'", rune(v))
 }
 
-func (v VString) Str() string {
-	return string(v)
+func (v VChar) Str() string {
+	return string(rune(v))
 }
 
-func (v VString) Equal(other Value) (bool, error) {
-	x, ok := other.(VString)
+func (v VChar) Equal(other Value) (bool, error) {
+	x, ok := other.(VChar)
 	if !ok {
-		return false, fmt.Errorf("expected string, but got %s", other.Type())
+		return false, fmt.Errorf("expected char, but got %s", other.Type())
 	}
-	return string(x) == string(v), nil
+	return rune(x) == rune(v), nil
 }
 
-func (v VString) LessThan(other Value) (bool, error) {
-	x, ok := other.(VString)
+func (v VChar) LessThan(other Value) (bool, error) {
+	x, ok := other.(VChar)
 	if !ok {
-		return false, fmt.Errorf("expected string, but got %s", other.Type())
+		return false, fmt.Errorf("expected char, but got %s", other.Type())
 	}
-	return string(v) < string(x), nil
+	return rune(v) < rune(x), nil
 }
 
 type VUserFun struct {
@@ -199,27 +204,93 @@ func (v *VList) Type() ValueType {
 }
 
 func (v *VList) String() string {
+	if len(v.Elements) > 0 {
+		allChar := true
+		for _, e := range v.Elements {
+			if _, ok := e.(VChar); !ok {
+				allChar = false
+				break
+			}
+		}
+		if allChar {
+			var b strings.Builder
+			b.WriteRune('"')
+			for _, e := range v.Elements {
+				// We don't use e.Str() here because we want to escape special chars if needed?
+				// For now let's just use raw.
+				b.WriteString(e.(VChar).Str())
+			}
+			b.WriteRune('"')
+			return b.String()
+		}
+	} else {
+		// Empty list could be an empty string, but let's stick to [] for now
+		// unless we have a reason to prefer "".
+		// Actually, if we want it to be compatible with string expectations:
+		// return "[]"
+	}
+
 	var elements []string
 	for _, elem := range v.Elements {
-		elements = append(elements, elem.Str())
+		elements = append(elements, elem.String())
 	}
 	return fmt.Sprintf("[%s]", strings.Join(elements, ", "))
 }
 
 func (v *VList) Str() string {
+	if len(v.Elements) == 0 {
+		return ""
+	}
+	allChar := true
+	for _, e := range v.Elements {
+		if _, ok := e.(VChar); !ok {
+			allChar = false
+			break
+		}
+	}
+	if allChar {
+		var b strings.Builder
+		for _, e := range v.Elements {
+			b.WriteString(e.(VChar).Str())
+		}
+		return b.String()
+	}
 	return v.String()
 }
 
 func (v *VList) Equal(other Value) (bool, error) {
+	return v.equal(other, make(map[ptrPair]bool))
+}
+
+func (v *VList) equal(other Value, seen map[ptrPair]bool) (bool, error) {
 	x, ok := other.(*VList)
 	if !ok {
-		return false, fmt.Errorf("expected list, but got %s", other.Type())
+		return false, nil
+	}
+	if v == x {
+		return true, nil
 	}
 	if len(v.Elements) != len(x.Elements) {
 		return false, nil
 	}
+
+	pair := ptrPair{unsafe.Pointer(v), unsafe.Pointer(x)}
+	if seen[pair] {
+		return true, nil
+	}
+	seen[pair] = true
+
 	for i, elem := range v.Elements {
-		eq, err := elem.Equal(x.Elements[i])
+		var eq bool
+		var err error
+		if el, ok := elem.(interface {
+			equal(Value, map[ptrPair]bool) (bool, error)
+		}); ok {
+			eq, err = el.equal(x.Elements[i], seen)
+		} else {
+			eq, err = elem.Equal(x.Elements[i])
+		}
+
 		if err != nil {
 			return false, err
 		}
@@ -260,6 +331,10 @@ func (v *VRecord) Str() string {
 }
 
 func (v *VRecord) Equal(other Value) (bool, error) {
+	return v.equal(other, make(map[ptrPair]bool))
+}
+
+func (v *VRecord) equal(other Value, seen map[ptrPair]bool) (bool, error) {
 	var o *VRecord
 	switch tv := other.(type) {
 	case *VRecord:
@@ -267,17 +342,37 @@ func (v *VRecord) Equal(other Value) (bool, error) {
 	case *VModule:
 		o = tv.VRecord
 	default:
-		return false, fmt.Errorf("expected record, but got %s", other.Type())
+		return false, nil
+	}
+	if v == o {
+		return true, nil
 	}
 	if len(o.Fields) != len(v.Fields) {
 		return false, nil
 	}
+
+	pair := ptrPair{unsafe.Pointer(v), unsafe.Pointer(o)}
+	if seen[pair] {
+		return true, nil
+	}
+	seen[pair] = true
+
 	for k, val := range v.Fields {
 		ov, ok := o.Fields[k]
 		if !ok {
 			return false, nil
 		}
-		eq, err := val.Equal(ov)
+
+		var eq bool
+		var err error
+		if el, ok := val.(interface {
+			equal(Value, map[ptrPair]bool) (bool, error)
+		}); ok {
+			eq, err = el.equal(ov, seen)
+		} else {
+			eq, err = val.Equal(ov)
+		}
+
 		if err != nil {
 			return false, err
 		}
@@ -336,4 +431,12 @@ func (v VNull) Equal(other Value) (bool, error) {
 
 func (v VNull) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare null")
+}
+func StringToValue(s string) Value {
+	runes := []rune(s)
+	elems := make([]Value, len(runes))
+	for i, r := range runes {
+		elems[i] = VChar(r)
+	}
+	return &VList{Elements: elems}
 }

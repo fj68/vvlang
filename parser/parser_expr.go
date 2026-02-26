@@ -276,25 +276,36 @@ func (p *Parser) parseInterpolatedStringLiteralExpr() (ast.Expr, error) {
 		return nil, err
 	}
 
-	texts := []string{}
-	values := []ast.Expr{}
-
 	runes := []rune(text)
-	last := 0
 	var currentText strings.Builder
+
+	var expr ast.Expr
+
+	addPart := func(s string) {
+		if s == "" && expr != nil {
+			return
+		}
+		part := stringToCharListExpr(s)
+		if expr == nil {
+			expr = part
+		} else {
+			expr = &ast.InfixExpr{
+				Op:    "+",
+				Left:  expr,
+				Right: part,
+			}
+		}
+	}
 
 	for i := 0; i < len(runes); i++ {
 		if runes[i] == '{' {
 			if i+1 < len(runes) && runes[i+1] == '{' {
-				currentText.WriteString(string(runes[last:i]))
 				currentText.WriteRune('{')
 				i++
-				last = i + 1
 				continue
 			}
 			// Start of interpolation
-			currentText.WriteString(string(runes[last:i]))
-			texts = append(texts, currentText.String())
+			addPart(currentText.String())
 			currentText.Reset()
 
 			i++
@@ -323,28 +334,52 @@ func (p *Parser) parseInterpolatedStringLiteralExpr() (ast.Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			values = append(values, subExpr)
-			last = i + 1
+			if expr == nil {
+				expr = subExpr
+			} else {
+				expr = &ast.InfixExpr{
+					Op:    "+",
+					Left:  expr,
+					Right: subExpr,
+				}
+			}
 		} else if runes[i] == '}' {
 			if i+1 < len(runes) && runes[i+1] == '}' {
-				currentText.WriteString(string(runes[last:i]))
 				currentText.WriteRune('}')
 				i++
-				last = i + 1
 				continue
 			}
-			// Lone } is just a character if not closing an interpolation
-			// (but our loop only sees this if it's NOT inside one)
+			currentText.WriteRune('}')
+		} else {
+			currentText.WriteRune(runes[i])
 		}
 	}
-	currentText.WriteString(string(runes[last:]))
-	texts = append(texts, currentText.String())
+	addPart(currentText.String())
 
-	return &ast.InterpolatedStringLiteralExpr{
-		Position: ast.Position{Start: &pos, End: &p.curToken.Pos},
-		Texts:    texts,
-		Values:   values,
-	}, nil
+	if expr == nil {
+		return stringToCharListExpr(""), nil
+	}
+
+	// Update pos
+	switch e := expr.(type) {
+	case *ast.ListLiteralExpr:
+		e.Start = &pos
+		e.End = &p.curToken.Pos
+	case *ast.InfixExpr:
+		e.Start = &pos
+		e.End = &p.curToken.Pos
+	}
+
+	return expr, nil
+}
+
+func stringToCharListExpr(s string) ast.Expr {
+	runes := []rune(s)
+	elems := make([]ast.Expr, len(runes))
+	for i, r := range runes {
+		elems[i] = &ast.CharLiteralExpr{Value: r}
+	}
+	return &ast.ListLiteralExpr{Elements: elems}
 }
 
 func (p *Parser) parseDigitLiteralExpr() (ast.Expr, error) {
@@ -370,14 +405,16 @@ func (p *Parser) parseBoolLiteralExpr() (ast.Expr, error) {
 	}, nil
 }
 
-func (p *Parser) parseStringLiteralExpr() (ast.Expr, error) {
-	value := p.curToken.Text
+func (p *Parser) parseLiteralExpr() (ast.Expr, error) {
+	text := p.curToken.Text
+	runes := []rune(text)
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
-	return &ast.StringLiteralExpr{
-		Value: value,
-	}, nil
+	if len(runes) == 1 {
+		return &ast.CharLiteralExpr{Value: runes[0]}, nil
+	}
+	return stringToCharListExpr(text), nil
 }
 
 func (p *Parser) parseListLiteralExpr() (ast.Expr, error) {

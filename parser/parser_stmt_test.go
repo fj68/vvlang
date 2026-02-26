@@ -152,7 +152,15 @@ func TestParseStmt(t *testing.T) {
 												Left: &ast.FunCallExpr{
 													Fun: &ast.VarRefExpr{Name: "get_key"},
 												},
-												Right: &ast.StringLiteralExpr{Value: "enter"},
+												Right: &ast.ListLiteralExpr{
+													Elements: []ast.Expr{
+														&ast.CharLiteralExpr{Value: 'e'},
+														&ast.CharLiteralExpr{Value: 'n'},
+														&ast.CharLiteralExpr{Value: 't'},
+														&ast.CharLiteralExpr{Value: 'e'},
+														&ast.CharLiteralExpr{Value: 'r'},
+													},
+												},
 											},
 											Then: &ast.BlockStmt{
 												Body: []ast.Stmt{

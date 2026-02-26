@@ -60,17 +60,17 @@ func (expr *BoolLiteralExpr) Equals(other Expr) bool {
 	return expr.Value == o.Value
 }
 
-type StringLiteralExpr struct {
+type CharLiteralExpr struct {
 	Position
-	Value string
+	Value rune
 }
 
-func (expr *StringLiteralExpr) Inspect() string {
-	return fmt.Sprintf("StringLiteralExpr{%s}", expr.Value)
+func (expr *CharLiteralExpr) Inspect() string {
+	return fmt.Sprintf("CharLiteralExpr{'%c'}", expr.Value)
 }
 
-func (expr *StringLiteralExpr) Equals(other Expr) bool {
-	o, ok := other.(*StringLiteralExpr)
+func (expr *CharLiteralExpr) Equals(other Expr) bool {
+	o, ok := other.(*CharLiteralExpr)
 	if !ok {
 		return false
 	}
@@ -106,45 +106,6 @@ func (expr *RecordLiteralExpr) Equals(other Expr) bool {
 	for k, v := range expr.Fields {
 		ov, ok := o.Fields[k]
 		if !ok || !v.Equals(ov) {
-			return false
-		}
-	}
-	return true
-}
-
-type InterpolatedStringLiteralExpr struct {
-	Position
-	Texts  []string
-	Values []Expr
-}
-
-func (expr *InterpolatedStringLiteralExpr) Inspect() string {
-	var b strings.Builder
-	b.WriteString(expr.Texts[0])
-	for i, value := range expr.Values {
-		b.WriteRune('{')
-		b.WriteString(value.Inspect())
-		b.WriteRune('}')
-		b.WriteString(expr.Texts[i+1])
-	}
-	return fmt.Sprintf("InterpolatedStringLiteralExpr{\"%s\"}", b.String())
-}
-
-func (expr *InterpolatedStringLiteralExpr) Equals(other Expr) bool {
-	o, ok := other.(*InterpolatedStringLiteralExpr)
-	if !ok {
-		return false
-	}
-	if len(expr.Texts) != len(o.Texts) || len(expr.Values) != len(o.Values) {
-		return false
-	}
-	for i := range expr.Texts {
-		if expr.Texts[i] != o.Texts[i] {
-			return false
-		}
-	}
-	for i := range expr.Values {
-		if !expr.Values[i].Equals(o.Values[i]) {
 			return false
 		}
 	}

@@ -12,7 +12,7 @@ func TestEvalExpr(t *testing.T) {
 			ExpectedEnv: map[string]Value{
 				"result": &VRecord{
 					Fields: map[string]Value{
-						"name": VString("value"),
+						"name": StringToValue("value"),
 						"key":  VNumber(8),
 					},
 				},
@@ -24,7 +24,7 @@ func TestEvalExpr(t *testing.T) {
 			ExpectedEnv: map[string]Value{
 				"result": &VRecord{
 					Fields: map[string]Value{
-						"name": VString("value"),
+						"name": StringToValue("value"),
 						"key":  VNumber(8),
 					},
 				},
@@ -33,7 +33,7 @@ func TestEvalExpr(t *testing.T) {
 		{
 			Name:        "record field access",
 			Input:       "r = { name = 'value', key = 8 }\nlet result = r.name",
-			ExpectedEnv: map[string]Value{"result": VString("value")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("value")},
 		},
 		{
 			Name:        "record field access number",
@@ -50,7 +50,7 @@ end
 alice_name = get_alice(admins).name
 let result = alice_name
 `,
-			ExpectedEnv: map[string]Value{"result": VString("Alice")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("Alice")},
 		},
 		{
 			Name: "simple destructuring",
@@ -112,57 +112,57 @@ let result = { v = value, e = error }`,
 		{
 			Name:        "str(number)",
 			Input:       `let result = str(123)`,
-			ExpectedEnv: map[string]Value{"result": VString("123")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("123")},
 		},
 		{
 			Name:        "str(bool)",
 			Input:       `let result = str(true)`,
-			ExpectedEnv: map[string]Value{"result": VString("true")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("true")},
 		},
 		{
 			Name:        "str(list)",
 			Input:       `let result = str([1, 2])`,
-			ExpectedEnv: map[string]Value{"result": VString("[1, 2]")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("[1, 2]")},
 		},
 		{
 			Name:        "str(record)",
 			Input:       `let result = str({a=1})`,
-			ExpectedEnv: map[string]Value{"result": VString("{ a = 1 }")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("{ a = 1 }")},
 		},
 		{
 			Name:        "str(null)",
 			Input:       `let result = str(null)`,
-			ExpectedEnv: map[string]Value{"result": VString("null")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("null")},
 		},
 		{
 			Name:        "str(var)",
 			Input:       "let x = 8\n let result = str(x)",
-			ExpectedEnv: map[string]Value{"result": VString("8")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("8")},
 		},
 		{
 			Name:        "interpolation basic",
 			Input:       "let name = \"world\"\nlet result = \"hello, {name}!\"",
-			ExpectedEnv: map[string]Value{"result": VString("hello, world!")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("hello, world!")},
 		},
 		{
 			Name:        "interpolation math",
 			Input:       "let a = 1\nlet b = 2\nlet result = \"{a} + {b} = {a + b}\"",
-			ExpectedEnv: map[string]Value{"result": VString("1 + 2 = 3")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("1 + 2 = 3")},
 		},
 		{
 			Name:        "interpolation list",
 			Input:       "let l = [1, 2]\nlet result = \"list: {l}\"",
-			ExpectedEnv: map[string]Value{"result": VString("list: [1, 2]")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("list: [1, 2]")},
 		},
 		{
 			Name:        "interpolation record",
 			Input:       "let r = { a = 1, b = \"s\" }\nlet result = \"record: {r}\"",
-			ExpectedEnv: map[string]Value{"result": VString("record: { a = 1, b = s }")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("record: { a = 1, b = s }")},
 		},
 		{
 			Name:        "interpolation nested braces syntax",
 			Input:       `let result = "nested: {{1}} {2}"`,
-			ExpectedEnv: map[string]Value{"result": VString("nested: {1} 2")},
+			ExpectedEnv: map[string]Value{"result": StringToValue("nested: {1} 2")},
 		},
 		{
 			Name:  "list literal eval",
@@ -189,7 +189,7 @@ let result = { v = value, e = error }`,
 			Name:  "list literal mixed",
 			Input: "let result = [42, 'hello', true]",
 			ExpectedEnv: map[string]Value{"result": &VList{
-				Elements: []Value{VNumber(42), VString("hello"), VBool(true)},
+				Elements: []Value{VNumber(42), StringToValue("hello"), VBool(true)},
 			}},
 		},
 		{
@@ -220,7 +220,7 @@ let result = { v = value, e = error }`,
 		{
 			Name:        "len invalid type",
 			Input:       "let n = len(123)",
-			ExpectedErr: "argument for len() is expected string or list, but got number",
+			ExpectedErr: "argument for len() is expected list, but got number",
 		},
 	}
 
