@@ -333,6 +333,8 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalNotExpr(v)
 	case *ast.StrExpr:
 		return s.evalStrExpr(v)
+	case *ast.LenExpr:
+		return s.evalLenExpr(v)
 	case *ast.InterpolatedStringLiteralExpr:
 		return s.evalInterpolatedStringLiteralExpr(v)
 	default:
@@ -377,6 +379,21 @@ func (s *State) evalStrExpr(expr *ast.StrExpr) (Value, error) {
 		return nil, err
 	}
 	return VString(v.Str()), nil
+}
+
+func (s *State) evalLenExpr(expr *ast.LenExpr) (Value, error) {
+	v, err := s.evalExpr(expr.Value)
+	if err != nil {
+		return nil, err
+	}
+	switch tv := v.(type) {
+	case VString:
+		return VNumber(len([]rune(string(tv)))), nil
+	case *VList:
+		return VNumber(len(tv.Elements)), nil
+	default:
+		return nil, fmt.Errorf("argument for len() is expected string or list, but got %s", v.Type())
+	}
 }
 
 func (s *State) evalInterpolatedStringLiteralExpr(expr *ast.InterpolatedStringLiteralExpr) (Value, error) {

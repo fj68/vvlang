@@ -47,6 +47,7 @@ const (
 	TType
 	TNot
 	TStr
+	TLen
 
 	// symbols
 	TLessEq
@@ -144,6 +145,8 @@ func (ty TokenType) String() string {
 		return "Not"
 	case TStr:
 		return "Str"
+	case TLen:
+		return "Len"
 
 	// symbols
 	case TLessEq:
@@ -261,6 +264,7 @@ var Keywords = map[string]TokenType{
 	"type":     TType,
 	"not":      TNot,
 	"str":      TStr,
+	"len":      TLen,
 }
 
 var Comments = map[string]string{

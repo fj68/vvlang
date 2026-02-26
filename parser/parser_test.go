@@ -380,3 +380,43 @@ func TestParseImportStmtsOnly(t *testing.T) {
 		})
 	}
 }
+
+func TestLenParsing(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected ast.Expr
+	}{
+		{
+			input: "len(xs)",
+			expected: &ast.LenExpr{
+				Value: &ast.VarRefExpr{Name: "xs"},
+			},
+		},
+		{
+			input: "len([1, 2, 3])",
+			expected: &ast.LenExpr{
+				Value: &ast.ListLiteralExpr{
+					Elements: []ast.Expr{
+						&ast.NumberLiteralExpr{Value: 1},
+						&ast.NumberLiteralExpr{Value: 2},
+						&ast.NumberLiteralExpr{Value: 3},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			p := New([]rune("let x = " + tt.input))
+			module, err := p.Parse()
+			if err != nil {
+				t.Fatalf("Parse error: %v", err)
+			}
+			stmt := module.Statements[0].(*ast.VarDeclStmt)
+			if !stmt.Body.Equals(tt.expected) {
+				t.Errorf("expected %s, got %s", tt.expected.Inspect(), stmt.Body.Inspect())
+			}
+		})
+	}
+}
