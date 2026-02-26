@@ -1,3 +1,5 @@
+import sys from 'std/sys.vv'
+
 fun rec sum(n, acc)
 	if n == 0
 		return acc
@@ -33,8 +35,10 @@ fun rec stack_overflow(n)
 end
 
 test "stack overflow without TCO"
+	assert sys.get_max_recursion_depth() == 1000
+	sys.set_max_recursion_depth(5)
+	assert sys.get_max_recursion_depth() == 5
 	// Will fail with "call stack size overflow"
-	// But tests don't have "expect error" easily in vvlang scripts maybe?
 	// Let's just run it manually from go test or skip the exact overflow test in pure script.
 	// We will write a pure go test for overflow.
 end
