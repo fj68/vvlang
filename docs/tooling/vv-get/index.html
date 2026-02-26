@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vv get - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .command {
+            border-left: 4px solid #3498db;
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Tooling</a></p>
+    <h1>vv get</h1>
+    <div class="command">
+        <p>Downloads and installs a remote module into the global module cache. Modules are cloned as Git repositories.
+        </p>
+        <pre><code>vv get github.com/user/repo
+vv get github.com/user/repo@v1.0.0</code></pre>
+
+        <h3>Module Storage</h3>
+        <p>By default, modules are stored in a global cache directory determined by the <code>VVPATH</code> environment
+            variable. If <code>VVPATH</code> is not set, it defaults to <code>~/.vv</code> (e.g.,
+            <code>C:\Users\Name\.vv</code> on Windows or <code>/home/name/.vv</code> on Unix).
+        </p>
+        <p>The cache structure follows the remote path:
+            <code>$VVPATH/.cache/&lt;domain&gt;/&lt;user&gt;/&lt;repo&gt;[@version]</code>.
+        </p>
+
+        <h3>Resolution Order</h3>
+        <p>When you import a module, <code>vv</code> searches for it in the following order:</p>
+        <ol>
+            <li><strong>Local Vendor</strong>: A <code>.vv-modules</code> directory in the same folder as the importing
+                file.</li>
+            <li><strong>Project Vendor</strong>: A <code>.vv-modules</code> directory at the project root (where
+                <code>vv.mod</code> is located).
+            </li>
+            <li><strong>Global Cache</strong>: The <code>.cache</code> directory inside your <code>$VVPATH</code>.</li>
+        </ol>
+        <p>The <code>vv.sum</code> file in your <code>$VVPATH</code> maintains checksums for all files in the global
+            cache to ensure integrity.</p>
+    </div>
+</body>
+
+</html>

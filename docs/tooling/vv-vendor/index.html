@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vv vendor - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .command {
+            border-left: 4px solid #3498db;
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Tooling</a></p>
+    <h1>vv vendor</h1>
+    <div class="command">
+        <p>Copies all dependencies into a local <code>.vv-modules</code> directory. This is useful for ensuring
+            reproducible builds without relying on external network access.</p>
+        <pre><code>vv vendor</code></pre>
+
+        <h3>Project Integrity with <code>vv.mod</code></h3>
+        <p>When you run <code>vv vendor</code> without arguments, it perform the following actions:</p>
+        <ol>
+            <li><strong>Dependency Discovery</strong>: Recursively scans all <code>.vv</code> files in your project to
+                find every imported remote module.</li>
+            <li><strong>Local Copying</strong>: Copies these modules from your global <code>$VVPATH/.cache</code> into
+                the project's <code>.vv-modules</code> directory.</li>
+            <li><strong>Locking</strong>: Creates (or updates) a <code>vv.mod</code> file at your project root.</li>
+        </ol>
+        <p>The <code>vv.mod</code> file acts as a <strong>lock file</strong>. It contains cryptographic checksums for
+            every file in the <code>.vv-modules</code> directory, ensuring that your dependencies haven't been tampered
+            with or accidentally modified.</p>
+    </div>
+</body>
+
+</html>
