@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vv Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #3498db;
+        }
+
+        .card p {
+            margin-bottom: 0;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>vv Documentation</h1>
+    <p>Official documentation for the <code>vv</code> programming language.</p>
+
+    <div class="card-container">
+        <a href="language_reference/index.html" class="card">
+            <h3>Language Reference</h3>
+            <p>Learn about types, syntax, control flow, functions, and the standard library.</p>
+        </a>
+        <a href="tooling/index.html" class="card">
+            <h3>Tooling & CLI</h3>
+            <p>Documentation for the <code>vv</code> command line tool, testing, and project management.</p>
+        </a>
+    </div>
+</body>
+
+</html>
