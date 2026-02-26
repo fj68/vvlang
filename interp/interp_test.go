@@ -499,6 +499,59 @@ end`,
 			expectedEnv: map[string]Value{"x": VNumber(2)},
 			evalTest:    true,
 		},
+		{
+			name: "top-level let is evaluated in test mode",
+			input: `
+let x = 10
+test 'use let'
+  assert x == 10
+  let y = x + 5
+end
+`,
+			expectedEnv: map[string]Value{"x": VNumber(10), "y": VNumber(15)},
+			evalTest:    true,
+		},
+		{
+			name: "top-level fun is evaluated in test mode",
+			input: `
+fun add(a, b) return a + b end
+test 'use fun'
+  let result = add(2, 3)
+  assert result == 5
+end
+`,
+			expectedEnv: map[string]Value{"result": VNumber(5)},
+			evalTest:    true,
+		},
+		{
+			name: "top-level extern is evaluated in test mode",
+			input: `
+extern 'native' fun my_native()
+test 'use extern'
+  let result = my_native()
+  assert result == 100
+end
+`,
+			globals: map[string]Value{
+				"my_native": VBuiltinFun(func(s *State, args []Value) (Value, error) {
+					return VNumber(100), nil
+				}),
+			},
+			expectedEnv: map[string]Value{"result": VNumber(100)},
+			evalTest:    true,
+		},
+		{
+			name: "top-level assignments and expressions are ignored in test mode",
+			input: `
+let x = 1
+x = 2
+test 'check x'
+  assert x == 1
+end
+`,
+			expectedEnv: map[string]Value{"x": VNumber(1)},
+			evalTest:    true,
+		},
 	}
 
 	for _, tt := range tests {

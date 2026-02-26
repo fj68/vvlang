@@ -5,4 +5,3 @@ fun get_alice(r)
 end
 
 let alice_name = get_alice(admins).name
-return alice_name
