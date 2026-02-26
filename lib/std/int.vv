@@ -1,2 +1,17 @@
+// The `int` module provides standard utilities for integer numbers.
+
+// Converts an integer to its string representation.
+//
+// Example:
+// ```vv
+// int.to_string(42) // "42"
+// ```
 pub extern "native" fun to_string(i)
+
+// Converts an integer to a floating-point number.
+//
+// Example:
+// ```vv
+// int.to_float(42) // 42.0
+// ```
 pub extern "native" fun to_float(i)

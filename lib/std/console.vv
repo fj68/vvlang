@@ -1,1 +1,10 @@
+// The `console` module provides standard input and output utilities.
+
+// Prints a value to the standard output, followed by a newline.
+//
+// Example:
+// ```vv
+// console.print("Hello, World!")
+// console.print(42)
+// ```
 pub extern "native" fun print(v)

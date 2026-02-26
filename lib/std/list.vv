@@ -1,9 +1,66 @@
+// The `list` module provides utilities for working with lists (arrays).
+// Lists are ordered, mutable collections of elements of any type.
+
+// Adds a value to the end of a list.
+// Returns the modified list.
+//
+// Example:
+// ```vv
+// let l = [1, 2]
+// list.push(l, 3) // [1, 2, 3]
+// ```
 pub extern "native" fun push(l, v)
+
+// Removes and returns the last element from a list.
+// Returns `null` if the list is empty.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.pop(l) // 3
+// // l is now [1, 2]
+// ```
 pub extern "native" fun pop(l)
+
+// Removes and returns the first element from a list.
+// Returns `null` if the list is empty.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.shift(l) // 1
+// // l is now [2, 3]
+// ```
 pub extern "native" fun shift(l)
+
+// Adds a value to the beginning of a list.
+// Returns the modified list.
+//
+// Example:
+// ```vv
+// let l = [2, 3]
+// list.unshift(l, 1) // [1, 2, 3]
+// ```
 pub extern "native" fun unshift(l, v)
+
+// Replaces occurrences of a sub-list pattern within a list with another pattern.
+// Returns a new list.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3, 2, 3, 4]
+// list.replace(l, [2, 3], [5, 6]) // [1, 5, 6, 5, 6, 4]
+// ```
 pub extern "native" fun replace(xs, from_pattern, to_pattern)
 
+// Iterates over each element in a list and applies a function to it.
+// The applied function receives the index and the element as arguments.
+//
+// Example:
+// ```vv
+// let l = ["a", "b"]
+// list.each(l, fun (i, x) console.print(x) end)
+// ```
 pub fun each(xs, f)
     let i = 0
     while i < len(xs)
@@ -12,6 +69,14 @@ pub fun each(xs, f)
     end
 end
 
+// Returns a new list with the results of applying a function to every element.
+// The applied function receives the index and the element as arguments.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.map(l, fun (i, x) x * 2 end) // [2, 4, 6]
+// ```
 pub fun map(xs, f)
   let rs = []
   each(xs, fun (i, x)
@@ -20,6 +85,14 @@ pub fun map(xs, f)
   return rs
 end
 
+// Returns a new list containing only elements that satisfy the provided testing function.
+// The testing function receives the index and the element as arguments.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3, 4]
+// list.filter(l, fun (i, x) x % 2 == 0 end) // [2, 4]
+// ```
 pub fun filter(xs, f)
   let rs = []
   each(xs, fun (i, x)
@@ -30,6 +103,13 @@ pub fun filter(xs, f)
   return rs
 end
 
+// Returns a new list with the elements of the original list in reverse order.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.reverse(l) // [3, 2, 1]
+// ```
 pub fun reverse(xs)
   let rs = []
   let i = len(xs) - 1
@@ -40,6 +120,14 @@ pub fun reverse(xs)
   return rs
 end
 
+// Applies a function against an accumulator and each element (from left to right) to reduce it to a single value.
+// The applied function receives the accumulator, the index, and the element as arguments.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.fold_left(l, 0, fun (acc, i, x) acc + x end) // 6
+// ```
 pub fun fold_left(xs, init, f)
   let rs = init
   each(xs, fun (i, x)
@@ -48,6 +136,14 @@ pub fun fold_left(xs, init, f)
   return rs
 end
 
+// Applies a function against an accumulator and each element (from right to left) to reduce it to a single value.
+// The applied function receives the accumulator, the index, and the element as arguments.
+//
+// Example:
+// ```vv
+// let l = ["a", "b", "c"]
+// list.fold_right(l, "", fun (acc, i, x) acc + x end) // "cba"
+// ```
 pub fun fold_right(xs, init, f)
   let rs = init
   let i = len(xs) - 1
@@ -58,6 +154,14 @@ pub fun fold_right(xs, init, f)
   return rs
 end
 
+// Returns the first element of a list.
+// Returns `null` if the list is empty.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.head(l) // 1
+// ```
 pub fun head(xs)
   if len(xs) == 0
     return nil
@@ -65,13 +169,29 @@ pub fun head(xs)
   return xs[0]
 end
 
+// Returns a new list containing all elements except the first one.
+// Returns `null` if the list is empty.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.tail(l) // [2, 3]
+// ```
 pub fun tail(xs)
   if len(xs) == 0
-    return nil
+    return null
   end
   return xs[1:]
 end
 
+// Flattens a list of lists into a single continuous list.
+// Note: Only flattens exactly one level deep.
+//
+// Example:
+// ```vv
+// let l = [[1, 2], [3, 4]]
+// list.flat(l) // [1, 2, 3, 4]
+// ```
 pub fun flat(xs)
   let rs = []
   each(xs, fun (_, x)
@@ -86,10 +206,24 @@ pub fun flat(xs)
   return rs
 end
 
+// Maps a function over a list and optionally flattens the result by one level.
+//
+// Example:
+// ```vv
+// let l = [1, 2]
+// list.flat_map(l, fun (i, x) [x, x * 2] end) // [1, 2, 2, 4]
+// ```
 pub fun flat_map(xs, f)
   flat(map(xs, f))
 end
 
+// Joins all elements of a list, placing the provided separator between each element.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.join(l, 0) // [1, 0, 2, 0, 3]
+// ```
 pub fun join(xs, sep)
   let rs = []
   each(xs, fun (i, x)
@@ -101,6 +235,12 @@ pub fun join(xs, sep)
   return rs
 end
 
+// Creates a list of size `n`, initializing each element using the function `f(index)`.
+//
+// Example:
+// ```vv
+// list.init(3, fun (i) i * 2 end) // [0, 2, 4]
+// ```
 pub fun init(n, f)
   let rs = []
   let i = 0
@@ -111,6 +251,13 @@ pub fun init(n, f)
   return rs
 end
 
+// Returns the element that produces the maximum value when `f(element)` is applied.
+//
+// Example:
+// ```vv
+// let l = [1, 5, 2]
+// list.max(l, fun (x) x end) // 5
+// ```
 pub fun max(xs, f)
   let m = xs[0]
   each(xs, fun (_, x)
@@ -121,6 +268,13 @@ pub fun max(xs, f)
   return m
 end
 
+// Returns the element that produces the minimum value when `f(element)` is applied.
+//
+// Example:
+// ```vv
+// let l = [1, 5, 2]
+// list.min(l, fun (x) x end) // 1
+// ```
 pub fun min(xs, f)
   let m = xs[0]
   each(xs, fun (_, x)
@@ -131,6 +285,13 @@ pub fun min(xs, f)
   return m
 end
 
+// Splits a list into two lists: one containing elements that satisfy the condition `f(index, element)`, and another for elements that don't.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3, 4]
+// list.partition(l, fun (i, x) x % 2 == 0 end) // [[2, 4], [1, 3]]
+// ```
 pub fun partition(xs, f)
   let ys = []
   let zs = []
@@ -144,6 +305,14 @@ pub fun partition(xs, f)
   return [ys, zs]
 end
 
+// Pairs elements of two lists based on their index. The longer list is truncated to the shorter list's length.
+//
+// Example:
+// ```vv
+// let a = [1, 2]
+// let b = ["a", "b"]
+// list.zip(a, b) // [[1, "a"], [2, "b"]]
+// ```
 pub fun zip(xs, ys)
   let rs = []
   let i = 0
@@ -166,6 +335,13 @@ pub fun zip(xs, ys)
   return rs
 end
 
+// Checks if all elements in the list satisfy the applied condition `f(index, element)`.
+//
+// Example:
+// ```vv
+// let l = [2, 4, 6]
+// list.every(l, fun (i, x) x % 2 == 0 end) // true
+// ```
 pub fun every(xs, f)
   let i = 0
   while i < len(xs)
@@ -177,6 +353,13 @@ pub fun every(xs, f)
   return true
 end
 
+// Checks if at least one element in the list satisfies the applied condition `f(index, element)`.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.some(l, fun (i, x) x % 2 == 0 end) // true
+// ```
 pub fun some(xs, f)
   let i = 0
   while i < len(xs)
@@ -188,6 +371,14 @@ pub fun some(xs, f)
   return false
 end
 
+// Returns the first element in the list that satisfies the condition `f(index, element)`.
+// Returns `null` if no such element is found.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.find(l, fun (i, x) x % 2 == 0 end) // 2
+// ```
 pub fun find(xs, f)
   let i = 0
   while i < len(xs)
@@ -196,9 +387,17 @@ pub fun find(xs, f)
     end
     i += 1
   end
-  return nil
+  return null
 end
 
+// Returns the index of the first element in the list that satisfies the condition `f(index, element)`.
+// Returns `-1` if no such element is found.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3]
+// list.find_index(l, fun (i, x) x % 2 == 0 end) // 1
+// ```
 pub fun find_index(xs, f)
   let i = 0
   while i < len(xs)
@@ -210,6 +409,14 @@ pub fun find_index(xs, f)
   return -1
 end
 
+// Searches for a sub-list pattern within the list and returns the start index.
+// Returns `-1` if not found.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3, 4]
+// list.find_pattern(l, [2, 3]) // 1
+// ```
 pub fun find_pattern(xs, ys)
   let i = 0
   while i < len(xs)
@@ -230,6 +437,14 @@ pub fun find_pattern(xs, ys)
   return -1
 end
 
+// Takes elements from the beginning of the list as long as they satisfy the condition `f(index, element)`.
+// Stops at the first element that fails the condition.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3, 4]
+// list.take_while(l, fun (i, x) x < 3 end) // [1, 2]
+// ```
 pub fun take_while(xs, f)
   let rs = []
   let i = 0
@@ -244,6 +459,14 @@ pub fun take_while(xs, f)
   return rs
 end
 
+// Drops elements from the beginning of the list as long as they satisfy the condition `f(index, element)`.
+// Returns the remaining elements starting from the first element that fails the condition.
+//
+// Example:
+// ```vv
+// let l = [1, 2, 3, 4]
+// list.drop_while(l, fun (i, x) x < 3 end) // [3, 4]
+// ```
 pub fun drop_while(xs, f)
   let rs = []
   let i = 0

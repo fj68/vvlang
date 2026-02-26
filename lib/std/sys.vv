@@ -1,4 +1,37 @@
+// The `sys` module provides system-level capabilities and interpreter control.
+
+// Prints help information about the language and available built-ins.
+//
+// Example:
+// ```vv
+// sys.help()
+// ```
 pub extern "native" fun help()
+
+// Checks if two values refer to the exact same object in memory (physical equality).
+//
+// Example:
+// ```vv
+// let a = [1]
+// let b = [1]
+// sys.phys_eq(a, b) // false
+// sys.phys_eq(a, a) // true
+// ```
 pub extern "native" fun phys_eq(a, b)
+
+// Sets the maximum recursion depth allowed by the interpreter.
+// Prevents stack overflow panics by throwing a catchable runtime error instead.
+//
+// Example:
+// ```vv
+// sys.set_max_recursion_depth(100)
+// ```
 pub extern "native" fun set_max_recursion_depth(depth)
+
+// Returns the current maximum recursion depth allowed by the interpreter.
+//
+// Example:
+// ```vv
+// sys.get_max_recursion_depth() // 1000
+// ```
 pub extern "native" fun get_max_recursion_depth()

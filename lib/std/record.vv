@@ -1,21 +1,72 @@
+// The `record` module provides utilities for working with records (key-value maps).
+// Records are unordered collections of fields, where keys are typically strings or integers.
+
 import list from "./list.vv"
 
+// Gets the value associated with the given key in a record.
+// Returns `null` if the key does not exist.
+//
+// Example:
+// ```vv
+// let r = {a: 1}
+// record.get(r, "a") // 1
+// record.get(r, "b") // null
+// ```
 extern "native" fun get(r, k)
+
+// Sets the value for the given key in a record, modifying it in place.
+// Returns the modified record.
+//
+// Example:
+// ```vv
+// let r = {}
+// record.set(r, "a", 1) // {a: 1}
+// ```
 extern "native" fun set(r, k, v)
+
+// Converts a record to a list of key-value pairs (each pair is a list of [key, value]).
+//
+// Example:
+// ```vv
+// let r = {a: 1, b: 2}
+// record.to_list(r) // [["a", 1], ["b", 2]]
+// ```
 extern "native" fun to_list(r)
 
+// Returns a list of all keys in the record.
+//
+// Example:
+// ```vv
+// let r = {a: 1, b: 2}
+// record.keys(r) // ["a", "b"]
+// ```
 pub fun keys(r)
   list.map(to_list(r), fun (i, kv)
     kv[0]
   end)
 end
 
+// Returns a list of all values in the record.
+//
+// Example:
+// ```vv
+// let r = {a: 1, b: 2}
+// record.values(r) // [1, 2]
+// ```
 pub fun values(r)
   list.map(to_list(r), fun (i, kv)
     kv[1]
   end)
 end
 
+// Checks if the record contains the specified key.
+//
+// Example:
+// ```vv
+// let r = {foo: "bar"}
+// record.has(r, "foo") // true
+// record.has(r, "baz") // false
+// ```
 pub fun has(r, k)
   list.some(keys(r), fun (i, x)
     x == k

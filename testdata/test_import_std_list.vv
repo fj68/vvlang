@@ -3,7 +3,7 @@ import console from 'std/console.vv'
 
 let xs = [1, 2, 3]
 
-fun incr(x)
+fun incr(_, x)
     return x + 1
 end
 
