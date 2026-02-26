@@ -1,16 +1,17 @@
 package std
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/fj68/vvlang/interp"
 )
 
 func Print(s *interp.State, args []interp.Value) (interp.Value, error) {
-	var b strings.Builder
+	var strs []string
 	for _, arg := range args {
-		b.WriteString(arg.String())
+		strs = append(strs, arg.Str())
 	}
-	println(b.String())
-	return nil, nil
+	fmt.Println(strings.Join(strs, " "))
+	return interp.VNull{}, nil
 }

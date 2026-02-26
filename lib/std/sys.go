@@ -77,3 +77,9 @@ func pickDoc(docs map[string]string) string {
 	}
 	return docs["en"]
 }
+func PhysEq(s *interp.State, args []interp.Value) (interp.Value, error) {
+	if len(args) != 2 {
+		return nil, fmt.Errorf("phys_eq() takes 2 arguments")
+	}
+	return interp.VBool(args[0] == args[1]), nil
+}

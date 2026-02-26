@@ -14,5 +14,5 @@ func FloatToString(s *interp.State, args []interp.Value) (interp.Value, error) {
 	if !ok {
 		return nil, fmt.Errorf("argument for to_string() is expected number, but got %s", args[0].Type())
 	}
-	return interp.VString(fmt.Sprintf("%g", v)), nil
+	return interp.StringToValue(fmt.Sprintf("%g", float64(v))), nil
 }

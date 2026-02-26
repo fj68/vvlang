@@ -222,8 +222,8 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return VBool(v.Value), nil
 	case *ast.NumberLiteralExpr:
 		return VNumber(v.Value), nil
-	case *ast.StringLiteralExpr:
-		return VString(v.Value), nil
+	case *ast.CharLiteralExpr:
+		return VChar(v.Value), nil
 	case *ast.RecordLiteralExpr:
 		return s.evalRecordLiteralExpr(v)
 	case *ast.NullLiteralExpr:
@@ -248,8 +248,6 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalFieldAccessExpr(v)
 	case *ast.BuiltinCallExpr:
 		return s.evalBuiltinCallExpr(v)
-	case *ast.InterpolatedStringLiteralExpr:
-		return s.evalInterpolatedStringLiteralExpr(v)
 	default:
 		return nil, fmt.Errorf("unknown expr: %s", v.Inspect())
 	}

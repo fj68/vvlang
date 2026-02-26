@@ -1,0 +1,4 @@
+extern 'native' fun to_upper(c)
+extern 'native' fun to_lower(c)
+extern 'native' fun is_digit(c)
+extern 'native' fun to_bytes(c)

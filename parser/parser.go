@@ -81,7 +81,7 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TDigit:        p.parseDigitLiteralExpr,
 		lexer.TTrue:         p.parseBoolLiteralExpr,
 		lexer.TFalse:        p.parseBoolLiteralExpr,
-		lexer.TLiteral:      p.parseStringLiteralExpr,
+		lexer.TLiteral:      p.parseLiteralExpr,
 		lexer.THyphen:       p.parsePrefixExpr,
 		lexer.TIdent:        p.parseVarRefExpr,
 		lexer.TFun:          p.parseFunLiteralExpr,

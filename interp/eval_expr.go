@@ -2,7 +2,6 @@ package interp
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/fj68/vvlang/ast"
 )
@@ -27,16 +26,7 @@ func (s *State) evalTypeExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	t := v.Type().String()
-	if t == "number" {
-		if n, ok := v.(VNumber); ok {
-			if float64(int64(n)) == float64(n) {
-				return VString("int"), nil
-			}
-			return VString("float"), nil
-		}
-	}
-	return VString(t), nil
+	return StringToValue(v.Type().String()), nil
 }
 
 func (s *State) evalNotExpr(expr *ast.BuiltinCallExpr) (Value, error) {
@@ -56,7 +46,7 @@ func (s *State) evalStrExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	return VString(v.Str()), nil
+	return StringToValue(v.Str()), nil
 }
 
 func (s *State) evalLenExpr(expr *ast.BuiltinCallExpr) (Value, error) {
@@ -65,27 +55,11 @@ func (s *State) evalLenExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 		return nil, err
 	}
 	switch tv := v.(type) {
-	case VString:
-		return VNumber(len([]rune(string(tv)))), nil
 	case *VList:
 		return VNumber(len(tv.Elements)), nil
 	default:
-		return nil, fmt.Errorf("argument for len() is expected string or list, but got %s", v.Type())
+		return nil, fmt.Errorf("argument for len() is expected list, but got %s", v.Type())
 	}
-}
-
-func (s *State) evalInterpolatedStringLiteralExpr(expr *ast.InterpolatedStringLiteralExpr) (Value, error) {
-	var b strings.Builder
-	b.WriteString(expr.Texts[0])
-	for i, valueExpr := range expr.Values {
-		v, err := s.evalExpr(valueExpr)
-		if err != nil {
-			return nil, err
-		}
-		b.WriteString(v.Str())
-		b.WriteString(expr.Texts[i+1])
-	}
-	return VString(b.String()), nil
 }
 
 func (s *State) evalFunLiteralExpr(expr *ast.FunLiteralExpr) (Value, error) {
@@ -216,15 +190,22 @@ func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
 }
 
 func (s *State) evalAddExpr(left Value, right Value) (Value, error) {
-	lvalue, ok := left.(VNumber)
-	if !ok {
-		return nil, fmt.Errorf("left side value of add expression is not a number")
-	}
-	rvalue, ok := right.(VNumber)
-	if !ok {
+	if l, ok := left.(VNumber); ok {
+		if r, ok := right.(VNumber); ok {
+			return VNumber(l + r), nil
+		}
 		return nil, fmt.Errorf("right side value of add expression is not a number")
 	}
-	return VNumber(lvalue + rvalue), nil
+	if l, ok := left.(*VList); ok {
+		if r, ok := right.(*VList); ok {
+			elems := make([]Value, 0, len(l.Elements)+len(r.Elements))
+			elems = append(elems, l.Elements...)
+			elems = append(elems, r.Elements...)
+			return &VList{Elements: elems}, nil
+		}
+		return nil, fmt.Errorf("right side value of add expression is not a list: %T (%s)", right, right.String())
+	}
+	return nil, fmt.Errorf("unsupported types for '+': %T (%s) and %T (%s)", left, left.String(), right, right.String())
 }
 
 func (s *State) evalSubExpr(left Value, right Value) (Value, error) {
@@ -371,20 +352,6 @@ func (s *State) evalIndexExpr(expr *ast.IndexExpr) (Value, error) {
 			return nil, fmt.Errorf("list index out of range: %d", intIdx)
 		}
 		return l.Elements[intIdx], nil
-	case VString:
-		idx, ok := index.(VNumber)
-		if !ok {
-			return nil, fmt.Errorf("string index must be a number, got %s", index.Type())
-		}
-		intIdx := int(float64(idx))
-		str := string(l)
-		if intIdx < 0 {
-			intIdx = len(str) + intIdx
-		}
-		if intIdx < 0 || intIdx >= len(str) {
-			return nil, fmt.Errorf("string index out of range: %d", intIdx)
-		}
-		return VString(string(str[intIdx])), nil
 	default:
 		return nil, fmt.Errorf("cannot index %s", left.Type())
 	}
@@ -443,54 +410,6 @@ func (s *State) evalSliceExpr(expr *ast.SliceExpr) (Value, error) {
 		}
 
 		return &VList{Elements: l.Elements[start:end]}, nil
-
-	case VString:
-		str := string(l)
-		var start, end int
-		start = 0
-		end = len(str)
-
-		if expr.Start != nil {
-			startVal, err := s.evalExpr(expr.Start)
-			if err != nil {
-				return nil, err
-			}
-			startNum, ok := startVal.(VNumber)
-			if !ok {
-				return nil, fmt.Errorf("slice start must be a number, got %s", startVal.Type())
-			}
-			start = int(float64(startNum))
-			if start < 0 {
-				start = len(str) + start
-			}
-		}
-
-		if expr.End != nil {
-			endVal, err := s.evalExpr(expr.End)
-			if err != nil {
-				return nil, err
-			}
-			endNum, ok := endVal.(VNumber)
-			if !ok {
-				return nil, fmt.Errorf("slice end must be a number, got %s", endVal.Type())
-			}
-			end = int(float64(endNum))
-			if end < 0 {
-				end = len(str) + end
-			}
-		}
-
-		if start < 0 {
-			start = 0
-		}
-		if end > len(str) {
-			end = len(str)
-		}
-		if start > end {
-			start = end
-		}
-
-		return VString(str[start:end]), nil
 
 	default:
 		return nil, fmt.Errorf("cannot slice %s", left.Type())

@@ -47,7 +47,15 @@ func TestParseExpr(t *testing.T) {
 					Name: "r",
 					Body: &ast.RecordLiteralExpr{
 						Fields: map[string]ast.Expr{
-							"name": &ast.StringLiteralExpr{Value: "value"},
+							"name": &ast.ListLiteralExpr{
+								Elements: []ast.Expr{
+									&ast.CharLiteralExpr{Value: 'v'},
+									&ast.CharLiteralExpr{Value: 'a'},
+									&ast.CharLiteralExpr{Value: 'l'},
+									&ast.CharLiteralExpr{Value: 'u'},
+									&ast.CharLiteralExpr{Value: 'e'},
+								},
+							},
 						},
 					},
 				},
