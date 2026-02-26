@@ -9,22 +9,22 @@ func TestEvalStmt(t *testing.T) {
 		{
 			Name:        "state basic eval",
 			Input:       "fun add(a, b) return a + b end x = 1 let result = add(x, 0.5)",
-			ExpectedEnv: map[string]Value{"result": VNumber(1.5)},
+			ExpectedEnv: map[string]Value{"result": VFloat(1.5)},
 		},
 		{
 			Name:        "while loop increments",
 			Input:       "i = 0 while i < 3 i = i + 1 end let result = i",
-			ExpectedEnv: map[string]Value{"result": VNumber(3)},
+			ExpectedEnv: map[string]Value{"result": VInt(3)},
 		},
 		{
 			Name:        "while break",
 			Input:       "i = 0 while true if i == 2 break end i = i + 1 end let result = i",
-			ExpectedEnv: map[string]Value{"result": VNumber(2)},
+			ExpectedEnv: map[string]Value{"result": VInt(2)},
 		},
 		{
 			Name:        "while continue",
 			Input:       "i = 0 j = 0 while i < 5 i = i + 1 if i == 2 continue end j = j + 1 end let result = j",
-			ExpectedEnv: map[string]Value{"result": VNumber(4)},
+			ExpectedEnv: map[string]Value{"result": VInt(4)},
 		},
 		{
 			Name: "if scoping",
@@ -35,7 +35,7 @@ if true
   let y = 30
 end
 `,
-			ExpectedEnv:  map[string]Value{"x": VNumber(10)},
+			ExpectedEnv:  map[string]Value{"x": VInt(10)},
 			UndefinedEnv: []string{"y"},
 		},
 		{
@@ -49,7 +49,7 @@ while i < 1
   i = i + 1
 end
 `,
-			ExpectedEnv:  map[string]Value{"x": VNumber(10)},
+			ExpectedEnv:  map[string]Value{"x": VInt(10)},
 			UndefinedEnv: []string{"y"},
 		},
 		{
@@ -63,7 +63,7 @@ if true
   end
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(1)},
+			ExpectedEnv: map[string]Value{"x": VInt(1)},
 		},
 		{
 			Name: "basic defer",
@@ -75,7 +75,7 @@ begin
   x = 3
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(2)},
+			ExpectedEnv: map[string]Value{"x": VInt(2)},
 		},
 		{
 			Name: "multiple defers (LIFO)",
@@ -89,7 +89,7 @@ begin
   x = 10
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(22)},
+			ExpectedEnv: map[string]Value{"x": VInt(22)},
 		},
 		{
 			Name: "defer in if",
@@ -101,7 +101,7 @@ if true
   x = 3
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(2)},
+			ExpectedEnv: map[string]Value{"x": VInt(2)},
 		},
 		{
 			Name: "defer in false if",
@@ -113,7 +113,7 @@ if false
   x = 3
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(1)},
+			ExpectedEnv: map[string]Value{"x": VInt(1)},
 		},
 		{
 			Name: "defer in while",
@@ -126,7 +126,7 @@ while i < 3
   i = i + 1
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(3)},
+			ExpectedEnv: map[string]Value{"x": VInt(3)},
 		},
 		{
 			Name: "defer in function",
@@ -139,7 +139,7 @@ let f = fun()
 end
 f()
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(2)},
+			ExpectedEnv: map[string]Value{"x": VInt(2)},
 		},
 		{
 			Name: "nested blocks",
@@ -155,14 +155,14 @@ begin
   end
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(111)},
+			ExpectedEnv: map[string]Value{"x": VInt(111)},
 		},
 		{
 			Name:  "valid extern fun",
 			Input: "extern 'native' fun f() f()",
 			Globals: map[string]Value{
 				"f": VBuiltinFun(func(s *State, args []Value) (Value, error) {
-					return VNumber(42), nil
+					return VInt(42), nil
 				}),
 			},
 		},
@@ -170,7 +170,7 @@ end
 			Name:  "valid extern let",
 			Input: "extern 'native' let v v + 1",
 			Globals: map[string]Value{
-				"v": VNumber(10),
+				"v": VInt(10),
 			},
 		},
 		{
@@ -182,7 +182,7 @@ end
 		{
 			Name:        "extern invalid placement",
 			Input:       "let x = 1 extern 'native' let v x + v",
-			Globals:     map[string]Value{"v": VNumber(1)},
+			Globals:     map[string]Value{"v": VInt(1)},
 			ExpectedErr: "extern statement must be after import statements and before other statements",
 		},
 		{
@@ -193,10 +193,10 @@ end
 					if len(args) != 2 {
 						return nil, nil
 					}
-					return VNumber(float64(args[0].(VNumber) + args[1].(VNumber))), nil
+					return VInt(int64(args[0].(VInt) + args[1].(VInt))), nil
 				}),
 			},
-			ExpectedEnv: map[string]Value{"result": VNumber(3)},
+			ExpectedEnv: map[string]Value{"result": VInt(3)},
 		},
 		{
 			Name: "block stmt scoping check",
@@ -205,7 +205,7 @@ begin
   let y = 1
   x += 1
 end`,
-			ExpectedEnv:  map[string]Value{"x": VNumber(1)},
+			ExpectedEnv:  map[string]Value{"x": VInt(1)},
 			UndefinedEnv: []string{"y"},
 		},
 		{
@@ -216,12 +216,12 @@ end`,
 		{
 			Name:        "test block is not run in normal eval",
 			Input:       "let x = 1\ntest 'not run'\n  x = 2\nend\nlet result = x",
-			ExpectedEnv: map[string]Value{"result": VNumber(1)},
+			ExpectedEnv: map[string]Value{"result": VInt(1)},
 		},
 		{
 			Name:        "test block is run in eval test mode",
 			Input:       "test 'run'\n  let x = 2\n  assert x == 2\nend\n",
-			ExpectedEnv: map[string]Value{"x": VNumber(2)},
+			ExpectedEnv: map[string]Value{"x": VInt(2)},
 			EvalTest:    true,
 		},
 		{
@@ -233,7 +233,7 @@ test 'use let'
   let y = x + 5
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(10), "y": VNumber(15)},
+			ExpectedEnv: map[string]Value{"x": VInt(10), "y": VInt(15)},
 			EvalTest:    true,
 		},
 		{
@@ -245,7 +245,7 @@ test 'use fun'
   assert result == 5
 end
 `,
-			ExpectedEnv: map[string]Value{"result": VNumber(5)},
+			ExpectedEnv: map[string]Value{"result": VInt(5)},
 			EvalTest:    true,
 		},
 		{
@@ -259,10 +259,10 @@ end
 `,
 			Globals: map[string]Value{
 				"my_native": VBuiltinFun(func(s *State, args []Value) (Value, error) {
-					return VNumber(100), nil
+					return VInt(100), nil
 				}),
 			},
-			ExpectedEnv: map[string]Value{"result": VNumber(100)},
+			ExpectedEnv: map[string]Value{"result": VInt(100)},
 			EvalTest:    true,
 		},
 		{
@@ -274,7 +274,7 @@ test 'check x'
   assert x == 1
 end
 `,
-			ExpectedEnv: map[string]Value{"x": VNumber(1)},
+			ExpectedEnv: map[string]Value{"x": VInt(1)},
 			EvalTest:    true,
 		},
 		{
@@ -286,7 +286,7 @@ fun rec sum(n, acc)
 end
 let result = sum(1500, 0)
 `,
-			ExpectedEnv: map[string]Value{"result": VNumber(1125750)},
+			ExpectedEnv: map[string]Value{"result": VInt(1125750)},
 		},
 		{
 			Name: "mutual recursion with and",

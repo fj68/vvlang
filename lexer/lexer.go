@@ -129,16 +129,21 @@ func (lex *Lexer) comment(start, end string) int {
 }
 
 func (lex *Lexer) digit() (*Token, error) {
+	isFloat := false
 	for !lex.s.IsEOF() && unicode.IsDigit(lex.s.Current()) {
 		lex.s.Advance(1)
 	}
 	if lex.s.Current() == '.' {
+		isFloat = true
 		lex.s.Advance(1)
 		for !lex.s.IsEOF() && unicode.IsDigit(lex.s.Current()) {
 			lex.s.Advance(1)
 		}
 	}
-	return lex.newToken(TDigit), nil
+	if isFloat {
+		return lex.newToken(TFloat), nil
+	}
+	return lex.newToken(TInt), nil
 }
 
 func (lex *Lexer) literal() (*Token, error) {

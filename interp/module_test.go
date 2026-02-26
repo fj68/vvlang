@@ -39,9 +39,9 @@ let result = math.square(math.pi)
 	if err != nil {
 		t.Fatalf("expected result: %v", err)
 	}
-	num, ok := res.(VNumber)
+	num, ok := res.(VFloat)
 	if !ok {
-		t.Fatalf("expected VNumber, got %T", res)
+		t.Fatalf("expected VFloat, got %T", res)
 	}
 	expected := 3.14 * 3.14
 	if float64(num) != expected {
@@ -118,9 +118,9 @@ let result = math.circle_area(2)
 	if err != nil {
 		t.Fatalf("expected result: %v", err)
 	}
-	num, ok := res.(VNumber)
+	num, ok := res.(VFloat)
 	if !ok {
-		t.Fatalf("expected VNumber, got %T", res)
+		t.Fatalf("expected VFloat, got %T", res)
 	}
 	expected := 3.14 * 2 * 2
 	if float64(num) != expected {

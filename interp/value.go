@@ -13,7 +13,8 @@ type ValueType int
 
 const (
 	VTBool ValueType = iota
-	VTNumber
+	VTInt
+	VTFloat
 	VTChar
 	VTUserFun
 	VTBuiltinFun
@@ -31,8 +32,10 @@ func (ty ValueType) String() string {
 	switch ty {
 	case VTBool:
 		return "bool"
-	case VTNumber:
-		return "number"
+	case VTInt:
+		return "int"
+	case VTFloat:
+		return "float"
 	case VTChar:
 		return "char"
 	case VTUserFun:
@@ -85,32 +88,62 @@ func (v VBool) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare bool")
 }
 
-type VNumber float64
+type VInt int64
 
-func (v VNumber) Type() ValueType {
-	return VTNumber
+func (v VInt) Type() ValueType {
+	return VTInt
 }
 
-func (v VNumber) String() string {
-	return fmt.Sprintf("%g", float64(v))
+func (v VInt) String() string {
+	return fmt.Sprintf("%d", int64(v))
 }
 
-func (v VNumber) Str() string {
+func (v VInt) Str() string {
 	return v.String()
 }
 
-func (v VNumber) Equal(other Value) (bool, error) {
-	x, ok := other.(VNumber)
+func (v VInt) Equal(other Value) (bool, error) {
+	x, ok := other.(VInt)
 	if !ok {
-		return false, fmt.Errorf("expected number, but got %s", other.Type())
+		return false, fmt.Errorf("expected int, but got %s", other.Type())
+	}
+	return int64(x) == int64(v), nil
+}
+
+func (v VInt) LessThan(other Value) (bool, error) {
+	x, ok := other.(VInt)
+	if !ok {
+		return false, fmt.Errorf("expected int, but got %s", other.Type())
+	}
+	return int64(v) < int64(x), nil
+}
+
+type VFloat float64
+
+func (v VFloat) Type() ValueType {
+	return VTFloat
+}
+
+func (v VFloat) String() string {
+	return fmt.Sprintf("%g", float64(v))
+}
+
+func (v VFloat) Str() string {
+	return v.String()
+}
+
+func (v VFloat) Equal(other Value) (bool, error) {
+	x, ok := other.(VFloat)
+	if !ok {
+		return false, fmt.Errorf("expected float, but got %s", other.Type())
 	}
 	return float64(x) == float64(v), nil
 }
 
-func (v VNumber) LessThan(other Value) (bool, error) {
-	x, ok := other.(VNumber)
+func (v VFloat) LessThan(other Value) (bool, error) {
+	x, ok := other.(VFloat)
 	if !ok {
-		return false, fmt.Errorf("expected number, but got %s", other.Type())
+		return false, fmt.Errorf("expected float, but got %s", other.Type())
 	}
 	return float64(v) < float64(x), nil
 }

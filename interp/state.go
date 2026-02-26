@@ -225,8 +225,10 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 	switch v := expr.(type) {
 	case *ast.BoolLiteralExpr:
 		return VBool(v.Value), nil
-	case *ast.NumberLiteralExpr:
-		return VNumber(v.Value), nil
+	case *ast.IntLiteralExpr:
+		return VInt(v.Value), nil
+	case *ast.FloatLiteralExpr:
+		return VFloat(v.Value), nil
 	case *ast.CharLiteralExpr:
 		return VChar(v.Value), nil
 	case *ast.RecordLiteralExpr:

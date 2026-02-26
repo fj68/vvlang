@@ -334,6 +334,11 @@ func (p *Parser) parseInterpolatedStringLiteralExpr() (ast.Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			// Wrap in str() to ensure it becomes a list of chars
+			subExpr = &ast.BuiltinCallExpr{
+				Op:    "str",
+				Value: subExpr,
+			}
 			if expr == nil {
 				expr = subExpr
 			} else {
@@ -382,7 +387,20 @@ func stringToCharListExpr(s string) ast.Expr {
 	return &ast.ListLiteralExpr{Elements: elems}
 }
 
-func (p *Parser) parseDigitLiteralExpr() (ast.Expr, error) {
+func (p *Parser) parseIntLiteralExpr() (ast.Expr, error) {
+	value, err := strconv.ParseInt(p.curToken.Text, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.IntLiteralExpr{
+		Value: value,
+	}, nil
+}
+
+func (p *Parser) parseFloatLiteralExpr() (ast.Expr, error) {
 	value, err := strconv.ParseFloat(p.curToken.Text, 64)
 	if err != nil {
 		return nil, err
@@ -390,7 +408,7 @@ func (p *Parser) parseDigitLiteralExpr() (ast.Expr, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
-	return &ast.NumberLiteralExpr{
+	return &ast.FloatLiteralExpr{
 		Value: value,
 	}, nil
 }

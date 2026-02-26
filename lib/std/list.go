@@ -14,7 +14,7 @@ func ListLength(s *interp.State, args []interp.Value) (interp.Value, error) {
 	if !ok {
 		return nil, fmt.Errorf("argument for length() is expected list, but got %s", args[0].Type())
 	}
-	return interp.VNumber(len(v.Elements)), nil
+	return interp.VInt(len(v.Elements)), nil
 }
 
 func Push(s *interp.State, args []interp.Value) (interp.Value, error) {

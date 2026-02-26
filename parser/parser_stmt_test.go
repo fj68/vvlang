@@ -14,7 +14,7 @@ func TestParseStmt(t *testing.T) {
 			Expected: []ast.Stmt{
 				&ast.VarDeclStmt{
 					Name: "x",
-					Body: &ast.NumberLiteralExpr{Value: 1},
+					Body: &ast.IntLiteralExpr{Value: 1},
 				},
 			},
 		},
@@ -67,14 +67,14 @@ func TestParseStmt(t *testing.T) {
 				&ast.WhileStmt{
 					Cond: &ast.InfixExpr{
 						Op:    "<",
-						Left:  &ast.NumberLiteralExpr{Value: 1},
-						Right: &ast.NumberLiteralExpr{Value: 2},
+						Left:  &ast.IntLiteralExpr{Value: 1},
+						Right: &ast.IntLiteralExpr{Value: 2},
 					},
 					Body: &ast.BlockStmt{
 						Body: []ast.Stmt{
 							&ast.VarDeclStmt{
 								Name: "x",
-								Body: &ast.NumberLiteralExpr{Value: 1},
+								Body: &ast.IntLiteralExpr{Value: 1},
 							},
 						},
 					},
@@ -91,7 +91,7 @@ func TestParseStmt(t *testing.T) {
 						Body: []ast.Stmt{
 							&ast.VarDeclStmt{
 								Name: "x",
-								Body: &ast.NumberLiteralExpr{Value: 1},
+								Body: &ast.IntLiteralExpr{Value: 1},
 							},
 						},
 					},
@@ -108,7 +108,7 @@ func TestParseStmt(t *testing.T) {
 						Body: []ast.Stmt{
 							&ast.VarDeclStmt{
 								Name: "x",
-								Body: &ast.NumberLiteralExpr{Value: 1},
+								Body: &ast.IntLiteralExpr{Value: 1},
 							},
 						},
 					},
@@ -116,7 +116,7 @@ func TestParseStmt(t *testing.T) {
 						Body: []ast.Stmt{
 							&ast.VarDeclStmt{
 								Name: "x",
-								Body: &ast.NumberLiteralExpr{Value: 2},
+								Body: &ast.IntLiteralExpr{Value: 2},
 							},
 						},
 					},
@@ -177,7 +177,7 @@ func TestParseStmt(t *testing.T) {
 												Body: []ast.Stmt{
 													&ast.VarDeclStmt{
 														Name: "x",
-														Body: &ast.NumberLiteralExpr{Value: 0.8},
+														Body: &ast.FloatLiteralExpr{Value: 0.8},
 													},
 													&ast.ReturnStmt{
 														Value: &ast.VarRefExpr{Name: "x"},

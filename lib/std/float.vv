@@ -1,1 +1,2 @@
 pub extern "native" fun to_string(f)
+pub extern "native" fun to_int(f)

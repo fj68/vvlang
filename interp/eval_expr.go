@@ -56,7 +56,7 @@ func (s *State) evalLenExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	}
 	switch tv := v.(type) {
 	case *VList:
-		return VNumber(len(tv.Elements)), nil
+		return VInt(len(tv.Elements)), nil
 	default:
 		return nil, fmt.Errorf("argument for len() is expected list, but got %s", v.Type())
 	}
@@ -201,6 +201,8 @@ func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
 		return s.evalMulExpr(left, right)
 	case "/":
 		return s.evalDivExpr(left, right)
+	case "/.":
+		return s.evalIDivExpr(left, right)
 	case "==":
 		return s.evalEqualExpr(left, right)
 	case "<":
@@ -217,9 +219,21 @@ func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
 }
 
 func (s *State) evalAddExpr(left Value, right Value) (Value, error) {
-	if l, ok := left.(VNumber); ok {
-		if r, ok := right.(VNumber); ok {
-			return VNumber(l + r), nil
+	if l, ok := left.(VInt); ok {
+		if r, ok := right.(VInt); ok {
+			return VInt(l + r), nil
+		}
+		if r, ok := right.(VFloat); ok {
+			return VFloat(float64(l) + float64(r)), nil
+		}
+		return nil, fmt.Errorf("right side value of add expression is not a number")
+	}
+	if l, ok := left.(VFloat); ok {
+		if r, ok := right.(VFloat); ok {
+			return VFloat(l + r), nil
+		}
+		if r, ok := right.(VInt); ok {
+			return VFloat(float64(l) + float64(r)), nil
 		}
 		return nil, fmt.Errorf("right side value of add expression is not a number")
 	}
@@ -236,42 +250,86 @@ func (s *State) evalAddExpr(left Value, right Value) (Value, error) {
 }
 
 func (s *State) evalSubExpr(left Value, right Value) (Value, error) {
-	lvalue, ok := left.(VNumber)
-	if !ok {
-		return nil, fmt.Errorf("left side value of sub expression is not a number")
-	}
-	rvalue, ok := right.(VNumber)
-	if !ok {
+	if l, ok := left.(VInt); ok {
+		if r, ok := right.(VInt); ok {
+			return VInt(l - r), nil
+		}
+		if r, ok := right.(VFloat); ok {
+			return VFloat(float64(l) - float64(r)), nil
+		}
 		return nil, fmt.Errorf("right side value of sub expression is not a number")
 	}
-	return VNumber(lvalue - rvalue), nil
+	if l, ok := left.(VFloat); ok {
+		if r, ok := right.(VFloat); ok {
+			return VFloat(l - r), nil
+		}
+		if r, ok := right.(VInt); ok {
+			return VFloat(float64(l) - float64(r)), nil
+		}
+		return nil, fmt.Errorf("right side value of sub expression is not a number")
+	}
+	return nil, fmt.Errorf("left side value of sub expression is not a number")
 }
 
 func (s *State) evalMulExpr(left Value, right Value) (Value, error) {
-	lvalue, ok := left.(VNumber)
-	if !ok {
-		return nil, fmt.Errorf("left side value of mul expression is not a number")
-	}
-	rvalue, ok := right.(VNumber)
-	if !ok {
+	if l, ok := left.(VInt); ok {
+		if r, ok := right.(VInt); ok {
+			return VInt(l * r), nil
+		}
+		if r, ok := right.(VFloat); ok {
+			return VFloat(float64(l) * float64(r)), nil
+		}
 		return nil, fmt.Errorf("right side value of mul expression is not a number")
 	}
-	return VNumber(lvalue * rvalue), nil
+	if l, ok := left.(VFloat); ok {
+		if r, ok := right.(VFloat); ok {
+			return VFloat(l * r), nil
+		}
+		if r, ok := right.(VInt); ok {
+			return VFloat(float64(l) * float64(r)), nil
+		}
+		return nil, fmt.Errorf("right side value of mul expression is not a number")
+	}
+	return nil, fmt.Errorf("left side value of mul expression is not a number")
 }
 
 func (s *State) evalDivExpr(left Value, right Value) (Value, error) {
-	lvalue, ok := left.(VNumber)
-	if !ok {
+	var l, r float64
+	if lv, ok := left.(VInt); ok {
+		l = float64(lv)
+	} else if lv, ok := left.(VFloat); ok {
+		l = float64(lv)
+	} else {
 		return nil, fmt.Errorf("left side value of div expression is not a number")
 	}
-	rvalue, ok := right.(VNumber)
-	if !ok {
+
+	if rv, ok := right.(VInt); ok {
+		r = float64(rv)
+	} else if rv, ok := right.(VFloat); ok {
+		r = float64(rv)
+	} else {
 		return nil, fmt.Errorf("right side value of div expression is not a number")
+	}
+
+	if r == 0 {
+		return nil, fmt.Errorf("division by zero")
+	}
+	return VFloat(l / r), nil
+}
+
+func (s *State) evalIDivExpr(left Value, right Value) (Value, error) {
+	lvalue, ok := left.(VInt)
+	if !ok {
+		return nil, fmt.Errorf("left side value of floor div expression is not an int")
+	}
+	rvalue, ok := right.(VInt)
+	if !ok {
+		return nil, fmt.Errorf("right side value of floor div expression is not an int")
 	}
 	if rvalue == 0 {
 		return nil, fmt.Errorf("division by zero")
 	}
-	return VNumber(lvalue / rvalue), nil
+	return VInt(int64(lvalue) / int64(rvalue)), nil
 }
 
 func (s *State) evalEqualExpr(left Value, right Value) (Value, error) {
@@ -332,11 +390,13 @@ func (s *State) evalPrefixExpr(expr *ast.PrefixExpr) (Value, error) {
 	}
 	switch expr.Op {
 	case "-":
-		num, ok := right.(VNumber)
-		if !ok {
-			return nil, fmt.Errorf("cannot negate %s", right.Type())
+		if num, ok := right.(VInt); ok {
+			return VInt(-int64(num)), nil
 		}
-		return VNumber(-float64(num)), nil
+		if num, ok := right.(VFloat); ok {
+			return VFloat(-float64(num)), nil
+		}
+		return nil, fmt.Errorf("cannot negate %s", right.Type())
 	default:
 		return nil, fmt.Errorf("unknown prefix operator: %s", expr.Op)
 	}
@@ -367,11 +427,11 @@ func (s *State) evalIndexExpr(expr *ast.IndexExpr) (Value, error) {
 
 	switch l := left.(type) {
 	case *VList:
-		idx, ok := index.(VNumber)
+		idx, ok := index.(VInt)
 		if !ok {
-			return nil, fmt.Errorf("list index must be a number, got %s", index.Type())
+			return nil, fmt.Errorf("list index must be an int, got %s", index.Type())
 		}
-		intIdx := int(float64(idx))
+		intIdx := int(int64(idx))
 		if intIdx < 0 {
 			intIdx = len(l.Elements) + intIdx
 		}
@@ -401,11 +461,11 @@ func (s *State) evalSliceExpr(expr *ast.SliceExpr) (Value, error) {
 			if err != nil {
 				return nil, err
 			}
-			startNum, ok := startVal.(VNumber)
+			startNum, ok := startVal.(VInt)
 			if !ok {
-				return nil, fmt.Errorf("slice start must be a number, got %s", startVal.Type())
+				return nil, fmt.Errorf("slice start must be an int, got %s", startVal.Type())
 			}
-			start = int(float64(startNum))
+			start = int(int64(startNum))
 			if start < 0 {
 				start = len(l.Elements) + start
 			}
@@ -416,11 +476,11 @@ func (s *State) evalSliceExpr(expr *ast.SliceExpr) (Value, error) {
 			if err != nil {
 				return nil, err
 			}
-			endNum, ok := endVal.(VNumber)
+			endNum, ok := endVal.(VInt)
 			if !ok {
-				return nil, fmt.Errorf("slice end must be a number, got %s", endVal.Type())
+				return nil, fmt.Errorf("slice end must be an int, got %s", endVal.Type())
 			}
-			end = int(float64(endNum))
+			end = int(int64(endNum))
 			if end < 0 {
 				end = len(l.Elements) + end
 			}

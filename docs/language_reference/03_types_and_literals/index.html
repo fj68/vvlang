@@ -84,9 +84,16 @@
     <p>The boolean type has two possible values: <code>true</code> and <code>false</code>.</p>
 
     <h2 id="numbers">Numbers</h2>
-    <p><code>vv</code> supports 64-bit floating-point numbers.</p>
+    <p><code>vv</code> supports two types of numbers: 64-bit integers (<code>int</code>) and 64-bit floating-point
+        numbers
+        (<code>float</code>).
+    </p>
     <pre><code>let int_num = 42
 let float_num = 3.14159</code></pre>
+    <p>Arithmetic operations between integers result in an integer, while operations involving at least one
+        floating-point
+        number result in a float. Note that the division operator (<code>/</code>) always results in a float. For floor
+        division (integer division), use the <code>/.</code> operator.</p>
 
     <h2 id="characters-and-strings">Characters and Strings</h2>
     <p>A single character is represented using single quotes.</p>
@@ -108,7 +115,8 @@ let letters = [
 let empty_list = []</code></pre>
 
     <h3 id="indexing">Indexing</h3>
-    <p>Elements in a list can be accessed using 0-based indexing.</p>
+    <p>Elements in a list can be accessed using 0-based indexing. Note that indices must be of type <code>int</code>.
+    </p>
     <pre><code>let first = numbers[0] // 1</code></pre>
 
     <h3 id="slicing">Slicing</h3>

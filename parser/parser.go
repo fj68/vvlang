@@ -38,6 +38,7 @@ var precedences = map[lexer.TokenType]Precedence{
 	lexer.THyphen:   PSum,
 	lexer.TAsterisk: PProduct,
 	lexer.TSlash:    PProduct,
+	lexer.TSlashDot: PProduct,
 	lexer.TLParen:   PCall,
 	lexer.TLBrace:   PIndex,
 	lexer.TDot:      PCall,
@@ -78,7 +79,8 @@ func Parse(text []rune) (*ast.Module, error) {
 
 func (p *Parser) registerPrefixParsers() {
 	p.prefixParsers = map[lexer.TokenType]PrefixParser{
-		lexer.TDigit:        p.parseDigitLiteralExpr,
+		lexer.TInt:          p.parseIntLiteralExpr,
+		lexer.TFloat:        p.parseFloatLiteralExpr,
 		lexer.TTrue:         p.parseBoolLiteralExpr,
 		lexer.TFalse:        p.parseBoolLiteralExpr,
 		lexer.TLiteral:      p.parseLiteralExpr,
@@ -109,6 +111,7 @@ func (p *Parser) registerInfixParsers() {
 		lexer.TLBrace:   p.parseIndexOrSliceExpr,
 		lexer.TAsterisk: p.parseInfixExpr,
 		lexer.TSlash:    p.parseInfixExpr,
+		lexer.TSlashDot: p.parseInfixExpr,
 	}
 }
 

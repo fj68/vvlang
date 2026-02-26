@@ -47,8 +47,8 @@ func TestLexer(t *testing.T) {
 				{TTrue, "true"},
 				{TFalse, "false"},
 				{TNull, "null"},
-				{TDigit, "123"},
-				{TDigit, "45.6"},
+				{TInt, "123"},
+				{TFloat, "45.6"},
 				{TLiteral, "single"},
 				{TInterpolated, "double"},
 			},
@@ -119,9 +119,9 @@ func TestLexer(t *testing.T) {
 				text string
 			}{
 				{TLBrace, "["},
-				{TDigit, "1"},
+				{TInt, "1"},
 				{TComma, ","},
-				{TDigit, "2"},
+				{TInt, "2"},
 				{TRBrace, "]"},
 				{TLBracket, "{"},
 				{TIdent, "a"},
@@ -138,6 +138,18 @@ func TestLexer(t *testing.T) {
 				text string
 			}{
 				{TIdent, "x"},
+			},
+		},
+		{
+			"floor division",
+			"5 /. 2",
+			[]struct {
+				t    TokenType
+				text string
+			}{
+				{TInt, "5"},
+				{TSlashDot, "/."},
+				{TInt, "2"},
 			},
 		},
 	}

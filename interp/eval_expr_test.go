@@ -13,7 +13,7 @@ func TestEvalExpr(t *testing.T) {
 				"result": &VRecord{
 					Fields: map[string]Value{
 						"name": StringToValue("value"),
-						"key":  VNumber(8),
+						"key":  VInt(8),
 					},
 				},
 			},
@@ -25,7 +25,7 @@ func TestEvalExpr(t *testing.T) {
 				"result": &VRecord{
 					Fields: map[string]Value{
 						"name": StringToValue("value"),
-						"key":  VNumber(8),
+						"key":  VInt(8),
 					},
 				},
 			},
@@ -38,7 +38,7 @@ func TestEvalExpr(t *testing.T) {
 		{
 			Name:        "record field access number",
 			Input:       "r = { name = 'value', key = 8 }\nlet result = r.key",
-			ExpectedEnv: map[string]Value{"result": VNumber(8)},
+			ExpectedEnv: map[string]Value{"result": VInt(8)},
 		},
 		{
 			Name: "nested records with chained field access",
@@ -58,8 +58,8 @@ let result = alice_name
 let result = { x = a, y = b }`,
 			ExpectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
-					"x": VNumber(1),
-					"y": VNumber(2),
+					"x": VInt(1),
+					"y": VInt(2),
 				},
 			}},
 		},
@@ -69,8 +69,8 @@ let result = { x = a, y = b }`,
 let result = { r1 = x, r2 = y }`,
 			ExpectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
-					"r1": VNumber(1),
-					"r2": VNumber(2),
+					"r1": VInt(1),
+					"r2": VInt(2),
 				},
 			}},
 		},
@@ -80,8 +80,8 @@ let result = { r1 = x, r2 = y }`,
 let result = { r1 = a, r2 = y }`,
 			ExpectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
-					"r1": VNumber(1),
-					"r2": VNumber(2),
+					"r1": VInt(1),
+					"r2": VInt(2),
 				},
 			}},
 		},
@@ -94,7 +94,7 @@ let { value, error } = some_func()
 let result = { v = value, e = error }`,
 			ExpectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
-					"v": VNumber(100),
+					"v": VInt(100),
 					"e": VNull{},
 				},
 			}},
@@ -107,7 +107,7 @@ let result = { v = value, e = error }`,
 		{
 			Name:        "not a record",
 			Input:       "let { a } = 1",
-			ExpectedErr: "expected record for field access, but got number",
+			ExpectedErr: "expected record for field access, but got int",
 		},
 		{
 			Name:        "str(number)",
@@ -168,14 +168,14 @@ let result = { v = value, e = error }`,
 			Name:  "list literal eval",
 			Input: "let result = [0, 1, 2]",
 			ExpectedEnv: map[string]Value{"result": &VList{
-				Elements: []Value{VNumber(0), VNumber(1), VNumber(2)},
+				Elements: []Value{VInt(0), VInt(1), VInt(2)},
 			}},
 		},
 		{
 			Name:  "list literal eval trailing comma",
 			Input: "let result = [0, 1, 2, ]",
 			ExpectedEnv: map[string]Value{"result": &VList{
-				Elements: []Value{VNumber(0), VNumber(1), VNumber(2)},
+				Elements: []Value{VInt(0), VInt(1), VInt(2)},
 			}},
 		},
 		{
@@ -189,38 +189,58 @@ let result = { v = value, e = error }`,
 			Name:  "list literal mixed",
 			Input: "let result = [42, 'hello', true]",
 			ExpectedEnv: map[string]Value{"result": &VList{
-				Elements: []Value{VNumber(42), StringToValue("hello"), VBool(true)},
+				Elements: []Value{VInt(42), StringToValue("hello"), VBool(true)},
 			}},
 		},
 		{
 			Name:        "len of string",
 			Input:       "let s = 'hello'\nlet n = len(s)",
-			ExpectedEnv: map[string]Value{"n": VNumber(5)},
+			ExpectedEnv: map[string]Value{"n": VInt(5)},
 		},
 		{
 			Name:        "len of unicode string",
 			Input:       "let s = 'こんにちは'\nlet n = len(s)",
-			ExpectedEnv: map[string]Value{"n": VNumber(5)},
+			ExpectedEnv: map[string]Value{"n": VInt(5)},
 		},
 		{
 			Name:        "len of empty string",
 			Input:       "let n = len('')",
-			ExpectedEnv: map[string]Value{"n": VNumber(0)},
+			ExpectedEnv: map[string]Value{"n": VInt(0)},
 		},
 		{
 			Name:        "len of list",
 			Input:       "let xs = [1, 2, 3]\nlet n = len(xs)",
-			ExpectedEnv: map[string]Value{"n": VNumber(3)},
+			ExpectedEnv: map[string]Value{"n": VInt(3)},
 		},
 		{
 			Name:        "len of empty list",
 			Input:       "let n = len([])",
-			ExpectedEnv: map[string]Value{"n": VNumber(0)},
+			ExpectedEnv: map[string]Value{"n": VInt(0)},
 		},
 		{
 			Name:        "len invalid type",
 			Input:       "let n = len(123)",
-			ExpectedErr: "argument for len() is expected list, but got number",
+			ExpectedErr: "argument for len() is expected list, but got int",
+		},
+		{
+			Name:        "floor division int",
+			Input:       "let result = 7 /. 2",
+			ExpectedEnv: map[string]Value{"result": VInt(3)},
+		},
+		{
+			Name:        "floor division negative",
+			Input:       "let result = -7 /. 2",
+			ExpectedEnv: map[string]Value{"result": VInt(-3)},
+		},
+		{
+			Name:        "floor division zero error",
+			Input:       "let result = 7 /. 0",
+			ExpectedErr: "division by zero",
+		},
+		{
+			Name:        "floor division float error",
+			Input:       "let result = 7.0 /. 2",
+			ExpectedErr: "left side value of floor div expression is not an int",
 		},
 	}
 

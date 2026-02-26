@@ -18,7 +18,7 @@ func TestParseExpr(t *testing.T) {
 						Fun: &ast.VarRefExpr{Name: "add"},
 						Args: []ast.Expr{
 							&ast.VarRefExpr{Name: "x"},
-							&ast.NumberLiteralExpr{Value: 0.5},
+							&ast.FloatLiteralExpr{Value: 0.5},
 						},
 					},
 				},
@@ -32,8 +32,8 @@ func TestParseExpr(t *testing.T) {
 					Name: "r",
 					Body: &ast.RecordLiteralExpr{
 						Fields: map[string]ast.Expr{
-							"a": &ast.NumberLiteralExpr{Value: 1},
-							"b": &ast.NumberLiteralExpr{Value: 2},
+							"a": &ast.IntLiteralExpr{Value: 1},
+							"b": &ast.IntLiteralExpr{Value: 2},
 						},
 					},
 				},
@@ -84,9 +84,9 @@ func TestParseExpr(t *testing.T) {
 						Op: "len",
 						Value: &ast.ListLiteralExpr{
 							Elements: []ast.Expr{
-								&ast.NumberLiteralExpr{Value: 1},
-								&ast.NumberLiteralExpr{Value: 2},
-								&ast.NumberLiteralExpr{Value: 3},
+								&ast.IntLiteralExpr{Value: 1},
+								&ast.IntLiteralExpr{Value: 2},
+								&ast.IntLiteralExpr{Value: 3},
 							},
 						},
 					},

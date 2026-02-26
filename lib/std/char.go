@@ -26,7 +26,7 @@ func CharToBytes(s *interp.State, args []interp.Value) (interp.Value, error) {
 	bytes := []byte(string(rune(v)))
 	elems := make([]interp.Value, len(bytes))
 	for i, b := range bytes {
-		elems[i] = interp.VNumber(b)
+		elems[i] = interp.VInt(int64(b))
 	}
 	return &interp.VList{Elements: elems}, nil
 }

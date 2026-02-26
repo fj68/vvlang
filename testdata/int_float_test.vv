@@ -1,0 +1,34 @@
+import int from "std/int.vv"
+import float from "std/float.vv"
+
+test "arithmetic rules"
+    assert type(1 + 2) == "int"
+    assert type(1 + 2.0) == "float"
+    assert type(1.0 + 2) == "float"
+    assert type(1.0 + 2.0) == "float"
+end
+
+test "division operators"
+    assert type(5 / 2) == "float"
+    assert 5 / 2 == 2.5
+    assert type(5 /. 2) == "int"
+    assert 5 /. 2 == 2
+end
+
+test "list indexing failure"
+    let l = [1, 2, 3]
+    // l[1.0] // Should cause error
+end
+
+test "list indexing"
+    let l = [1, 2, 3]
+    assert l[1] == 2
+    // This should cause an error
+    // l[1.0] 
+end
+
+test "conversions"
+    assert type(int.to_float(1)) == "float"
+    assert type(float.to_int(1.5)) == "int"
+    assert float.to_int(1.5) == 1
+end

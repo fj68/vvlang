@@ -7,7 +7,7 @@ import (
 func TestExternNativeExported(t *testing.T) {
 	s := NewState("test.vv")
 	s.RegisterNative("f", VBuiltinFun(func(s *State, args []Value) (Value, error) {
-		return VNumber(42), nil
+		return VInt(42), nil
 	}))
 	err := s.Eval([]rune("pub extern 'native' fun f()"))
 	if err != nil {

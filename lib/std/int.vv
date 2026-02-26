@@ -1,1 +1,2 @@
 pub extern "native" fun to_string(i)
+pub extern "native" fun to_float(i)

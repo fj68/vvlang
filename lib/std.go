@@ -36,9 +36,11 @@ var natives = map[string]map[string]interp.Value{
 	},
 	"std/float.vv": {
 		"to_string": interp.VBuiltinFun(std.FloatToString),
+		"to_int":    interp.VBuiltinFun(std.FloatToInt),
 	},
 	"std/int.vv": {
 		"to_string": interp.VBuiltinFun(std.IntToString),
+		"to_float":  interp.VBuiltinFun(std.IntToFloat),
 	},
 	"std/bool.vv": {
 		"to_string": interp.VBuiltinFun(std.BoolToString),

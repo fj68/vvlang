@@ -26,17 +26,34 @@ func (p Position) EndPos() *Pos {
 	return p.End
 }
 
-type NumberLiteralExpr struct {
+type IntLiteralExpr struct {
+	Position
+	Value int64
+}
+
+func (expr *IntLiteralExpr) Inspect() string {
+	return fmt.Sprintf("IntLiteralExpr{%d}", expr.Value)
+}
+
+func (expr *IntLiteralExpr) Equals(other Expr) bool {
+	o, ok := other.(*IntLiteralExpr)
+	if !ok {
+		return false
+	}
+	return expr.Value == o.Value
+}
+
+type FloatLiteralExpr struct {
 	Position
 	Value float64
 }
 
-func (expr *NumberLiteralExpr) Inspect() string {
-	return fmt.Sprintf("NumberLiteralExpr{%g}", expr.Value)
+func (expr *FloatLiteralExpr) Inspect() string {
+	return fmt.Sprintf("FloatLiteralExpr{%g}", expr.Value)
 }
 
-func (expr *NumberLiteralExpr) Equals(other Expr) bool {
-	o, ok := other.(*NumberLiteralExpr)
+func (expr *FloatLiteralExpr) Equals(other Expr) bool {
+	o, ok := other.(*FloatLiteralExpr)
 	if !ok {
 		return false
 	}

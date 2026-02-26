@@ -11,7 +11,8 @@ type TokenType int
 
 const (
 	TEOF TokenType = iota
-	TDigit
+	TInt
+	TFloat
 	TIdent
 	TLiteral
 	TInterpolated
@@ -66,6 +67,7 @@ const (
 	THyphen
 	TAsterisk
 	TSlash
+	TSlashDot
 	TDot
 	TColon
 	TIncr
@@ -76,8 +78,10 @@ func (ty TokenType) String() string {
 	switch ty {
 	case TEOF:
 		return "EOF"
-	case TDigit:
-		return "Digit"
+	case TInt:
+		return "Int"
+	case TFloat:
+		return "Float"
 	case TIdent:
 		return "Ident"
 	case TLiteral:
@@ -182,6 +186,8 @@ func (ty TokenType) String() string {
 		return "Asterisk"
 	case TSlash:
 		return "Slash"
+	case TSlashDot:
+		return "SlashDot"
 	case TDot:
 		return "Dot"
 	case TColon:
@@ -234,6 +240,7 @@ var Symbols = map[rune]TokenType{
 var Symbols2 = map[string]TokenType{
 	"<=": TLessEq,
 	"==": TEqual,
+	"/.": TSlashDot,
 	"+=": TIncr,
 	"-=": TDecr,
 }
