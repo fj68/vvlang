@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>lib/std/record.vv - vvlang documentation</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            background: #f9f9f9;
+        }
+
+        header {
+            background: #1a1a1a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        nav.langs a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: #fff;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        h1 {
+            color: #111;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            color: #444;
+            margin-top: 2rem;
+        }
+
+        .docstring {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 4px solid #007acc;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-doc {
+            font-size: 1.1rem;
+        }
+
+        .export-item {
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .kind {
+            font-weight: normal;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #666;
+            background: #eee;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../../static/highlight.css">
+</head>
+
+<body>
+    <header>
+        <div class='logo'>vvlang docs</div>
+        <nav class='langs'>
+            
+            <a href='../../../../en/index.html' class='active' >en</a>
+            
+        </nav>
+    </header>
+    <main>
+        
+<h1><a href='../../../../index.html'>Home</a> / Module <code>lib/std/record.vv</code></h1>
+
+
+<div class='docstring module-doc'>The `record` module provides utilities for working with records (key-value maps).<br>
+Records are unordered collections of fields, where keys are typically strings or integers.</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='keys'><span class='kind'>function</span> <code>keys(r)</code></h3>
+    
+    <div class='docstring'>Returns a list of all keys in the record.<br>
+<br>
+Example:<br>
+```vv<br>
+let r = {a: 1, b: 2}<br>
+record.keys(r) // ["a", "b"]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='values'><span class='kind'>function</span> <code>values(r)</code></h3>
+    
+    <div class='docstring'>Returns a list of all values in the record.<br>
+<br>
+Example:<br>
+```vv<br>
+let r = {a: 1, b: 2}<br>
+record.values(r) // [1, 2]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='has'><span class='kind'>function</span> <code>has(r, k)</code></h3>
+    
+    <div class='docstring'>Checks if the record contains the specified key.<br>
+<br>
+Example:<br>
+```vv<br>
+let r = {foo: "bar"}<br>
+record.has(r, "foo") // true<br>
+record.has(r, "baz") // false<br>
+```</div>
+    
+</div>
+
+
+    </main>
+    <script type="module" src="../../../../static/highlight.js"></script>
+</body>
+
+</html>

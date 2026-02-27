@@ -103,6 +103,7 @@
             font-family: 'Fira Code', monospace;
         }
     </style>
+    <link rel="stylesheet" href="{{.RootRel}}static/highlight.css">
 </head>
 
 <body>
@@ -117,6 +118,7 @@
     <main>
         {{template "content" .}}
     </main>
+    <script type="module" src="{{.RootRel}}static/highlight.js"></script>
 </body>
 
 </html>
