@@ -72,6 +72,7 @@ const (
 	TColon
 	TIncr
 	TDecr
+	TPercent
 )
 
 func (ty TokenType) String() string {
@@ -196,6 +197,8 @@ func (ty TokenType) String() string {
 		return "Incr"
 	case TDecr:
 		return "Decr"
+	case TPercent:
+		return "Percent"
 	}
 	return "Unknown"
 }
@@ -235,6 +238,7 @@ var Symbols = map[rune]TokenType{
 	'/': TSlash,
 	'.': TDot,
 	':': TColon,
+	'%': TPercent,
 }
 
 var Symbols2 = map[string]TokenType{

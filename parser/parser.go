@@ -40,6 +40,7 @@ var precedences = map[lexer.TokenType]Precedence{
 	lexer.TAsterisk: PProduct,
 	lexer.TSlash:    PProduct,
 	lexer.TSlashDot: PProduct,
+	lexer.TPercent:   PProduct,
 	lexer.TLParen:   PCall,
 	lexer.TLBrace:   PIndex,
 	lexer.TDot:      PCall,
@@ -113,6 +114,7 @@ func (p *Parser) registerInfixParsers() {
 		lexer.TAsterisk: p.parseInfixExpr,
 		lexer.TSlash:    p.parseInfixExpr,
 		lexer.TSlashDot: p.parseInfixExpr,
+		lexer.TPercent:  p.parseInfixExpr,
 	}
 }
 

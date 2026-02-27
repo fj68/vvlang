@@ -213,6 +213,8 @@ func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
 		return s.evalAndExpr(left, right)
 	case "or":
 		return s.evalOrExpr(left, right)
+	case "%":
+		return s.evalModExpr(left, right)
 	default:
 		return nil, fmt.Errorf("unknown operator: %s", expr.Op)
 	}
@@ -330,6 +332,21 @@ func (s *State) evalIDivExpr(left Value, right Value) (Value, error) {
 		return nil, fmt.Errorf("division by zero")
 	}
 	return VInt(int64(lvalue) / int64(rvalue)), nil
+}
+
+func (s *State) evalModExpr(left Value, right Value) (Value, error) {
+	lvalue, ok := left.(VInt)
+	if !ok {
+		return nil, fmt.Errorf("left side value of mod expression is not an int")
+	}
+	rvalue, ok := right.(VInt)
+	if !ok {
+		return nil, fmt.Errorf("right side value of mod expression is not an int")
+	}
+	if rvalue == 0 {
+		return nil, fmt.Errorf("modulo by zero")
+	}
+	return VInt(int64(lvalue) % int64(rvalue)), nil
 }
 
 func (s *State) evalEqualExpr(left Value, right Value) (Value, error) {

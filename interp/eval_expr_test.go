@@ -242,6 +242,16 @@ let result = { v = value, e = error }`,
 			Input:       "let result = 7.0 /. 2",
 			ExpectedErr: "left side value of floor div expression is not an int",
 		},
+		{
+			Name:        "modulo int",
+			Input:       "let result = 7 % 2",
+			ExpectedEnv: map[string]Value{"result": VInt(1)},
+		},
+		{
+			Name:        "modulo negative",
+			Input:       "let result = -7 % 2",
+			ExpectedEnv: map[string]Value{"result": VInt(-1)},
+		},
 	}
 
 	for _, tc := range tests {
