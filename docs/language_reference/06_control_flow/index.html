@@ -69,6 +69,7 @@
         <h2 style="margin-top: 0;">In this chapter</h2>
         <ul>
             <li><a href="#conditional-statements-if-else">Conditional Statements (`if` / `else`)</a></li>
+            <li><a href="#blocks-begin-end">Blocks (`begin...end`)</a></li>
             <li><a href="#loops-while">Loops (`while`)</a></li>
             <li><a href="#loop-control-break-continue">Loop Control (`break`, `continue`)</a></li>
             <li><a href="#error-handling-and-early-returns">Error Handling and Early Returns (`!`)</a></li>
@@ -85,6 +86,27 @@ if x == 10
 else
     console.print("Not ten")
 end</code></pre>
+
+    <p>Chained conditions are supported using <code>else if</code>. Multiple conditions can be checked in
+        sequence, and only the first branch that evaluates to true will be executed.</p>
+    <pre><code>if x == 1
+    console.print("one")
+else if x == 2
+    console.print("two")
+else
+    console.print("many")
+end</code></pre>
+
+    <h2 id="blocks-begin-end">Blocks (`begin...end`)</h2>
+    <p>A <code>begin...end</code> block groups multiple statements into a single unit. It is primarily used to
+        create a new local scope for variables.</p>
+    <pre><code>let x = 1
+begin
+    let y = 2
+    console.print(x + y) // 3
+end
+// console.print(y) // Error: y is only visible inside the block</code></pre>
+
 
     <h2 id="loops-while">Loops (`while`)</h2>
     <p><code>while</code> loops execute a block of code repeatedly as long as a condition is true. The loop is closed
