@@ -188,7 +188,7 @@ list.each(l, fun (i, x) console.print(x) end)<br>
     <h3 id='tail'><span class='kind'>function</span> <code>tail(xs)</code></h3>
     
     <div class='docstring'>Returns a new list containing all elements except the first one.<br>
-Returns `null` if the list is empty.<br>
+
 <br>
 Example:<br>
 ```vv<br>
@@ -215,7 +215,7 @@ list.flat_map(l, fun (i, x) [x, x * 2] end) // [1, 2, 2, 4]<br>
     <h3 id='find'><span class='kind'>function</span> <code>find(xs, f)</code></h3>
     
     <div class='docstring'>Returns the first element in the list that satisfies the condition `f(index, element)`.<br>
-Returns `null` if no such element is found.<br>
+Returns `none` if no such element is found.<br>
 <br>
 Example:<br>
 ```vv<br>
@@ -284,7 +284,7 @@ list.fold_right(l, "", fun (acc, i, x) acc + x end) // "cba"<br>
     <h3 id='head'><span class='kind'>function</span> <code>head(xs)</code></h3>
     
     <div class='docstring'>Returns the first element of a list.<br>
-Returns `null` if the list is empty.<br>
+
 <br>
 Example:<br>
 ```vv<br>
@@ -338,7 +338,7 @@ list.min(l, fun (x) x end) // 1<br>
     <h3 id='shift'><span class='kind'>extern</span> <code>shift</code></h3>
     
     <div class='docstring'>Removes and returns the first element from a list.<br>
-Returns `null` if the list is empty.<br>
+
 <br>
 Example:<br>
 ```vv<br>
@@ -445,7 +445,7 @@ list.some(l, fun (i, x) x % 2 == 0 end) // true<br>
     <h3 id='pop'><span class='kind'>extern</span> <code>pop</code></h3>
     
     <div class='docstring'>Removes and returns the last element from a list.<br>
-Returns `null` if the list is empty.<br>
+
 <br>
 Example:<br>
 ```vv<br>

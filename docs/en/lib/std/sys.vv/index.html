@@ -113,8 +113,6 @@
             
             <a href='../../../../en/index.html' class='active' >en</a>
             
-            <a href='../../../../ja/index.html' >ja</a>
-            
         </nav>
     </header>
     <main>
@@ -126,33 +124,6 @@
 
 
 <h2>Exports</h2>
-
-<div class='export-item'>
-    <h3 id='help'><span class='kind'>extern</span> <code>help</code></h3>
-    
-    <div class='docstring'>Prints help information about the language and available built-ins.<br>
-<br>
-Example:<br>
-```vv<br>
-sys.help()<br>
-```</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='phys_eq'><span class='kind'>extern</span> <code>phys_eq</code></h3>
-    
-    <div class='docstring'>Checks if two values refer to the exact same object in memory (physical equality).<br>
-<br>
-Example:<br>
-```vv<br>
-let a = [1]<br>
-let b = [1]<br>
-sys.phys_eq(a, b) // false<br>
-sys.phys_eq(a, a) // true<br>
-```</div>
-    
-</div>
 
 <div class='export-item'>
     <h3 id='set_max_recursion_depth'><span class='kind'>extern</span> <code>set_max_recursion_depth</code></h3>
@@ -180,29 +151,28 @@ sys.get_max_recursion_depth() // 1000<br>
 </div>
 
 <div class='export-item'>
-    <h3 id='type'><span class='kind'>extern</span> <code>type</code></h3>
+    <h3 id='help'><span class='kind'>extern</span> <code>help</code></h3>
     
-    <div class='docstring'>Returns the string representation of the type of the given value.<br>
+    <div class='docstring'>Prints help information about the language and available built-ins.<br>
 <br>
 Example:<br>
 ```vv<br>
-sys.type(123) // "int"<br>
-sys.type("hello") // "list" (string is a list of characters)<br>
-sys.type({ a = 1 }) // "record"<br>
+sys.help()<br>
 ```</div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='str'><span class='kind'>extern</span> <code>str</code></h3>
+    <h3 id='phys_eq'><span class='kind'>extern</span> <code>phys_eq</code></h3>
     
-    <div class='docstring'>Returns the string representation of the given value.<br>
+    <div class='docstring'>Checks if two values refer to the exact same object in memory (physical equality).<br>
 <br>
 Example:<br>
 ```vv<br>
-sys.str(123) // "123"<br>
-sys.str([1, 2, 3]) // "[1, 2, 3]"<br>
-sys.str(true) // "true"<br>
+let a = [1]<br>
+let b = [1]<br>
+sys.phys_eq(a, b) // false<br>
+sys.phys_eq(a, a) // true<br>
 ```</div>
     
 </div>

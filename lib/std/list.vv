@@ -12,7 +12,6 @@
 pub extern "native" fun push(l, v)
 
 /// Removes and returns the last element from a list.
-/// Returns `null` if the list is empty.
 ///
 /// Example:
 /// ```vv
@@ -23,7 +22,6 @@ pub extern "native" fun push(l, v)
 pub extern "native" fun pop(l)
 
 /// Removes and returns the first element from a list.
-/// Returns `null` if the list is empty.
 ///
 /// Example:
 /// ```vv
@@ -155,7 +153,6 @@ pub fun fold_right(xs, init, f)
 end
 
 /// Returns the first element of a list.
-/// Returns `null` if the list is empty.
 ///
 /// Example:
 /// ```vv
@@ -164,13 +161,12 @@ end
 /// ```
 pub fun head(xs)
   if len(xs) == 0
-    return nil
+    return none
   end
   return xs[0]
 end
 
 /// Returns a new list containing all elements except the first one.
-/// Returns `null` if the list is empty.
 ///
 /// Example:
 /// ```vv
@@ -179,7 +175,7 @@ end
 /// ```
 pub fun tail(xs)
   if len(xs) == 0
-    return null
+    return none
   end
   return xs[1:]
 end
@@ -318,12 +314,12 @@ pub fun zip(xs, ys)
   let i = 0
   let length = max([len(xs), len(ys)], fun (it) return it end)
   while i < length
-    let x = null
+    let x = none
     if i < len(xs)
       x = xs[i]
     end
 
-    let y = null
+    let y = none
     if i < len(ys)
       y = ys[i]
     end
@@ -372,7 +368,6 @@ pub fun some(xs, f)
 end
 
 /// Returns the first element in the list that satisfies the condition `f(index, element)`.
-/// Returns `null` if no such element is found.
 ///
 /// Example:
 /// ```vv
@@ -387,7 +382,7 @@ pub fun find(xs, f)
     end
     i += 1
   end
-  return null
+  return none
 end
 
 /// Returns the index of the first element in the list that satisfies the condition `f(index, element)`.
