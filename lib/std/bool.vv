@@ -1,10 +1,10 @@
-// The `bool` module provides standard utilities for boolean values.
+/// The `bool` module provides standard utilities for boolean values.
 
-// Converts a boolean value to its string representation.
-//
-// Example:
-// ```vv
-// bool.to_string(true)  // "true"
-// bool.to_string(false) // "false"
-// ```
+/// Converts a boolean value to its string representation.
+///
+/// Example:
+/// ```vv
+/// bool.to_string(true)  // "true"
+/// bool.to_string(false) // "false"
+/// ```
 pub extern "native" fun to_string(b)

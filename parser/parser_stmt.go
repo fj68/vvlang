@@ -19,27 +19,34 @@ func (p *Parser) parseToplevelStmt() ([]ast.Stmt, error) {
 		return []ast.Stmt{stmt}, nil
 	}
 
+	isPub := false
 	if p.curToken.Type == lexer.TPub {
+		isPub = true
 		if err := p.readToken(); err != nil {
 			return nil, err
 		}
-		stmts, err := p.parseStmt()
-		if err != nil {
-			return nil, err
-		}
-		for _, stmt := range stmts {
-			switch s := stmt.(type) {
-			case *ast.VarDeclStmt:
-				s.Exported = true
-				s.Docstring = docstring
-			default:
-				return nil, fmt.Errorf("only variable and function declarations can be exported")
-			}
-		}
-		return stmts, nil
 	}
 
-	return p.parseStmt()
+	stmts, err := p.parseStmt()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, stmt := range stmts {
+		switch s := stmt.(type) {
+		case *ast.VarDeclStmt:
+			s.Exported = isPub
+			s.Docstring = docstring
+		case *ast.ExternStmt:
+			s.Exported = isPub
+			s.Docstring = docstring
+		default:
+			if isPub {
+				return nil, fmt.Errorf("only let, fun, and extern declarations can be exported")
+			}
+		}
+	}
+	return stmts, nil
 }
 
 func (p *Parser) parseStmt() ([]ast.Stmt, error) {
@@ -74,6 +81,14 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 
 	if p.curToken.Type == lexer.TLet {
 		return p.parseVarDeclStmt()
+	}
+
+	if p.curToken.Type == lexer.TExtern {
+		stmt, err := p.parseExternStmt()
+		if err != nil {
+			return nil, err
+		}
+		return []ast.Stmt{stmt}, nil
 	}
 
 	if p.curToken.Type == lexer.TBegin {

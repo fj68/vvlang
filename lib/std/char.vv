@@ -1,48 +1,48 @@
-// The `char` module provides utilities for working with characters.
-// Characters are typically represented by single quotes.
+/// The `char` module provides utilities for working with characters.
+/// Characters are typically represented by single quotes.
 
-// Converts a character to its uppercase equivalent.
-//
-// Example:
-// ```vv
-// char.to_upper('a') // 'A'
-// char.to_upper('1') // '1'
-// ```
+/// Converts a character to its uppercase equivalent.
+///
+/// Example:
+/// ```vv
+/// char.to_upper('a') // 'A'
+/// char.to_upper('1') // '1'
+/// ```
 pub extern 'native' fun to_upper(c)
 
-// Converts a character to its lowercase equivalent.
-//
-// Example:
-// ```vv
-// char.to_lower('A') // 'a'
-// char.to_lower('!') // '!'
-// ```
+/// Converts a character to its lowercase equivalent.
+///
+/// Example:
+/// ```vv
+/// char.to_lower('A') // 'a'
+/// char.to_lower('!') // '!'
+/// ```
 pub extern 'native' fun to_lower(c)
 
-// Checks if a character is an ASCII decimal digit ('0'-'9').
-//
-// Example:
-// ```vv
-// char.is_digit('5') // true
-// char.is_digit('a') // false
-// ```
+/// Checks if a character is an ASCII decimal digit ('0'-'9').
+///
+/// Example:
+/// ```vv
+/// char.is_digit('5') // true
+/// char.is_digit('a') // false
+/// ```
 pub extern 'native' fun is_digit(c)
 
-// Checks if a character is a whitespace character (e.g., space, tab, newline).
-//
-// Example:
-// ```vv
-// char.is_space(' ')  // true
-// char.is_space('\n') // true
-// char.is_space('a')  // false
-// ```
+/// Checks if a character is a whitespace character (e.g., space, tab, newline).
+///
+/// Example:
+/// ```vv
+/// char.is_space(' ')  // true
+/// char.is_space('\n') // true
+/// char.is_space('a')  // false
+/// ```
 pub extern 'native' fun is_space(c)
 
-// Converts a character to a list of its UTF-8 byte values.
-//
-// Example:
-// ```vv
-// char.to_bytes('a') // [97]
-// char.to_bytes('€') // [226, 130, 172]
-// ```
+/// Converts a character to a list of its UTF-8 byte values.
+///
+/// Example:
+/// ```vv
+/// char.to_bytes('a') // [97]
+/// char.to_bytes('€') // [226, 130, 172]
+/// ```
 pub extern 'native' fun to_bytes(c)

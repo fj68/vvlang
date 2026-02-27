@@ -1,18 +1,18 @@
-// The `float` module provides standard utilities for floating-point numbers.
+/// The `float` module provides standard utilities for floating-point numbers.
 
-// Converts a floating-point number to its string representation.
-//
-// Example:
-// ```vv
-// float.to_string(3.14) // "3.14"
-// ```
+/// Converts a floating-point number to its string representation.
+///
+/// Example:
+/// ```vv
+/// float.to_string(3.14) // "3.14"
+/// ```
 pub extern "native" fun to_string(f)
 
-// Converts a floating-point number to an integer by truncating toward zero.
-//
-// Example:
-// ```vv
-// float.to_int(3.14) // 3
-// float.to_int(-2.5) // -2
-// ```
+/// Converts a floating-point number to an integer by truncating toward zero.
+///
+/// Example:
+/// ```vv
+/// float.to_int(3.14) // 3
+/// float.to_int(-2.5) // -2
+/// ```
 pub extern "native" fun to_int(f)

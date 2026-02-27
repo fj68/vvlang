@@ -285,9 +285,10 @@ func (stmt *DeferStmt) Equals(other Stmt) bool {
 }
 
 type ExternStmt struct {
-	Type     string // e.g. "native"
-	Name     string
-	Exported bool
+	Type      string // e.g. "native"
+	Name      string
+	Exported  bool
+	Docstring map[string]string
 }
 
 func (stmt *ExternStmt) Inspect() string {
