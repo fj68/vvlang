@@ -105,8 +105,37 @@ func (p *Parser) parsePrefixExpr() (ast.Expr, error) {
 	}, nil
 }
 
+func (p *Parser) parseInfixOp(op lexer.TokenType) ast.InfixOp {
+	switch op {
+	case lexer.TPlus:
+		return ast.OpAdd
+	case lexer.THyphen:
+		return ast.OpSub
+	case lexer.TAsterisk:
+		return ast.OpMul
+	case lexer.TSlash:
+		return ast.OpDiv
+	case lexer.TSlashColon:
+		return ast.OpIDiv
+	case lexer.TEqual:
+		return ast.OpEqual
+	case lexer.TLess:
+		return ast.OpLessThan
+	case lexer.TLessEq:
+		return ast.OpLessThanEqual
+	case lexer.TAnd:
+		return ast.OpAnd
+	case lexer.TOr:
+		return ast.OpOr
+	case lexer.TPercent:
+		return ast.OpMod
+	default:
+		panic(fmt.Sprintf("unknown infix operator: %s", op))
+	}
+}
+
 func (p *Parser) parseInfixExpr(left ast.Expr) (ast.Expr, error) {
-	op := p.curToken.Text
+	op := p.parseInfixOp(p.curToken.Type)
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
@@ -290,7 +319,7 @@ func (p *Parser) parseInterpolatedStringLiteralExpr() (ast.Expr, error) {
 			expr = part
 		} else {
 			expr = &ast.InfixExpr{
-				Op:    "+",
+				Op:    ast.OpAdd,
 				Left:  expr,
 				Right: part,
 			}
@@ -343,7 +372,7 @@ func (p *Parser) parseInterpolatedStringLiteralExpr() (ast.Expr, error) {
 				expr = subExpr
 			} else {
 				expr = &ast.InfixExpr{
-					Op:    "+",
+					Op:    ast.OpAdd,
 					Left:  expr,
 					Right: subExpr,
 				}

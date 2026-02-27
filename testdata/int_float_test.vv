@@ -11,8 +11,8 @@ end
 test "division operators"
     assert type(5 / 2) == "float"
     assert 5 / 2 == 2.5
-    assert type(5 /. 2) == "int"
-    assert 5 /. 2 == 2
+    assert type(5 /: 2) == "int"
+    assert 5 /: 2 == 2
 end
 
 test "list indexing failure"

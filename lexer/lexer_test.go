@@ -142,13 +142,13 @@ func TestLexer(t *testing.T) {
 		},
 		{
 			"floor division",
-			"5 /. 2",
+			"5 /: 2",
 			[]struct {
 				t    TokenType
 				text string
 			}{
 				{TInt, "5"},
-				{TSlashDot, "/."},
+				{TSlashColon, "/:"},
 				{TInt, "2"},
 			},
 		},

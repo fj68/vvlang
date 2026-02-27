@@ -29,7 +29,7 @@ func TestParseStmt(t *testing.T) {
 						Body: []ast.Stmt{
 							&ast.ReturnStmt{
 								Value: &ast.InfixExpr{
-									Op:    "+",
+									Op:    ast.OpAdd,
 									Left:  &ast.VarRefExpr{Name: "a"},
 									Right: &ast.VarRefExpr{Name: "b"},
 								},
@@ -50,7 +50,7 @@ func TestParseStmt(t *testing.T) {
 						Body: []ast.Stmt{
 							&ast.ReturnStmt{
 								Value: &ast.InfixExpr{
-									Op:    "+",
+									Op:    ast.OpAdd,
 									Left:  &ast.VarRefExpr{Name: "a"},
 									Right: &ast.VarRefExpr{Name: "b"},
 								},
@@ -66,7 +66,7 @@ func TestParseStmt(t *testing.T) {
 			Expected: []ast.Stmt{
 				&ast.WhileStmt{
 					Cond: &ast.InfixExpr{
-						Op:    "<",
+						Op:    ast.OpLessThan,
 						Left:  &ast.IntLiteralExpr{Value: 1},
 						Right: &ast.IntLiteralExpr{Value: 2},
 					},
@@ -148,7 +148,7 @@ func TestParseStmt(t *testing.T) {
 									Body: []ast.Stmt{
 										&ast.IfStmt{
 											Cond: &ast.InfixExpr{
-												Op: "==",
+												Op:   ast.OpEqual,
 												Left: &ast.FunCallExpr{
 													Fun: &ast.VarRefExpr{Name: "get_key"},
 												},
@@ -166,7 +166,7 @@ func TestParseStmt(t *testing.T) {
 												Body: []ast.Stmt{
 													&ast.ReturnStmt{
 														Value: &ast.InfixExpr{
-															Op:    "+",
+															Op:    ast.OpAdd,
 															Left:  &ast.VarRefExpr{Name: "a"},
 															Right: &ast.VarRefExpr{Name: "b"},
 														},

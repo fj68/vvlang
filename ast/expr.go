@@ -229,9 +229,53 @@ func (expr *PrefixExpr) Equals(other Expr) bool {
 	return expr.Op == o.Op && expr.Right.Equals(o.Right)
 }
 
+type InfixOp int
+
+const (
+	OpAdd InfixOp = iota
+	OpSub
+	OpMul
+	OpDiv
+	OpIDiv
+	OpEqual
+	OpLessThan
+	OpLessThanEqual
+	OpAnd
+	OpOr
+	OpMod
+)
+
+func (op InfixOp) String() string {
+	switch op {
+	case OpAdd:
+		return "add"
+	case OpSub:
+		return "sub"
+	case OpMul:
+		return "mul"
+	case OpDiv:
+		return "div"
+	case OpIDiv:
+		return "idiv"
+	case OpEqual:
+		return "equal"
+	case OpLessThan:
+		return "less_than"
+	case OpLessThanEqual:
+		return "less_than_equal"
+	case OpAnd:
+		return "and"
+	case OpOr:
+		return "or"
+	case OpMod:
+		return "mod"
+	}
+	return "unknown"
+}
+
 type InfixExpr struct {
 	Position
-	Op    string
+	Op    InfixOp
 	Left  Expr
 	Right Expr
 }

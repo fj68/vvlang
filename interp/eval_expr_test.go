@@ -224,22 +224,22 @@ let result = { v = value, e = error }`,
 		},
 		{
 			Name:        "floor division int",
-			Input:       "let result = 7 /. 2",
+			Input:       "let result = 7 /: 2",
 			ExpectedEnv: map[string]Value{"result": VInt(3)},
 		},
 		{
 			Name:        "floor division negative",
-			Input:       "let result = -7 /. 2",
+			Input:       "let result = -7 /: 2",
 			ExpectedEnv: map[string]Value{"result": VInt(-3)},
 		},
 		{
 			Name:        "floor division zero error",
-			Input:       "let result = 7 /. 0",
+			Input:       "let result = 7 /: 0",
 			ExpectedErr: "division by zero",
 		},
 		{
 			Name:        "floor division float error",
-			Input:       "let result = 7.0 /. 2",
+			Input:       "let result = 7.0 /: 2",
 			ExpectedErr: "left side value of floor div expression is not an int",
 		},
 		{
