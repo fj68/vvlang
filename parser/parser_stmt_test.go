@@ -124,6 +124,78 @@ func TestParseStmt(t *testing.T) {
 			},
 		},
 		{
+			Name:  "if else if statement",
+			Input: "if true let x = 1 else if false let x = 2 end",
+			Expected: []ast.Stmt{
+				&ast.IfStmt{
+					Cond: &ast.BoolLiteralExpr{Value: true},
+					Then: &ast.BlockStmt{
+						Body: []ast.Stmt{
+							&ast.VarDeclStmt{
+								Name: "x",
+								Body: &ast.IntLiteralExpr{Value: 1},
+							},
+						},
+					},
+					Else: &ast.BlockStmt{
+						Body: []ast.Stmt{
+							&ast.IfStmt{
+								Cond: &ast.BoolLiteralExpr{Value: false},
+								Then: &ast.BlockStmt{
+									Body: []ast.Stmt{
+										&ast.VarDeclStmt{
+											Name: "x",
+											Body: &ast.IntLiteralExpr{Value: 2},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name:  "if else if else statement",
+			Input: "if true let x = 1 else if false let x = 2 else let x = 3 end",
+			Expected: []ast.Stmt{
+				&ast.IfStmt{
+					Cond: &ast.BoolLiteralExpr{Value: true},
+					Then: &ast.BlockStmt{
+						Body: []ast.Stmt{
+							&ast.VarDeclStmt{
+								Name: "x",
+								Body: &ast.IntLiteralExpr{Value: 1},
+							},
+						},
+					},
+					Else: &ast.BlockStmt{
+						Body: []ast.Stmt{
+							&ast.IfStmt{
+								Cond: &ast.BoolLiteralExpr{Value: false},
+								Then: &ast.BlockStmt{
+									Body: []ast.Stmt{
+										&ast.VarDeclStmt{
+											Name: "x",
+											Body: &ast.IntLiteralExpr{Value: 2},
+										},
+									},
+								},
+								Else: &ast.BlockStmt{
+									Body: []ast.Stmt{
+										&ast.VarDeclStmt{
+											Name: "x",
+											Body: &ast.IntLiteralExpr{Value: 3},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			Name:        "return top level",
 			Input:       "return 1",
 			ExpectedErr: "return statement is not allowed here (must be inside a function or block)",
@@ -148,7 +220,7 @@ func TestParseStmt(t *testing.T) {
 									Body: []ast.Stmt{
 										&ast.IfStmt{
 											Cond: &ast.InfixExpr{
-												Op:   ast.OpEqual,
+												Op: ast.OpEqual,
 												Left: &ast.FunCallExpr{
 													Fun: &ast.VarRefExpr{Name: "get_key"},
 												},

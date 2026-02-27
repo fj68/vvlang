@@ -1,0 +1,8 @@
+let name = "Alice"
+let age = 30
+let person = { name, age }
+
+// Use `print` or whatever builtin exists to output it. Assuming println or print.
+// In tests I saw `len` and `add`. I will just let the interpreter print it if it's an expression or use print.
+print(person.name)
+print(person.age)
