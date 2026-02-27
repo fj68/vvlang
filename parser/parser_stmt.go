@@ -517,7 +517,7 @@ func (p *Parser) parseVarIncrDecrStmt() (*ast.VarAssignStmt, error) {
 		return &ast.VarAssignStmt{
 			Name: name,
 			Body: &ast.InfixExpr{
-				Op:    "+",
+				Op:    ast.OpAdd,
 				Left:  &ast.VarRefExpr{Name: name},
 				Right: expr,
 			},
@@ -526,7 +526,7 @@ func (p *Parser) parseVarIncrDecrStmt() (*ast.VarAssignStmt, error) {
 	return &ast.VarAssignStmt{
 		Name: name,
 		Body: &ast.InfixExpr{
-			Op:    "-",
+			Op:    ast.OpSub,
 			Left:  &ast.VarRefExpr{Name: name},
 			Right: expr,
 		},

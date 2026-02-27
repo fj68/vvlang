@@ -67,7 +67,7 @@ const (
 	THyphen
 	TAsterisk
 	TSlash
-	TSlashDot
+	TSlashColon
 	TDot
 	TColon
 	TIncr
@@ -187,8 +187,8 @@ func (ty TokenType) String() string {
 		return "Asterisk"
 	case TSlash:
 		return "Slash"
-	case TSlashDot:
-		return "SlashDot"
+	case TSlashColon:
+		return "SlashColon"
 	case TDot:
 		return "Dot"
 	case TColon:
@@ -244,7 +244,7 @@ var Symbols = map[rune]TokenType{
 var Symbols2 = map[string]TokenType{
 	"<=": TLessEq,
 	"==": TEqual,
-	"/.": TSlashDot,
+	"/:": TSlashColon,
 	"+=": TIncr,
 	"-=": TDecr,
 }

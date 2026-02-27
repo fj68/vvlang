@@ -31,19 +31,19 @@ const (
 )
 
 var precedences = map[lexer.TokenType]Precedence{
-	lexer.TIdent:    PLowest,
-	lexer.TEqual:    PEquals,
-	lexer.TLessEq:   PLess,
-	lexer.TLess:     PLess,
-	lexer.TPlus:     PSum,
-	lexer.THyphen:   PSum,
-	lexer.TAsterisk: PProduct,
-	lexer.TSlash:    PProduct,
-	lexer.TSlashDot: PProduct,
-	lexer.TPercent:   PProduct,
-	lexer.TLParen:   PCall,
-	lexer.TLBrace:   PIndex,
-	lexer.TDot:      PCall,
+	lexer.TIdent:      PLowest,
+	lexer.TEqual:      PEquals,
+	lexer.TLessEq:     PLess,
+	lexer.TLess:       PLess,
+	lexer.TPlus:       PSum,
+	lexer.THyphen:     PSum,
+	lexer.TAsterisk:   PProduct,
+	lexer.TSlash:      PProduct,
+	lexer.TSlashColon: PProduct,
+	lexer.TPercent:    PProduct,
+	lexer.TLParen:     PCall,
+	lexer.TLBrace:     PIndex,
+	lexer.TDot:        PCall,
 }
 
 func precedenceOf(ty lexer.TokenType) Precedence {
@@ -103,18 +103,18 @@ func (p *Parser) registerPrefixParsers() {
 
 func (p *Parser) registerInfixParsers() {
 	p.infixParsers = map[lexer.TokenType]InfixParser{
-		lexer.TDot:      p.parseFieldAccessExpr,
-		lexer.THyphen:   p.parseInfixExpr,
-		lexer.TPlus:     p.parseInfixExpr,
-		lexer.TEqual:    p.parseInfixExpr,
-		lexer.TLessEq:   p.parseInfixExpr,
-		lexer.TLess:     p.parseInfixExpr,
-		lexer.TLParen:   p.parseFunCallExpr,
-		lexer.TLBrace:   p.parseIndexOrSliceExpr,
-		lexer.TAsterisk: p.parseInfixExpr,
-		lexer.TSlash:    p.parseInfixExpr,
-		lexer.TSlashDot: p.parseInfixExpr,
-		lexer.TPercent:  p.parseInfixExpr,
+		lexer.TDot:        p.parseFieldAccessExpr,
+		lexer.THyphen:     p.parseInfixExpr,
+		lexer.TPlus:       p.parseInfixExpr,
+		lexer.TEqual:      p.parseInfixExpr,
+		lexer.TLessEq:     p.parseInfixExpr,
+		lexer.TLess:       p.parseInfixExpr,
+		lexer.TLParen:     p.parseFunCallExpr,
+		lexer.TLBrace:     p.parseIndexOrSliceExpr,
+		lexer.TAsterisk:   p.parseInfixExpr,
+		lexer.TSlash:      p.parseInfixExpr,
+		lexer.TSlashColon: p.parseInfixExpr,
+		lexer.TPercent:    p.parseInfixExpr,
 	}
 }
 

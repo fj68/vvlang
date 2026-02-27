@@ -193,27 +193,27 @@ func (s *State) evalInfixExpr(expr *ast.InfixExpr) (Value, error) {
 		return nil, err
 	}
 	switch expr.Op {
-	case "+":
+	case ast.OpAdd:
 		return s.evalAddExpr(left, right)
-	case "-":
+	case ast.OpSub:
 		return s.evalSubExpr(left, right)
-	case "*":
+	case ast.OpMul:
 		return s.evalMulExpr(left, right)
-	case "/":
+	case ast.OpDiv:
 		return s.evalDivExpr(left, right)
-	case "/.":
+	case ast.OpIDiv:
 		return s.evalIDivExpr(left, right)
-	case "==":
+	case ast.OpEqual:
 		return s.evalEqualExpr(left, right)
-	case "<":
+	case ast.OpLessThan:
 		return s.evalLessThanExpr(left, right)
-	case "<=":
+	case ast.OpLessThanEqual:
 		return s.evalLessThanEqualExpr(left, right)
-	case "and":
+	case ast.OpAnd:
 		return s.evalAndExpr(left, right)
-	case "or":
+	case ast.OpOr:
 		return s.evalOrExpr(left, right)
-	case "%":
+	case ast.OpMod:
 		return s.evalModExpr(left, right)
 	default:
 		return nil, fmt.Errorf("unknown operator: %s", expr.Op)
