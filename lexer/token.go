@@ -46,7 +46,6 @@ const (
 	TImport
 	TFrom
 	TNot
-	TStr
 	TLen
 
 	// symbols
@@ -146,8 +145,6 @@ func (ty TokenType) String() string {
 		return "From"
 	case TNot:
 		return "Not"
-	case TStr:
-		return "Str"
 	case TLen:
 		return "Len"
 
@@ -274,7 +271,6 @@ var Keywords = map[string]TokenType{
 	"import":   TImport,
 	"from":     TFrom,
 	"not":      TNot,
-	"str":      TStr,
 	"len":      TLen,
 }
 

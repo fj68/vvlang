@@ -45,3 +45,13 @@ pub extern "native" fun get_max_recursion_depth()
 /// sys.type({ a = 1 }) // "record"
 /// ```
 pub extern "native" fun type(v)
+
+/// Returns the string representation of the given value.
+///
+/// Example:
+/// ```vv
+/// sys.str(123) // "123"
+/// sys.str([1, 2, 3]) // "[1, 2, 3]"
+/// sys.str(true) // "true"
+/// ```
+pub extern "native" fun str(v)

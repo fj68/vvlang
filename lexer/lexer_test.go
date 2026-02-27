@@ -64,7 +64,7 @@ func TestLexer(t *testing.T) {
 		},
 		{
 			"prefix operators",
-			"not(a) str(c)",
+			"not(a)",
 			[]struct {
 				t    TokenType
 				text string
@@ -72,10 +72,6 @@ func TestLexer(t *testing.T) {
 				{TNot, "not"},
 				{TLParen, "("},
 				{TIdent, "a"},
-				{TRParen, ")"},
-				{TStr, "str"},
-				{TLParen, "("},
-				{TIdent, "c"},
 				{TRParen, ")"},
 			},
 		},

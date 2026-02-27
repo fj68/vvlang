@@ -93,7 +93,6 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TLBrace:       p.parseListLiteralExpr,
 		lexer.TLBracket:     p.parseRecordLiteralExpr,
 		lexer.TNot:          p.parseBuiltinCallExpr,
-		lexer.TStr:          p.parseBuiltinCallExpr,
 		lexer.TLen:          p.parseBuiltinCallExpr,
 		lexer.TInterpolated: p.parseInterpolatedStringLiteralExpr,
 		lexer.TLParen:       p.parseGroupedExpr,

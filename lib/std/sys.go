@@ -109,3 +109,10 @@ func Type(s *interp.State, args []interp.Value) (interp.Value, error) {
 	}
 	return interp.StringToValue(args[0].Type().String()), nil
 }
+
+func Str(s *interp.State, args []interp.Value) (interp.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("str() takes 1 argument")
+	}
+	return interp.StringToValue(args[0].Str()), nil
+}
