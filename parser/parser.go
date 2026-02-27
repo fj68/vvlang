@@ -188,7 +188,13 @@ func (p *Parser) expectNext(ty lexer.TokenType) error {
 func (p *Parser) parseDocstring() map[string]string {
 	docs := make(map[string]string)
 	lang := "en"
+	lastLine := -1
 	for p.curToken.Type == lexer.TDocstring {
+		if lastLine != -1 && p.curToken.Pos.Line > lastLine+1 {
+			break
+		}
+		lastLine = p.curToken.Pos.Line
+
 		line := p.curToken.Text
 		if len(line) >= 6 && line[:6] == "@lang " {
 			lang = strings.TrimSpace(line[6:])
@@ -242,9 +248,6 @@ func (p *Parser) parseProgram() (*ast.Module, error) {
 		if p.curToken.Type == lexer.TImport {
 			return nil, fmt.Errorf("import statement must be at the beginning of the program")
 		}
-		if p.curToken.Type == lexer.TExtern {
-			return nil, fmt.Errorf("extern statement must be after import statements and before other statements")
-		}
 		stmts, err := p.parseToplevelStmt()
 		if err != nil {
 			return nil, err
@@ -277,22 +280,6 @@ func (p *Parser) parseProgramHeader() ([]ast.Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		header = append(header, stmt)
-	}
-	// then externs
-	for p.curToken.Type == lexer.TExtern || (p.curToken.Type == lexer.TPub && p.peekToken.Type == lexer.TExtern) {
-		exported := false
-		if p.curToken.Type == lexer.TPub {
-			exported = true
-			if err := p.readToken(); err != nil {
-				return nil, err
-			}
-		}
-		stmt, err := p.parseExternStmt()
-		if err != nil {
-			return nil, err
-		}
-		stmt.Exported = exported
 		header = append(header, stmt)
 	}
 	return header, nil

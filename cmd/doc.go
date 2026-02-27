@@ -80,7 +80,20 @@ func Doc() {
 		modules[file] = mod
 	}
 
-	if err := generateDocs(modules, outputDir); err != nil {
+	rootDirName := target
+	if target == "." {
+		cwd, err := os.Getwd()
+		if err == nil {
+			rootDirName = filepath.Base(cwd)
+		}
+	} else {
+		targetAbs, err := filepath.Abs(target)
+		if err == nil {
+			rootDirName = filepath.Base(targetAbs)
+		}
+	}
+
+	if err := generateDocs(modules, outputDir, rootDirName); err != nil {
 		fmt.Printf("error generating docs: %v\n", err)
 		os.Exit(1)
 	}
@@ -155,7 +168,7 @@ type moduleMeta struct {
 	Summary string
 }
 
-func generateDocs(modules map[string]*ast.Module, outputDir string) error {
+func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName string) error {
 	langs := make(map[string]bool)
 	langs["en"] = true
 
@@ -169,6 +182,12 @@ func generateDocs(modules map[string]*ast.Module, outputDir string) error {
 			if decl, ok := stmt.(*ast.VarDeclStmt); ok {
 				if decl.Docstring != nil {
 					for lang := range decl.Docstring {
+						langs[lang] = true
+					}
+				}
+			} else if ext, ok := stmt.(*ast.ExternStmt); ok {
+				if ext.Docstring != nil {
+					for lang := range ext.Docstring {
 						langs[lang] = true
 					}
 				}
@@ -189,8 +208,7 @@ func generateDocs(modules map[string]*ast.Module, outputDir string) error {
 
 		for path, mod := range modules {
 			relPath, _ := filepath.Rel(".", path)
-			modPath := strings.TrimSuffix(relPath, ".vv")
-			modPath = filepath.ToSlash(modPath)
+			modPath := filepath.ToSlash(relPath)
 
 			modDir := filepath.Join(langDir, filepath.FromSlash(modPath))
 			if err := os.MkdirAll(modDir, 0755); err != nil {
@@ -220,6 +238,7 @@ func generateDocs(modules map[string]*ast.Module, outputDir string) error {
 					exp.Doc = template.HTML(formatDoc(getDocstring(s.Docstring, lang)))
 				case *ast.ExternStmt:
 					exp.Kind = "extern"
+					exp.Doc = template.HTML(formatDoc(getDocstring(s.Docstring, lang)))
 				}
 				data.Exports = append(data.Exports, exp)
 			}
@@ -245,10 +264,9 @@ func generateDocs(modules map[string]*ast.Module, outputDir string) error {
 		catMap := make(map[string][]moduleMeta)
 		for path, mod := range modules {
 			relPath, _ := filepath.Rel(".", path)
-			modPath := strings.TrimSuffix(relPath, ".vv")
-			modPath = filepath.ToSlash(modPath)
+			modPath := filepath.ToSlash(relPath)
 
-			cat := "."
+			cat := rootDirName
 			if idx := strings.LastIndex(modPath, "/"); idx != -1 {
 				cat = modPath[:idx]
 			}
