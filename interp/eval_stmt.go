@@ -11,7 +11,7 @@ import (
 
 func (s *State) evalReturnStmt(stmt *ast.ReturnStmt) error {
 	if stmt.Value == nil {
-		s.RetVals.Push(VNull{})
+		s.RetVals.Push(NoneValue)
 		return ErrReturn
 	}
 

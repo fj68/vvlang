@@ -20,7 +20,6 @@ const (
 	VTBuiltinFun
 	VTList
 	VTRecord
-	VTNull
 	VTTailCall
 )
 
@@ -46,8 +45,6 @@ func (ty ValueType) String() string {
 		return "list"
 	case VTRecord:
 		return "record"
-	case VTNull:
-		return "null"
 	case VTTailCall:
 		return "tailcall"
 	}
@@ -446,29 +443,6 @@ func (v *VModule) Str() string {
 	return v.VRecord.Str()
 }
 
-type VNull struct{}
-
-func (v VNull) Type() ValueType {
-	return VTNull
-}
-
-func (v VNull) String() string {
-	return "null"
-}
-
-func (v VNull) Str() string {
-	return v.String()
-}
-
-func (v VNull) Equal(other Value) (bool, error) {
-	_, ok := other.(VNull)
-	return ok, nil
-}
-
-func (v VNull) LessThan(other Value) (bool, error) {
-	return false, fmt.Errorf("unable to compare null")
-}
-
 type VTailCall struct {
 	Fun  *VUserFun
 	Args []Value
@@ -501,4 +475,11 @@ func StringToValue(s string) Value {
 		elems[i] = VChar(r)
 	}
 	return &VList{Elements: elems}
+}
+
+// NoneValue is the standard representation of `null` internally, `{ type = "none" }`.
+var NoneValue Value = &VRecord{
+	Fields: map[string]Value{
+		"type": StringToValue("none"),
+	},
 }

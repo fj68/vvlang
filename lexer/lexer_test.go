@@ -39,14 +39,13 @@ func TestLexer(t *testing.T) {
 		},
 		{
 			"literals and booleans",
-			"true false null 123 45.6 'single' \"double\"",
+			"true false 123 45.6 'single' \"double\"",
 			[]struct {
 				t    TokenType
 				text string
 			}{
 				{TTrue, "true"},
 				{TFalse, "false"},
-				{TNull, "null"},
 				{TInt, "123"},
 				{TFloat, "45.6"},
 				{TLiteral, "single"},

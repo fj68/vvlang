@@ -462,7 +462,11 @@ func (p *Parser) parseRecordDestructStmt() ([]ast.Stmt, error) {
 		}
 		stmts = append(stmts, &ast.VarDeclStmt{
 			Name: name,
-			Body: &ast.NullLiteralExpr{},
+			Body: &ast.RecordLiteralExpr{
+				Fields: map[string]ast.Expr{
+					"type": stringToCharListExpr("none"),
+				},
+			},
 		})
 	}
 
