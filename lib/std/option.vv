@@ -8,6 +8,10 @@ pub fun is_some(v)
    return v.type == "some"
 end
 
+pub fun is_none(v)
+   return v.type == "none"
+end
+
 pub fun get_or(v, default_value)
   if is_some(v)
     return v.value

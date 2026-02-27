@@ -483,3 +483,21 @@ var NoneValue Value = &VRecord{
 		"type": StringToValue("none"),
 	},
 }
+
+func OkValue(v Value) Value {
+	return &VRecord{
+		Fields: map[string]Value{
+			"type":  StringToValue("ok"),
+			"value": v,
+		},
+	}
+}
+
+func ErrorValue(v Value) Value {
+	return &VRecord{
+		Fields: map[string]Value{
+			"type":  StringToValue("error"),
+			"value": v,
+		},
+	}
+}

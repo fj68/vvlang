@@ -1,0 +1,23 @@
+import result from 'std/result.vv'
+import console from 'std/console.vv'
+
+let o = result.ok(42)
+console.print('o:', o)
+
+let e = result.error(['an error occurred'])
+console.print('e:', e)
+
+console.print('is_ok(o):', result.is_ok(o))
+console.print('is_error(e):', result.is_error(e))
+
+console.print('get_or(o):', result.get_or(o, 100))
+console.print('get_or(e):', result.get_or(e, 100))
+
+let m = result.map(o, fun(v) return v * 2 end)
+console.print('map(o, *2):', m)
+
+let fm = result.flat_map(o, fun(v) return result.ok(v * 3) end)
+console.print('flat_map(o, ok(*3)):', fm)
+
+let fm2 = result.flat_map_error(e, fun(v) return result.error(['another error']) end)
+console.print('flat_map_error(e, error(...)):', fm2)
