@@ -1,0 +1,520 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>lib/std/list.vv - vvlang documentation</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            background: #f9f9f9;
+        }
+
+        header {
+            background: #1a1a1a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        nav.langs a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: #fff;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        h1 {
+            color: #111;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        h2 {
+            color: #444;
+            margin-top: 2rem;
+        }
+
+        .docstring {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 4px solid #007acc;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-doc {
+            font-size: 1.1rem;
+        }
+
+        .export-item {
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .kind {
+            font-weight: normal;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #666;
+            background: #eee;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../../static/highlight.css">
+</head>
+
+<body>
+    <header>
+        <div class='logo'>vvlang docs</div>
+        <nav class='langs'>
+            
+            <a href='../../../../en/index.html' class='active' >en</a>
+            
+            <a href='../../../../ja/index.html' >ja</a>
+            
+        </nav>
+    </header>
+    <main>
+        
+<h1><a href='../../../../index.html'>Home</a> / Module <code>lib/std/list.vv</code></h1>
+
+
+<div class='docstring module-doc'>The `list` module provides utilities for working with lists (arrays).<br>
+Lists are ordered, mutable collections of elements of any type.</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='push'><span class='kind'>extern</span> <code>push</code></h3>
+    
+    <div class='docstring'>Adds a value to the end of a list.<br>
+Returns the modified list.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2]<br>
+list.push(l, 3) // [1, 2, 3]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='filter'><span class='kind'>function</span> <code>filter(xs, f)</code></h3>
+    
+    <div class='docstring'>Returns a new list containing only elements that satisfy the provided testing function.<br>
+The testing function receives the index and the element as arguments.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3, 4]<br>
+list.filter(l, fun (i, x) x % 2 == 0 end) // [2, 4]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='reverse'><span class='kind'>function</span> <code>reverse(xs)</code></h3>
+    
+    <div class='docstring'>Returns a new list with the elements of the original list in reverse order.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.reverse(l) // [3, 2, 1]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='fold_right'><span class='kind'>function</span> <code>fold_right(xs, init, f)</code></h3>
+    
+    <div class='docstring'>Applies a function against an accumulator and each element (from right to left) to reduce it to a single value.<br>
+The applied function receives the accumulator, the index, and the element as arguments.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = ["a", "b", "c"]<br>
+list.fold_right(l, "", fun (acc, i, x) acc + x end) // "cba"<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='head'><span class='kind'>function</span> <code>head(xs)</code></h3>
+    
+    <div class='docstring'>Returns the first element of a list.<br>
+Returns `null` if the list is empty.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.head(l) // 1<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat'><span class='kind'>function</span> <code>flat(xs)</code></h3>
+    
+    <div class='docstring'>Flattens a list of lists into a single continuous list.<br>
+Note: Only flattens exactly one level deep.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [[1, 2], [3, 4]]<br>
+list.flat(l) // [1, 2, 3, 4]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='max'><span class='kind'>function</span> <code>max(xs, f)</code></h3>
+    
+    <div class='docstring'>Returns the element that produces the maximum value when `f(element)` is applied.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 5, 2]<br>
+list.max(l, fun (x) x end) // 5<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='min'><span class='kind'>function</span> <code>min(xs, f)</code></h3>
+    
+    <div class='docstring'>Returns the element that produces the minimum value when `f(element)` is applied.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 5, 2]<br>
+list.min(l, fun (x) x end) // 1<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='shift'><span class='kind'>extern</span> <code>shift</code></h3>
+    
+    <div class='docstring'>Removes and returns the first element from a list.<br>
+Returns `null` if the list is empty.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.shift(l) // 1<br>
+// l is now [2, 3]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='map'><span class='kind'>function</span> <code>map(xs, f)</code></h3>
+    
+    <div class='docstring'>Returns a new list with the results of applying a function to every element.<br>
+The applied function receives the index and the element as arguments.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.map(l, fun (i, x) x * 2 end) // [2, 4, 6]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='fold_left'><span class='kind'>function</span> <code>fold_left(xs, init, f)</code></h3>
+    
+    <div class='docstring'>Applies a function against an accumulator and each element (from left to right) to reduce it to a single value.<br>
+The applied function receives the accumulator, the index, and the element as arguments.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.fold_left(l, 0, fun (acc, i, x) acc + x end) // 6<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='join'><span class='kind'>function</span> <code>join(xs, sep)</code></h3>
+    
+    <div class='docstring'>Joins all elements of a list, placing the provided separator between each element.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.join(l, 0) // [1, 0, 2, 0, 3]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='init'><span class='kind'>function</span> <code>init(n, f)</code></h3>
+    
+    <div class='docstring'>Creates a list of size `n`, initializing each element using the function `f(index)`.<br>
+<br>
+Example:<br>
+```vv<br>
+list.init(3, fun (i) i * 2 end) // [0, 2, 4]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='partition'><span class='kind'>function</span> <code>partition(xs, f)</code></h3>
+    
+    <div class='docstring'>Splits a list into two lists: one containing elements that satisfy the condition `f(index, element)`, and another for elements that don't.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3, 4]<br>
+list.partition(l, fun (i, x) x % 2 == 0 end) // [[2, 4], [1, 3]]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='every'><span class='kind'>function</span> <code>every(xs, f)</code></h3>
+    
+    <div class='docstring'>Checks if all elements in the list satisfy the applied condition `f(index, element)`.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [2, 4, 6]<br>
+list.every(l, fun (i, x) x % 2 == 0 end) // true<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='some'><span class='kind'>function</span> <code>some(xs, f)</code></h3>
+    
+    <div class='docstring'>Checks if at least one element in the list satisfies the applied condition `f(index, element)`.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.some(l, fun (i, x) x % 2 == 0 end) // true<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='pop'><span class='kind'>extern</span> <code>pop</code></h3>
+    
+    <div class='docstring'>Removes and returns the last element from a list.<br>
+Returns `null` if the list is empty.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.pop(l) // 3<br>
+// l is now [1, 2]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='unshift'><span class='kind'>extern</span> <code>unshift</code></h3>
+    
+    <div class='docstring'>Adds a value to the beginning of a list.<br>
+Returns the modified list.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [2, 3]<br>
+list.unshift(l, 1) // [1, 2, 3]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='replace'><span class='kind'>extern</span> <code>replace</code></h3>
+    
+    <div class='docstring'>Replaces occurrences of a sub-list pattern within a list with another pattern.<br>
+Returns a new list.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3, 2, 3, 4]<br>
+list.replace(l, [2, 3], [5, 6]) // [1, 5, 6, 5, 6, 4]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='zip'><span class='kind'>function</span> <code>zip(xs, ys)</code></h3>
+    
+    <div class='docstring'>Pairs elements of two lists based on their index. The longer list is truncated to the shorter list's length.<br>
+<br>
+Example:<br>
+```vv<br>
+let a = [1, 2]<br>
+let b = ["a", "b"]<br>
+list.zip(a, b) // [[1, "a"], [2, "b"]]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='find_index'><span class='kind'>function</span> <code>find_index(xs, f)</code></h3>
+    
+    <div class='docstring'>Returns the index of the first element in the list that satisfies the condition `f(index, element)`.<br>
+Returns `-1` if no such element is found.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.find_index(l, fun (i, x) x % 2 == 0 end) // 1<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='find_pattern'><span class='kind'>function</span> <code>find_pattern(xs, ys)</code></h3>
+    
+    <div class='docstring'>Searches for a sub-list pattern within the list and returns the start index.<br>
+Returns `-1` if not found.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3, 4]<br>
+list.find_pattern(l, [2, 3]) // 1<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='take_while'><span class='kind'>function</span> <code>take_while(xs, f)</code></h3>
+    
+    <div class='docstring'>Takes elements from the beginning of the list as long as they satisfy the condition `f(index, element)`.<br>
+Stops at the first element that fails the condition.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3, 4]<br>
+list.take_while(l, fun (i, x) x < 3 end) // [1, 2]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='drop_while'><span class='kind'>function</span> <code>drop_while(xs, f)</code></h3>
+    
+    <div class='docstring'>Drops elements from the beginning of the list as long as they satisfy the condition `f(index, element)`.<br>
+Returns the remaining elements starting from the first element that fails the condition.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3, 4]<br>
+list.drop_while(l, fun (i, x) x < 3 end) // [3, 4]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='each'><span class='kind'>function</span> <code>each(xs, f)</code></h3>
+    
+    <div class='docstring'>Iterates over each element in a list and applies a function to it.<br>
+The applied function receives the index and the element as arguments.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = ["a", "b"]<br>
+list.each(l, fun (i, x) console.print(x) end)<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='tail'><span class='kind'>function</span> <code>tail(xs)</code></h3>
+    
+    <div class='docstring'>Returns a new list containing all elements except the first one.<br>
+Returns `null` if the list is empty.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.tail(l) // [2, 3]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat_map'><span class='kind'>function</span> <code>flat_map(xs, f)</code></h3>
+    
+    <div class='docstring'>Maps a function over a list and optionally flattens the result by one level.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2]<br>
+list.flat_map(l, fun (i, x) [x, x * 2] end) // [1, 2, 2, 4]<br>
+```</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='find'><span class='kind'>function</span> <code>find(xs, f)</code></h3>
+    
+    <div class='docstring'>Returns the first element in the list that satisfies the condition `f(index, element)`.<br>
+Returns `null` if no such element is found.<br>
+<br>
+Example:<br>
+```vv<br>
+let l = [1, 2, 3]<br>
+list.find(l, fun (i, x) x % 2 == 0 end) // 2<br>
+```</div>
+    
+</div>
+
+
+    </main>
+    <script type="module" src="../../../../static/highlight.js"></script>
+</body>
+
+</html>

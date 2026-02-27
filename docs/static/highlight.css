@@ -1,0 +1,126 @@
+/* Shiki multi-theme configuration */
+html {
+    color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    .shiki,
+    .shiki span {
+        color: var(--shiki-dark) !important;
+        background-color: var(--shiki-dark-bg) !important;
+    }
+}
+
+/* Wrapper to position the copy button */
+.shiki-wrapper {
+    position: relative;
+    margin: 1.5em 0;
+}
+
+/* Base styles for the injected Shiki <pre> tag */
+.shiki-wrapper pre.shiki {
+    padding: 1rem;
+    overflow-x: auto;
+    border-radius: 6px;
+    margin: 0;
+    counter-reset: line;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+    .shiki-wrapper pre.shiki {
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+    }
+}
+
+/* Line numbering setup */
+.shiki-wrapper pre.shiki code {
+    display: block;
+    counter-increment: none; /* prevent counter on code itself */
+}
+
+/* Each line output by Shiki */
+.shiki-wrapper pre.shiki code > span.line {
+    display: block;
+    padding: 0 0.5rem;
+}
+
+/* Line numbers pseudo-element */
+.shiki-wrapper pre.shiki code > span.line::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 2rem;
+    margin-right: 1.5rem;
+    text-align: right;
+    color: #999;
+    user-select: none;
+    -webkit-user-select: none;
+    font-size: 0.9em;
+}
+
+@media (prefers-color-scheme: dark) {
+    .shiki-wrapper pre.shiki code > span.line::before {
+        color: #666;
+    }
+}
+
+/* Copy button styling */
+.shiki-copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    color: #555;
+    background: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, background-color 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+    z-index: 10;
+    font-family: inherit;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+    .shiki-copy-btn {
+        color: #ccc;
+        background: #333;
+        border-color: #555;
+    }
+}
+
+/* Show copy button on hover, or always on touch devices */
+.shiki-wrapper:hover .shiki-copy-btn {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .shiki-copy-btn {
+        opacity: 1;
+    }
+}
+
+.shiki-copy-btn:hover {
+    background: #f0f0f0;
+}
+
+@media (prefers-color-scheme: dark) {
+    .shiki-copy-btn:hover {
+        background: #444;
+    }
+}
+
+.shiki-copy-btn:active {
+    background: #e0e0e0;
+}
+
+@media (prefers-color-scheme: dark) {
+    .shiki-copy-btn:active {
+        background: #555;
+    }
+}

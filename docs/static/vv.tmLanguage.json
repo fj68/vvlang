@@ -1,0 +1,99 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "vv",
+    "scopeName": "source.vv",
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "include": "#keywords"
+        },
+        {
+            "include": "#constants"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#operators"
+        }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.block.documentation.vv",
+                    "match": "///.*$"
+                },
+                {
+                    "name": "comment.line.double-slash.vv",
+                    "match": "//.*$"
+                },
+                {
+                    "name": "comment.block.vv",
+                    "begin": "/\\*",
+                    "end": "\\*/"
+                }
+            ]
+        },
+        "strings": {
+            "name": "string.quoted.double.vv",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape.vv",
+                    "match": "\\\\."
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.vv",
+                    "match": "\\b(if|else|while|return|break|continue|begin|end|test|assert|defer)\\b"
+                },
+                {
+                    "name": "keyword.declaration.vv",
+                    "match": "\\b(let|fun|rec|extern|pub|import|from|type|interface)\\b"
+                },
+                {
+                    "name": "keyword.operator.logical.vv",
+                    "match": "\\b(and|or|not|as|len)\\b"
+                }
+            ]
+        },
+        "constants": {
+            "patterns": [
+                {
+                    "name": "constant.language.boolean.vv",
+                    "match": "\\b(true|false)\\b"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.float.vv",
+                    "match": "\\b\\d+\\.\\d+\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.decimal.vv",
+                    "match": "\\b\\d+\\b"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "name": "keyword.operator.vv",
+                    "match": "(==|<=|/:|\\+=|-=|\\+|-|\\*|/|%|=|\\.|:|!)"
+                }
+            ]
+        }
+    }
+}
