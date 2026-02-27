@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/fj68/vvlang)
+
 # vv programming language
 
 _This project is still in __early stage of development__. Nothing useful for end-users._
