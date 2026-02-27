@@ -268,13 +268,6 @@ func (p *Parser) parseIndexOrSliceExpr(left ast.Expr) (ast.Expr, error) {
 	}, nil
 }
 
-func (p *Parser) parseNullLiteralExpr() (ast.Expr, error) {
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	return &ast.NullLiteralExpr{}, nil
-}
-
 func (p *Parser) parseBuiltinCallExpr() (ast.Expr, error) {
 	op := p.curToken.Text
 	pos := p.curToken.Pos
@@ -520,17 +513,28 @@ func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
 			return nil, fmt.Errorf("expected identifier for record field, got %s", p.curToken.Type)
 		}
 		name := p.curToken.Text
-		if err := p.expectNext(lexer.TAssign); err != nil {
-			return nil, err
+
+		if p.peekToken.Type == lexer.TComma || p.peekToken.Type == lexer.TRBracket {
+			fields[name] = &ast.VarRefExpr{
+				Name: name,
+			}
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+		} else {
+			if err := p.expectNext(lexer.TAssign); err != nil {
+				return nil, err
+			}
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			expr, err := p.parseExpr(PLowest)
+			if err != nil {
+				return nil, err
+			}
+			fields[name] = expr
 		}
-		if err := p.readToken(); err != nil {
-			return nil, err
-		}
-		expr, err := p.parseExpr(PLowest)
-		if err != nil {
-			return nil, err
-		}
-		fields[name] = expr
+
 		if p.curToken.Type == lexer.TRBracket {
 			break
 		}
@@ -584,4 +588,17 @@ func (p *Parser) parseGroupedExpr() (ast.Expr, error) {
 		return nil, err
 	}
 	return expr, nil
+}
+
+func (p *Parser) parsePostfixExpr(left ast.Expr) (ast.Expr, error) {
+	pos := p.curToken.Pos
+	op := p.curToken.Text
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.PostfixExpr{
+		Position: ast.Position{Start: left.StartPos(), End: &pos},
+		Op:       op,
+		Left:     left,
+	}, nil
 }

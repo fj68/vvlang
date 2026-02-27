@@ -462,7 +462,11 @@ func (p *Parser) parseRecordDestructStmt() ([]ast.Stmt, error) {
 		}
 		stmts = append(stmts, &ast.VarDeclStmt{
 			Name: name,
-			Body: &ast.NullLiteralExpr{},
+			Body: &ast.RecordLiteralExpr{
+				Fields: map[string]ast.Expr{
+					"type": stringToCharListExpr("none"),
+				},
+			},
 		})
 	}
 
@@ -570,6 +574,17 @@ func (p *Parser) parseWhileStmt() (*ast.WhileStmt, error) {
 }
 
 func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
+	stmt, err := p.parseIfStmtInner()
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect(lexer.TEnd); err != nil {
+		return nil, err
+	}
+	return stmt, nil
+}
+
+func (p *Parser) parseIfStmtInner() (*ast.IfStmt, error) {
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
@@ -583,17 +598,25 @@ func (p *Parser) parseIfStmt() (*ast.IfStmt, error) {
 	}
 	var elseBody *ast.BlockStmt
 	if p.curToken.Type == lexer.TElse {
-		if err := p.readToken(); err != nil {
-			return nil, err
+		if p.peekToken.Type == lexer.TIf {
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			elseIfStmt, err := p.parseIfStmtInner()
+			if err != nil {
+				return nil, err
+			}
+			elseBody = &ast.BlockStmt{Body: []ast.Stmt{elseIfStmt}}
+		} else {
+			if err := p.readToken(); err != nil {
+				return nil, err
+			}
+			eBody, err := p.parseBody()
+			if err != nil {
+				return nil, err
+			}
+			elseBody = &ast.BlockStmt{Body: eBody}
 		}
-		eBody, err := p.parseBody()
-		if err != nil {
-			return nil, err
-		}
-		elseBody = &ast.BlockStmt{Body: eBody}
-	}
-	if err := p.expect(lexer.TEnd); err != nil {
-		return nil, err
 	}
 	return &ast.IfStmt{
 		Cond: cond,

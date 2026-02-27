@@ -62,6 +62,35 @@ func TestParseExpr(t *testing.T) {
 			},
 		},
 		{
+			Name:  "record property shorthand",
+			Input: "let r = { name, age }",
+			Expected: []ast.Stmt{
+				&ast.VarDeclStmt{
+					Name: "r",
+					Body: &ast.RecordLiteralExpr{
+						Fields: map[string]ast.Expr{
+							"name": &ast.VarRefExpr{Name: "name"},
+							"age":  &ast.VarRefExpr{Name: "age"},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name:  "record property shorthand trailing comma",
+			Input: "let r = { name, }",
+			Expected: []ast.Stmt{
+				&ast.VarDeclStmt{
+					Name: "r",
+					Body: &ast.RecordLiteralExpr{
+						Fields: map[string]ast.Expr{
+							"name": &ast.VarRefExpr{Name: "name"},
+						},
+					},
+				},
+			},
+		},
+		{
 			Name:  "len(xs)",
 			Input: "let x = len(xs)",
 			Expected: []ast.Stmt{

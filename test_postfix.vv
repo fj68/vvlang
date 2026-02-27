@@ -1,0 +1,16 @@
+import result from 'std/result.vv'
+import console from 'std/console.vv'
+
+fun successful_op()
+  let r = result.ok(42)!
+  return r * 2
+end
+
+fun failing_op()
+  let r = result.error(['disk read error'])!
+  console.print('this should not be printed')
+  return result.ok(r)
+end
+
+console.print('successful_op:', successful_op())
+console.print('failing_op:', failing_op())

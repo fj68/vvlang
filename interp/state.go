@@ -233,8 +233,6 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return VChar(v.Value), nil
 	case *ast.RecordLiteralExpr:
 		return s.evalRecordLiteralExpr(v)
-	case *ast.NullLiteralExpr:
-		return VNull{}, nil
 	case *ast.FunLiteralExpr:
 		return s.evalFunLiteralExpr(v)
 	case *ast.FunCallExpr:
@@ -251,6 +249,8 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return s.evalSliceExpr(v)
 	case *ast.PrefixExpr:
 		return s.evalPrefixExpr(v)
+	case *ast.PostfixExpr:
+		return s.evalPostfixExpr(v)
 	case *ast.FieldAccessExpr:
 		return s.evalFieldAccessExpr(v)
 	case *ast.BuiltinCallExpr:

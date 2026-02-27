@@ -71,6 +71,7 @@
             <li><a href="#conditional-statements-if-else">Conditional Statements (`if` / `else`)</a></li>
             <li><a href="#loops-while">Loops (`while`)</a></li>
             <li><a href="#loop-control-break-continue">Loop Control (`break`, `continue`)</a></li>
+            <li><a href="#error-handling-and-early-returns">Error Handling and Early Returns (`!`)</a></li>
         </ul>
     </div>
     <h2 id="conditional-statements-if-else">Conditional Statements (`if` / `else`)</h2>
@@ -105,6 +106,35 @@ while i &lt; 10
         break // Stop at 5
     end
     i = i + 1
+end</code></pre>
+
+    <h2 id="error-handling-and-early-returns">Error Handling and Early Returns (`!`)</h2>
+    <p><code>vv</code> utilizes the <code>std/result.vv</code> module and a postfix <code>!</code> operator for error
+        handling. The <code>!</code> operator, also known as the try operator, evaluates an expression returning a
+        result record with a <code>type</code> field.</p>
+    <ul>
+        <li>If the result is <code>{ type = "ok", value = ... }</code>, the <code>!</code> operator unwraps the result
+            and evaluates to the inner <code>value</code>.</li>
+        <li>If the result is <code>{ type = "error", value = ... }</code>, the <code>!</code> operator automatically
+            triggers an early return from the current enclosing function, propagating the error record upward to the
+            caller.</li>
+    </ul>
+    <pre><code>import result from "std/result.vv"
+import console from "std/console.vv"
+
+fun divide(a, b)
+    if b == 0
+        return result.error("division by zero")
+    end
+    return result.ok(a / b)
+end
+
+fun calculate()
+    // If divide fails, calculate() immediately returns the error.
+    // If divide succeeds, val gets the unwrapped result.
+    let val = divide(10, 2)!
+    console.print(val) // Prints: 5
+    return result.ok(val)
 end</code></pre>
 
     <div class="nav">

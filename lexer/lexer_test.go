@@ -39,14 +39,13 @@ func TestLexer(t *testing.T) {
 		},
 		{
 			"literals and booleans",
-			"true false null 123 45.6 'single' \"double\"",
+			"true false 123 45.6 'single' \"double\"",
 			[]struct {
 				t    TokenType
 				text string
 			}{
 				{TTrue, "true"},
 				{TFalse, "false"},
-				{TNull, "null"},
 				{TInt, "123"},
 				{TFloat, "45.6"},
 				{TLiteral, "single"},
@@ -65,7 +64,7 @@ func TestLexer(t *testing.T) {
 		},
 		{
 			"prefix operators",
-			"not(a) type(b) str(c)",
+			"not(a)",
 			[]struct {
 				t    TokenType
 				text string
@@ -73,14 +72,6 @@ func TestLexer(t *testing.T) {
 				{TNot, "not"},
 				{TLParen, "("},
 				{TIdent, "a"},
-				{TRParen, ")"},
-				{TType, "type"},
-				{TLParen, "("},
-				{TIdent, "b"},
-				{TRParen, ")"},
-				{TStr, "str"},
-				{TLParen, "("},
-				{TIdent, "c"},
 				{TRParen, ")"},
 			},
 		},

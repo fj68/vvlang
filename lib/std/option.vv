@@ -1,0 +1,41 @@
+pub let none = { type = "none" }
+
+pub fun some(value)
+  return { type = "some", value = value }
+end
+
+pub fun is_some(v)
+   return v.type == "some"
+end
+
+pub fun is_none(v)
+   return v.type == "none"
+end
+
+pub fun get_or(v, default_value)
+  if is_some(v)
+    return v.value
+  end
+  return default_value
+end
+
+pub fun map(v, f)
+  if is_some(v)
+    return some(f(v.value))
+  end
+  return v
+end
+
+pub fun flat_map(v, f)
+  if is_some(v)
+    return f(v.value)
+  end
+  return v
+end
+
+pub fun flat_map_none(v, f)
+  if is_some(v)
+    return v
+  end
+  return f(v.value)
+end

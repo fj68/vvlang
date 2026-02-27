@@ -88,14 +88,14 @@ let result = { r1 = a, r2 = y }`,
 		{
 			Name: "destructuring from function return",
 			Input: `fun some_func()
-  return { value = 100, error = null }
+  return { value = 100, error = { type = "none" } }
 end
 let { value, error } = some_func()
 let result = { v = value, e = error }`,
 			ExpectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
 					"v": VInt(100),
-					"e": VNull{},
+					"e": NoneValue,
 				},
 			}},
 		},
@@ -108,36 +108,6 @@ let result = { v = value, e = error }`,
 			Name:        "not a record",
 			Input:       "let { a } = 1",
 			ExpectedErr: "expected record for field access, but got int",
-		},
-		{
-			Name:        "str(number)",
-			Input:       `let result = str(123)`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("123")},
-		},
-		{
-			Name:        "str(bool)",
-			Input:       `let result = str(true)`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("true")},
-		},
-		{
-			Name:        "str(list)",
-			Input:       `let result = str([1, 2])`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("[1, 2]")},
-		},
-		{
-			Name:        "str(record)",
-			Input:       `let result = str({a=1})`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("{ a = 1 }")},
-		},
-		{
-			Name:        "str(null)",
-			Input:       `let result = str(null)`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("null")},
-		},
-		{
-			Name:        "str(var)",
-			Input:       "let x = 8\n let result = str(x)",
-			ExpectedEnv: map[string]Value{"result": StringToValue("8")},
 		},
 		{
 			Name:        "interpolation basic",

@@ -93,7 +93,7 @@ func SetMaxRecursionDepth(s *interp.State, args []interp.Value) (interp.Value, e
 		return nil, fmt.Errorf("set_max_recursion_depth() argument must be an integer, got %s", args[0].Type())
 	}
 	s.MaxRecursionDepth = int(depth)
-	return interp.VNull{}, nil
+	return interp.NoneValue, nil
 }
 
 func GetMaxRecursionDepth(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -101,4 +101,18 @@ func GetMaxRecursionDepth(s *interp.State, args []interp.Value) (interp.Value, e
 		return nil, fmt.Errorf("get_max_recursion_depth() takes 0 arguments")
 	}
 	return interp.VInt(int64(s.MaxRecursionDepth)), nil
+}
+
+func Type(s *interp.State, args []interp.Value) (interp.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("type() takes 1 argument")
+	}
+	return interp.StringToValue(args[0].Type().String()), nil
+}
+
+func Str(s *interp.State, args []interp.Value) (interp.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("str() takes 1 argument")
+	}
+	return interp.StringToValue(args[0].Str()), nil
 }

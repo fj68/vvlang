@@ -1,0 +1,23 @@
+import option from 'std/option'
+import console from 'std/console'
+
+let n = option.none
+console.print('n:', n)
+
+let s = option.some(42)
+console.print('s:', s)
+
+console.print('is_some(n):', option.is_some(n))
+console.print('is_some(s):', option.is_some(s))
+
+console.print('get_or(n):', option.get_or(n, 100))
+console.print('get_or(s):', option.get_or(s, 100))
+
+let m = option.map(s, fun(v) return v * 2 end)
+console.print('map(s, *2):', m)
+
+let fm = option.flat_map(s, fun(v) return option.some(v * 3) end)
+console.print('flat_map(s, some(*3)):', fm)
+
+let fm2 = option.flat_map(n, fun(v) return option.some(v * 3) end)
+console.print('flat_map(n, some(*3)):', fm2)
