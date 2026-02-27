@@ -70,6 +70,7 @@
         <ul>
             <li><a href="#variable-declaration-let">Variable Declaration (`let`)</a></li>
             <li><a href="#variable-assignment">Variable Assignment (`=`)</a></li>
+            <li><a href="#variable-scope">Variable Scope</a></li>
         </ul>
     </div>
     <h2 id="variable-declaration-let">Variable Declaration (`let`)</h2>
@@ -81,6 +82,31 @@ let message = "Hello"</code></pre>
     <p>Existing variables can be re-assigned new values using the <code>=</code> operator.</p>
     <pre><code>let x = 10
 x = 20 // Reassignment</code></pre>
+
+    <h2 id="variable-scope">Variable Scope</h2>
+    <p>Variables in <code>vv</code> are lexically scoped. The scope of a variable is the region of code where it is
+        visible and can be accessed.</p>
+
+    <h3>Block Scope</h3>
+    <p>Variables declared within a block (such as an <code>if</code> statement, <code>while</code> loop, or
+        <code>begin...end</code> block) are only accessible within that block and any nested blocks.
+    </p>
+    <pre><code>let x = 1
+if true
+    let y = 2
+    console.print(x + y) // OK: x and y are in scope
+end
+// console.print(y) // Error: y is out of scope</code></pre>
+
+    <h3>Shadowing</h3>
+    <p><code>vv</code> allows shadowing, which means you can declare a new variable in an inner scope with the same
+        name as a variable in an outer scope. The inner variable "shadows" the outer one until the inner scope ends.</p>
+    <pre><code>let x = 1
+begin
+    let x = 2
+    console.print(x) // Prints 2
+end
+console.print(x) // Prints 1</code></pre>
 
 
 
