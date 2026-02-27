@@ -27,6 +27,21 @@ func TestEvalStmt(t *testing.T) {
 			ExpectedEnv: map[string]Value{"result": VInt(4)},
 		},
 		{
+			Name: "if else if evaluation",
+			Input: `
+let x = 0
+if false
+  x = 1
+else if true
+  x = 2
+else
+  x = 3
+end
+let result = x
+`,
+			ExpectedEnv: map[string]Value{"result": VInt(2)},
+		},
+		{
 			Name: "if scoping",
 			Input: `
 let x = 10
