@@ -233,8 +233,6 @@ func (s *State) evalExpr(expr ast.Expr) (Value, error) {
 		return VChar(v.Value), nil
 	case *ast.RecordLiteralExpr:
 		return s.evalRecordLiteralExpr(v)
-	case *ast.NullLiteralExpr:
-		return VNull{}, nil
 	case *ast.FunLiteralExpr:
 		return s.evalFunLiteralExpr(v)
 	case *ast.FunCallExpr:

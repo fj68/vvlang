@@ -399,19 +399,6 @@ func (expr *FieldAccessExpr) Equals(other Expr) bool {
 	return expr.Record.Equals(o.Record) && expr.Field == o.Field
 }
 
-type NullLiteralExpr struct {
-	Position
-}
-
-func (expr *NullLiteralExpr) Inspect() string {
-	return "NullLiteralExpr{}"
-}
-
-func (expr *NullLiteralExpr) Equals(other Expr) bool {
-	_, ok := other.(*NullLiteralExpr)
-	return ok
-}
-
 type BuiltinCallExpr struct {
 	Position
 	Op    string

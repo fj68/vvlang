@@ -268,13 +268,6 @@ func (p *Parser) parseIndexOrSliceExpr(left ast.Expr) (ast.Expr, error) {
 	}, nil
 }
 
-func (p *Parser) parseNullLiteralExpr() (ast.Expr, error) {
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-	return &ast.NullLiteralExpr{}, nil
-}
-
 func (p *Parser) parseBuiltinCallExpr() (ast.Expr, error) {
 	op := p.curToken.Text
 	pos := p.curToken.Pos
@@ -516,7 +509,7 @@ func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
 		return &ast.RecordLiteralExpr{Fields: fields}, nil
 	}
 	for {
-		if p.curToken.Type != lexer.TIdent {
+		if p.curToken.Type != lexer.TIdent && p.curToken.Type != lexer.TType {
 			return nil, fmt.Errorf("expected identifier for record field, got %s", p.curToken.Type)
 		}
 		name := p.curToken.Text

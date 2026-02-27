@@ -91,7 +91,6 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TFun:          p.parseFunLiteralExpr,
 		lexer.TLBrace:       p.parseListLiteralExpr,
 		lexer.TLBracket:     p.parseRecordLiteralExpr,
-		lexer.TNull:         p.parseNullLiteralExpr,
 		lexer.TType:         p.parseBuiltinCallExpr,
 		lexer.TNot:          p.parseBuiltinCallExpr,
 		lexer.TStr:          p.parseBuiltinCallExpr,
@@ -241,6 +240,7 @@ func (p *Parser) parseProgram() (*ast.Module, error) {
 		Docstring:  moduleDocstring,
 	}
 
+	seenOtherStmt := false
 	for {
 		if p.curToken.Type == lexer.TEOF {
 			break
@@ -248,6 +248,22 @@ func (p *Parser) parseProgram() (*ast.Module, error) {
 		if p.curToken.Type == lexer.TImport {
 			return nil, fmt.Errorf("import statement must be at the beginning of the program")
 		}
+
+		isExtern := false
+		if p.curToken.Type == lexer.TExtern {
+			isExtern = true
+		} else if p.curToken.Type == lexer.TPub && p.peekToken.Type == lexer.TExtern {
+			isExtern = true
+		}
+
+		if isExtern {
+			if seenOtherStmt {
+				return nil, fmt.Errorf("extern statement must be after import statements and before other statements")
+			}
+		} else if p.curToken.Type != lexer.TDocstring && p.curToken.Type != lexer.TTest {
+			seenOtherStmt = true
+		}
+
 		stmts, err := p.parseToplevelStmt()
 		if err != nil {
 			return nil, err

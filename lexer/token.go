@@ -40,7 +40,6 @@ const (
 	TTest
 	TAssert
 	TAs
-	TNull
 	TDefer
 	TExtern
 	TPub
@@ -135,8 +134,6 @@ func (ty TokenType) String() string {
 		return "Assert"
 	case TAs:
 		return "As"
-	case TNull:
-		return "Null"
 	case TDefer:
 		return "Defer"
 	case TExtern:
@@ -270,7 +267,6 @@ var Keywords = map[string]TokenType{
 	"test":     TTest,
 	"assert":   TAssert,
 	"as":       TAs,
-	"null":     TNull,
 	"defer":    TDefer,
 	"extern":   TExtern,
 	"pub":      TPub,

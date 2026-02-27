@@ -13,5 +13,5 @@ func Print(s *interp.State, args []interp.Value) (interp.Value, error) {
 		strs = append(strs, arg.Str())
 	}
 	fmt.Println(strings.Join(strs, " "))
-	return interp.VNull{}, nil
+	return interp.NoneValue, nil
 }

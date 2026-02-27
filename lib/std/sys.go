@@ -93,7 +93,7 @@ func SetMaxRecursionDepth(s *interp.State, args []interp.Value) (interp.Value, e
 		return nil, fmt.Errorf("set_max_recursion_depth() argument must be an integer, got %s", args[0].Type())
 	}
 	s.MaxRecursionDepth = int(depth)
-	return interp.VNull{}, nil
+	return interp.NoneValue, nil
 }
 
 func GetMaxRecursionDepth(s *interp.State, args []interp.Value) (interp.Value, error) {

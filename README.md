@@ -245,7 +245,7 @@ func main() {
     // 3. Register your own native function
     s.RegisterNative("hello", interp.VBuiltinFun(func(s *interp.State, args []interp.Value) (interp.Value, error) {
         fmt.Println("Hello from Go!")
-        return interp.VNull{}, nil
+        return interp.NoneValue, nil
     }))
 
     // 4. Evaluate code

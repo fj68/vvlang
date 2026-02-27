@@ -88,14 +88,14 @@ let result = { r1 = a, r2 = y }`,
 		{
 			Name: "destructuring from function return",
 			Input: `fun some_func()
-  return { value = 100, error = null }
+  return { value = 100, error = { type = "none" } }
 end
 let { value, error } = some_func()
 let result = { v = value, e = error }`,
 			ExpectedEnv: map[string]Value{"result": &VRecord{
 				Fields: map[string]Value{
 					"v": VInt(100),
-					"e": VNull{},
+					"e": NoneValue,
 				},
 			}},
 		},
@@ -131,8 +131,8 @@ let result = { v = value, e = error }`,
 		},
 		{
 			Name:        "str(null)",
-			Input:       `let result = str(null)`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("null")},
+			Input:       `let result = { type = "none" }`,
+			ExpectedEnv: map[string]Value{"result": NoneValue},
 		},
 		{
 			Name:        "str(var)",
