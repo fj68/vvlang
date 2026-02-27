@@ -45,9 +45,7 @@ const (
 	TPub
 	TImport
 	TFrom
-	TType
 	TNot
-	TStr
 	TLen
 
 	// symbols
@@ -72,6 +70,7 @@ const (
 	TIncr
 	TDecr
 	TPercent
+	TExclam
 )
 
 func (ty TokenType) String() string {
@@ -144,12 +143,8 @@ func (ty TokenType) String() string {
 		return "Import"
 	case TFrom:
 		return "From"
-	case TType:
-		return "Type"
 	case TNot:
 		return "Not"
-	case TStr:
-		return "Str"
 	case TLen:
 		return "Len"
 
@@ -196,6 +191,8 @@ func (ty TokenType) String() string {
 		return "Decr"
 	case TPercent:
 		return "Percent"
+	case TExclam:
+		return "Exclam"
 	}
 	return "Unknown"
 }
@@ -236,6 +233,7 @@ var Symbols = map[rune]TokenType{
 	'.': TDot,
 	':': TColon,
 	'%': TPercent,
+	'!': TExclam,
 }
 
 var Symbols2 = map[string]TokenType{
@@ -272,9 +270,7 @@ var Keywords = map[string]TokenType{
 	"pub":      TPub,
 	"import":   TImport,
 	"from":     TFrom,
-	"type":     TType,
 	"not":      TNot,
-	"str":      TStr,
 	"len":      TLen,
 }
 

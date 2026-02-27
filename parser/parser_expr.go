@@ -509,7 +509,7 @@ func (p *Parser) parseRecordLiteralExpr() (ast.Expr, error) {
 		return &ast.RecordLiteralExpr{Fields: fields}, nil
 	}
 	for {
-		if p.curToken.Type != lexer.TIdent && p.curToken.Type != lexer.TType {
+		if p.curToken.Type != lexer.TIdent {
 			return nil, fmt.Errorf("expected identifier for record field, got %s", p.curToken.Type)
 		}
 		name := p.curToken.Text
@@ -588,4 +588,17 @@ func (p *Parser) parseGroupedExpr() (ast.Expr, error) {
 		return nil, err
 	}
 	return expr, nil
+}
+
+func (p *Parser) parsePostfixExpr(left ast.Expr) (ast.Expr, error) {
+	pos := p.curToken.Pos
+	op := p.curToken.Text
+	if err := p.readToken(); err != nil {
+		return nil, err
+	}
+	return &ast.PostfixExpr{
+		Position: ast.Position{Start: left.StartPos(), End: &pos},
+		Op:       op,
+		Left:     left,
+	}, nil
 }

@@ -16,6 +16,8 @@ var natives = map[string]map[string]interp.Value{
 		"phys_eq":                 interp.VBuiltinFun(std.PhysEq),
 		"set_max_recursion_depth": interp.VBuiltinFun(std.SetMaxRecursionDepth),
 		"get_max_recursion_depth": interp.VBuiltinFun(std.GetMaxRecursionDepth),
+		"type":                    interp.VBuiltinFun(std.Type),
+		"str":                     interp.VBuiltinFun(std.Str),
 	},
 	"std/console.vv": {
 		"print": interp.VBuiltinFun(std.Print),

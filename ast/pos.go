@@ -6,7 +6,7 @@ type Pos struct {
 	Start int
 	End   int
 	Line  int
-	Col   int	// index of End in the current line
+	Col   int // index of End in the current line
 }
 
 func (pos Pos) String() string {

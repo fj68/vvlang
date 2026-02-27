@@ -229,6 +229,24 @@ func (expr *PrefixExpr) Equals(other Expr) bool {
 	return expr.Op == o.Op && expr.Right.Equals(o.Right)
 }
 
+type PostfixExpr struct {
+	Position
+	Op   string
+	Left Expr
+}
+
+func (expr *PostfixExpr) Inspect() string {
+	return fmt.Sprintf("PostfixExpr{%s, \"%s\"}", expr.Left.Inspect(), expr.Op)
+}
+
+func (expr *PostfixExpr) Equals(other Expr) bool {
+	o, ok := other.(*PostfixExpr)
+	if !ok {
+		return false
+	}
+	return expr.Op == o.Op && expr.Left.Equals(o.Left)
+}
+
 type InfixOp int
 
 const (

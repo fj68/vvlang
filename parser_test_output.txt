@@ -1,0 +1,66 @@
+=== RUN   TestParseExpr
+=== RUN   TestParseExpr/function_call
+=== RUN   TestParseExpr/record_literal
+=== RUN   TestParseExpr/record_literal_trailing_comma
+=== RUN   TestParseExpr/record_property_shorthand
+=== RUN   TestParseExpr/record_property_shorthand_trailing_comma
+=== RUN   TestParseExpr/len(xs)
+=== RUN   TestParseExpr/len([1,_2,_3])
+--- PASS: TestParseExpr (0.00s)
+    --- PASS: TestParseExpr/function_call (0.00s)
+    --- PASS: TestParseExpr/record_literal (0.00s)
+    --- PASS: TestParseExpr/record_literal_trailing_comma (0.00s)
+    --- PASS: TestParseExpr/record_property_shorthand (0.00s)
+    --- PASS: TestParseExpr/record_property_shorthand_trailing_comma (0.00s)
+    --- PASS: TestParseExpr/len(xs) (0.00s)
+    --- PASS: TestParseExpr/len([1,_2,_3]) (0.00s)
+=== RUN   TestParseStmt
+=== RUN   TestParseStmt/simple_assignment
+=== RUN   TestParseStmt/function_declaration
+=== RUN   TestParseStmt/function_shorthand
+=== RUN   TestParseStmt/while_statement
+=== RUN   TestParseStmt/if_statement
+=== RUN   TestParseStmt/if_else_statement
+=== RUN   TestParseStmt/if_else_if_statement
+=== RUN   TestParseStmt/if_else_if_else_statement
+=== RUN   TestParseStmt/return_top_level
+=== RUN   TestParseStmt/return_no_value
+=== RUN   TestParseStmt/complex_nested
+=== RUN   TestParseStmt/valid_extern_fun
+=== RUN   TestParseStmt/valid_extern_let
+=== RUN   TestParseStmt/multiple_valid_extern_statements
+=== RUN   TestParseStmt/invalid_extern_placement
+    test_util_test.go:22: expected error containing "extern statement must be after import statements and before other statements", got nil
+=== RUN   TestParseStmt/invalid_extern_syntax_-_missing_literal
+=== RUN   TestParseStmt/invalid_extern_syntax_-_missing_fun/let
+--- FAIL: TestParseStmt (0.00s)
+    --- PASS: TestParseStmt/simple_assignment (0.00s)
+    --- PASS: TestParseStmt/function_declaration (0.00s)
+    --- PASS: TestParseStmt/function_shorthand (0.00s)
+    --- PASS: TestParseStmt/while_statement (0.00s)
+    --- PASS: TestParseStmt/if_statement (0.00s)
+    --- PASS: TestParseStmt/if_else_statement (0.00s)
+    --- PASS: TestParseStmt/if_else_if_statement (0.00s)
+    --- PASS: TestParseStmt/if_else_if_else_statement (0.00s)
+    --- PASS: TestParseStmt/return_top_level (0.00s)
+    --- PASS: TestParseStmt/return_no_value (0.00s)
+    --- PASS: TestParseStmt/complex_nested (0.00s)
+    --- PASS: TestParseStmt/valid_extern_fun (0.00s)
+    --- PASS: TestParseStmt/valid_extern_let (0.00s)
+    --- PASS: TestParseStmt/multiple_valid_extern_statements (0.00s)
+    --- FAIL: TestParseStmt/invalid_extern_placement (0.00s)
+    --- PASS: TestParseStmt/invalid_extern_syntax_-_missing_literal (0.00s)
+    --- PASS: TestParseStmt/invalid_extern_syntax_-_missing_fun/let (0.00s)
+=== RUN   TestParseImportStmtsOnly
+=== RUN   TestParseImportStmtsOnly/single_import
+=== RUN   TestParseImportStmtsOnly/multiple_imports
+=== RUN   TestParseImportStmtsOnly/module_docstring
+=== RUN   TestParseImportStmtsOnly/no_imports
+--- PASS: TestParseImportStmtsOnly (0.00s)
+    --- PASS: TestParseImportStmtsOnly/single_import (0.00s)
+    --- PASS: TestParseImportStmtsOnly/multiple_imports (0.00s)
+    --- PASS: TestParseImportStmtsOnly/module_docstring (0.00s)
+    --- PASS: TestParseImportStmtsOnly/no_imports (0.00s)
+FAIL
+FAIL	github.com/fj68/vvlang/parser	0.664s
+FAIL

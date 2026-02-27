@@ -10,8 +10,6 @@ func (s *State) evalBuiltinCallExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	switch expr.Op {
 	case "not":
 		return s.evalNotExpr(expr)
-	case "type":
-		return s.evalTypeExpr(expr)
 	case "str":
 		return s.evalStrExpr(expr)
 	case "len":
@@ -19,14 +17,6 @@ func (s *State) evalBuiltinCallExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 	default:
 		return nil, fmt.Errorf("unknown builtin op: %s", expr.Op)
 	}
-}
-
-func (s *State) evalTypeExpr(expr *ast.BuiltinCallExpr) (Value, error) {
-	v, err := s.evalExpr(expr.Value)
-	if err != nil {
-		return nil, err
-	}
-	return StringToValue(v.Type().String()), nil
 }
 
 func (s *State) evalNotExpr(expr *ast.BuiltinCallExpr) (Value, error) {
@@ -540,4 +530,34 @@ func (s *State) evalFieldAccessExpr(expr *ast.FieldAccessExpr) (Value, error) {
 		return nil, fmt.Errorf("field '%s' not found in record", fieldName)
 	}
 	return value, nil
+}
+
+func (s *State) evalPostfixExpr(expr *ast.PostfixExpr) (Value, error) {
+	switch expr.Op {
+	case "!":
+		return s.evalTryExpr(expr)
+	default:
+		return nil, fmt.Errorf("unknown postfix operator: %s", expr.Op)
+	}
+}
+
+func (s *State) evalTryExpr(expr *ast.PostfixExpr) (Value, error) {
+	val, err := s.evalExpr(expr.Left)
+	if err != nil {
+		return nil, err
+	}
+	switch rec := val.(type) {
+	case *VRecord:
+		typVal, ok := rec.Fields["type"]
+		if !ok {
+			return val, nil
+		}
+		if typVal.Str() == "ok" {
+			return rec.Fields["value"], nil
+		} else if typVal.Str() == "error" {
+			s.RetVals.Push(val)
+			return nil, ErrReturn
+		}
+	}
+	return val, nil
 }

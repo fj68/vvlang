@@ -110,36 +110,6 @@ let result = { v = value, e = error }`,
 			ExpectedErr: "expected record for field access, but got int",
 		},
 		{
-			Name:        "str(number)",
-			Input:       `let result = str(123)`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("123")},
-		},
-		{
-			Name:        "str(bool)",
-			Input:       `let result = str(true)`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("true")},
-		},
-		{
-			Name:        "str(list)",
-			Input:       `let result = str([1, 2])`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("[1, 2]")},
-		},
-		{
-			Name:        "str(record)",
-			Input:       `let result = str({a=1})`,
-			ExpectedEnv: map[string]Value{"result": StringToValue("{ a = 1 }")},
-		},
-		{
-			Name:        "str(null)",
-			Input:       `let result = { type = "none" }`,
-			ExpectedEnv: map[string]Value{"result": NoneValue},
-		},
-		{
-			Name:        "str(var)",
-			Input:       "let x = 8\n let result = str(x)",
-			ExpectedEnv: map[string]Value{"result": StringToValue("8")},
-		},
-		{
 			Name:        "interpolation basic",
 			Input:       "let name = \"world\"\nlet result = \"hello, {name}!\"",
 			ExpectedEnv: map[string]Value{"result": StringToValue("hello, world!")},

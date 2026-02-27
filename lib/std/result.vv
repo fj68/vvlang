@@ -1,0 +1,78 @@
+/// @lang en
+/// A module for handling operations that can succeed or fail.
+/// @lang ja
+/// 成功または失敗する可能性のある操作を処理するためのモジュール。
+
+import option from "std/option.vv"
+
+pub fun ok(value)
+  return { type = "ok", value = value }
+end
+
+pub fun error(value)
+  return { type = "error", value = value }
+end
+
+pub fun is_ok(v)
+  return v.type == "ok"
+end
+
+pub fun is_error(v)
+  return v.type == "error"
+end
+
+pub fun map(v, f)
+  if is_ok(v)
+    return ok(f(v.value))
+  end
+  return v
+end
+
+pub fun flat_map(v, f)
+  if is_ok(v)
+    return f(v.value)
+  end
+  return v
+end
+
+pub fun map_error(v, f)
+  if is_error(v)
+    return error(f(v.value))
+  end
+  return v
+end
+
+pub fun flat_map_error(v, f)
+  if is_error(v)
+    return f(v.value)
+  end
+  return v
+end
+
+pub fun get_or(v, default_value)
+  if is_ok(v)
+    return v.value
+  end
+  return default_value
+end
+
+pub fun get_error_or(v, default_value)
+  if is_error(v)
+    return v.value
+  end
+  return default_value
+end
+
+pub fun to_option(v)
+  if is_ok(v)
+    return option.some(v.value)
+  end
+  return option.none
+end
+
+pub fun from_option(v, error_value)
+  if option.is_some(v)
+    return ok(v.value)
+  end
+  return error(error_value)
+end
