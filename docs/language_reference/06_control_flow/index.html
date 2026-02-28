@@ -72,6 +72,7 @@
             <li><a href="#blocks-begin-end">Blocks (`begin...end`)</a></li>
             <li><a href="#loops-while">Loops (`while`)</a></li>
             <li><a href="#loop-control-break-continue">Loop Control (`break`, `continue`)</a></li>
+            <li><a href="#deferred-execution-defer">Deferred Execution (`defer`)</a></li>
             <li><a href="#error-handling-and-early-returns">Error Handling and Early Returns (`!`)</a></li>
         </ul>
     </div>
@@ -158,6 +159,24 @@ fun calculate()
     console.print(val) // Prints: 5
     return result.ok(val)
 end</code></pre>
+
+    <h2 id="deferred-execution-defer">Deferred Execution (`defer`)</h2>
+    <p>The <code>defer</code> statement schedules an expression to be executed just before the current scope (block,
+        function, or module) exits.</p>
+    <p>This is extremely useful for ensuring that resources are cleaned up properly, regardless of whether the scope
+        exits normally or via a <code>return</code> statement.</p>
+    <pre><code>import console from "std/console.vv"
+
+let process_file = fun()
+    console.print("Opening file...")
+    defer console.print("Closing file...")
+    
+    console.print("Processing file contents...")
+end</code></pre>
+    <p>Output of the above function will be:</p>
+    <pre>Opening file...
+Processing file contents...
+Closing file...</pre>
 
     <div class="nav">
         <a href="../05_expressions/index.html">← Previous: 5. Operators and Expressions</a>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>8. Resource Management - vv Language Reference</title>
+    <title>9. Testing - vv Language Reference</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -62,36 +62,35 @@
 
 <body>
     <p><a href="../index.html">← Back to Index</a></p>
-    <h1>8. Resource Management</h1>
+    <h1>9. Testing Framework</h1>
 
 
     <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
         <h2 style="margin-top: 0;">In this chapter</h2>
         <ul>
-            <li><a href="#deferred-execution-defer">Deferred Execution (`defer`)</a></li>
+            <li><a href="#test-blocks">Test Blocks</a></li>
+            <li><a href="#assertions">Assertions</a></li>
         </ul>
     </div>
-    <h2 id="deferred-execution-defer">Deferred Execution (`defer`)</h2>
-    <p>The <code>defer</code> statement schedules an expression to be executed just before the current scope (block,
-        function, or module) exits.</p>
-    <p>This is extremely useful for ensuring that resources are cleaned up properly, regardless of whether the scope
-        exits normally or via a <code>return</code> statement.</p>
-    <pre><code>import console from "std/console.vv"
-
-let process_file = fun()
-    console.print("Opening file...")
-    defer console.print("Closing file...")
-    
-    console.print("Processing file contents...")
+    <h2 id="test-blocks">Test Blocks</h2>
+    <p><code>vv</code> has an integrated testing framework. Tests are defined using the <code>test</code> keyword
+        followed by a string description and closed with <code>end</code>.</p>
+    <pre><code>test "Addition works correctly"
+    let result = 2 + 2
+    assert result == 4
 end</code></pre>
-    <p>Output of the above function will be:</p>
-    <pre>Opening file...
-Processing file contents...
-Closing file...</pre>
+    <p>These blocks are not executed during normal program execution. They are only run when invoked by a test runner.
+    </p>
+
+    <h2 id="assertions">Assertions</h2>
+    <p>The <code>assert</code> keyword takes a boolean expression. If the expression evaluates to <code>false</code>,
+        the test fails.</p>
+    <pre><code>assert 1 &lt; 2 // Test passes
+assert 2 == 3 // Test fails with an assertion error</code></pre>
 
     <div class="nav">
-        <a href="../07_functions/index.html">← Previous: 7. Functions</a>
-        <a href="../09_modules/index.html">Next: 9. Modules and Program Structure →</a>
+        <a href="../08_modules/index.html">← Previous: 8. Modules and Program Structure</a>
+        <a href="../10_interop_and_builtins/index.html">Next: 10. Interoperability & Built-ins →</a>
     </div>
     <script type="module" src="../../static/highlight.js"></script>
 </body>
