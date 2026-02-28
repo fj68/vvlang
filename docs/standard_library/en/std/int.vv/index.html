@@ -190,6 +190,12 @@
         
         <li><a href="#to_string">to_string</a></li>
         
+        <li><a href="#abs">abs</a></li>
+        
+        <li><a href="#min">min</a></li>
+        
+        <li><a href="#max">max</a></li>
+        
     </ul>
 </div>
 
@@ -205,6 +211,49 @@
     <div class='docstring'><p>Converts an integer to its string representation.</p>
 <p>Example:</p>
 <pre><code class="language-vv">int.to_string(42) // &quot;42&quot;
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='abs' class='signature-header'>
+        <code>fun abs(n)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the absolute value of <code>n</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">int.abs(-5) // 5
+int.abs(5)  // 5
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='min' class='signature-header'>
+        <code>fun min(a, b)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the smaller of <code>a</code> and <code>b</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">int.min(10, 5) // 5
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='max' class='signature-header'>
+        <code>fun max(a, b)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the larger of <code>a</code> and <code>b</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">int.max(10, 5) // 10
 </code></pre>
 </div>
     

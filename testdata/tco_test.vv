@@ -17,7 +17,7 @@ end
 fun rec is_even(n)
 	if n == 0 return true end
 	return is_odd(n - 1)
-and is_odd(n)
+also is_odd(n)
 	if n == 0 return false end
 	return is_even(n - 1)
 end

@@ -33,3 +33,37 @@ pub extern "native" fun ceil(f)
 /// float.from_int(42) // 42.0
 /// ```
 pub extern "native" fun from_int(i)
+
+/// Returns the nearest integer to `f`, rounding half away from zero.
+///
+/// Example:
+/// ```vv
+/// float.round(3.5)  // 4.0
+/// float.round(-3.5) // -4.0
+/// ```
+pub extern "native" fun round(f)
+
+/// Returns the absolute value of `f`.
+///
+/// Example:
+/// ```vv
+/// float.abs(-5.5) // 5.5
+/// float.abs(5.5)  // 5.5
+/// ```
+pub extern "native" fun abs(f)
+
+/// Returns the smaller of `a` and `b`.
+///
+/// Example:
+/// ```vv
+/// float.min(10.5, 5.2) // 5.2
+/// ```
+pub extern "native" fun min(a, b)
+
+/// Returns the larger of `a` and `b`.
+///
+/// Example:
+/// ```vv
+/// float.max(10.5, 5.2) // 10.5
+/// ```
+pub extern "native" fun max(a, b)
