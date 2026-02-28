@@ -68,15 +68,16 @@
     <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
         <h2 style="margin-top: 0;">In this chapter</h2>
         <ul>
-            <li><a href="#conditional-statements-if-else">Conditional Statements (`if` / `else`)</a></li>
-            <li><a href="#blocks-begin-end">Blocks (`begin...end`)</a></li>
-            <li><a href="#loops-while">Loops (`while`)</a></li>
-            <li><a href="#loop-control-break-continue">Loop Control (`break`, `continue`)</a></li>
-            <li><a href="#deferred-execution-defer">Deferred Execution (`defer`)</a></li>
-            <li><a href="#error-handling-and-early-returns">Error Handling and Early Returns (`!`)</a></li>
+            <li><a href="#conditional-statements-if-else">Conditional Statements (<code>if</code> /
+                    <code>else</code>)</a></li>
+            <li><a href="#blocks-begin-end">Blocks (<code>begin...end</code>)</a></li>
+            <li><a href="#loops-while">Loops (<code>while</code>)</a></li>
+            <li><a href="#loop-control-break-continue">Loop Control (<code>break</code>, <code>continue</code>)</a></li>
+            <li><a href="#error-handling-and-early-returns">Error Handling and Early Returns (<code>!</code>)</a></li>
+            <li><a href="#deferred-execution-defer">Deferred Execution (<code>defer</code>)</a></li>
         </ul>
     </div>
-    <h2 id="conditional-statements-if-else">Conditional Statements (`if` / `else`)</h2>
+    <h2 id="conditional-statements-if-else">Conditional Statements (<code>if</code> / <code>else</code>)</h2>
     <p><code>if</code> statements execute a block of code if a condition is true. The block is closed with the
         <code>end</code> keyword. The <code>else</code> branch is optional.
     </p>
@@ -98,7 +99,7 @@ else
     console.print("many")
 end</code></pre>
 
-    <h2 id="blocks-begin-end">Blocks (`begin...end`)</h2>
+    <h2 id="blocks-begin-end">Blocks (<code>begin...end</code>)</h2>
     <p>A <code>begin...end</code> block groups multiple statements into a single unit. It is primarily used to
         create a new local scope for variables.</p>
     <pre><code>let x = 1
@@ -109,7 +110,7 @@ end
 // console.print(y) // Error: y is only visible inside the block</code></pre>
 
 
-    <h2 id="loops-while">Loops (`while`)</h2>
+    <h2 id="loops-while">Loops (<code>while</code>)</h2>
     <p><code>while</code> loops execute a block of code repeatedly as long as a condition is true. The loop is closed
         with the <code>end</code> keyword.</p>
     <pre><code>import console from "std/console.vv"
@@ -120,7 +121,7 @@ while i &lt; 5
     i = i + 1
 end</code></pre>
 
-    <h2 id="loop-control-break-continue">Loop Control (`break`, `continue`)</h2>
+    <h2 id="loop-control-break-continue">Loop Control (<code>break</code>, <code>continue</code>)</h2>
     <p>Inside a loop, you can use <code>break</code> to exit the loop entirely, or <code>continue</code> to skip to the
         next iteration.</p>
     <pre><code>let i = 0
@@ -131,7 +132,7 @@ while i &lt; 10
     i = i + 1
 end</code></pre>
 
-    <h2 id="error-handling-and-early-returns">Error Handling and Early Returns (`!`)</h2>
+    <h2 id="error-handling-and-early-returns">Error Handling and Early Returns (<code>!</code>)</h2>
     <p><code>vv</code> utilizes the <code>std/result.vv</code> module and a postfix <code>!</code> operator for error
         handling. The <code>!</code> operator, also known as the try operator, evaluates an expression returning a
         result record with a <code>type</code> field.</p>
@@ -160,7 +161,7 @@ fun calculate()
     return result.ok(val)
 end</code></pre>
 
-    <h2 id="deferred-execution-defer">Deferred Execution (`defer`)</h2>
+    <h2 id="deferred-execution-defer">Deferred Execution (<code>defer</code>)</h2>
     <p>The <code>defer</code> statement schedules an expression to be executed just before the current scope (block,
         function, or module) exits.</p>
     <p>This is extremely useful for ensuring that resources are cleaned up properly, regardless of whether the scope
@@ -177,6 +178,25 @@ end</code></pre>
     <pre>Opening file...
 Processing file contents...
 Closing file...</pre>
+
+    <h3>Defer in Loops</h3>
+    <p>When used inside a loop, <code>defer</code> executes at the end of each <em>iteration</em> of the loop, not
+        when the entire loop finishes. This is useful for cleaning up resources created within a single loop cycle.</p>
+    <pre><code>import console from "std/console.vv"
+
+let i = 0
+while i &lt; 3
+    defer console.print("End of iteration {i}")
+    console.print("Start of iteration {i}")
+    i = i + 1
+end</code></pre>
+    <p>Output:</p>
+    <pre>Start of iteration 0
+End of iteration 0
+Start of iteration 1
+End of iteration 1
+Start of iteration 2
+End of iteration 2</pre>
 
     <div class="nav">
         <a href="../05_expressions/index.html">← Previous: 5. Operators and Expressions</a>
