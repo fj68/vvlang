@@ -166,6 +166,7 @@ end</code></pre>
         function, or module) exits.</p>
     <p>This is extremely useful for ensuring that resources are cleaned up properly, regardless of whether the scope
         exits normally or via a <code>return</code> statement.</p>
+    <p>The execution order of multiple <code>defer</code> statements is "last defer, first executed".</p>
     <pre><code>import console from "std/console.vv"
 
 let process_file = fun()
@@ -188,7 +189,7 @@ let i = 0
 while i &lt; 3
     defer console.print("End of iteration {i}")
     console.print("Start of iteration {i}")
-    i = i + 1
+    i += 1
 end</code></pre>
     <p>Output:</p>
     <pre>Start of iteration 0
