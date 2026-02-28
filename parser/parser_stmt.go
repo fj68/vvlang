@@ -193,7 +193,7 @@ func (p *Parser) parseBody() ([]ast.Stmt, error) {
 		switch p.curToken.Type {
 		case lexer.TEOF:
 			return nil, fmt.Errorf("unexpected eof while reading body")
-		case lexer.TEnd, lexer.TElse, lexer.TAnd:
+		case lexer.TEnd, lexer.TElse, lexer.TAlso:
 			return body, nil
 		}
 		stmts, err := p.parseBodyStmt()
@@ -246,7 +246,7 @@ func (p *Parser) parseFunDeclStmt() ([]ast.Stmt, error) {
 			},
 		})
 
-		if isRec && p.curToken.Type == lexer.TAnd {
+		if isRec && p.curToken.Type == lexer.TAlso {
 			if err := p.readToken(); err != nil {
 				return nil, err
 			}

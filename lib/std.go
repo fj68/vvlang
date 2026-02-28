@@ -2,6 +2,7 @@ package lib
 
 import (
 	"embed"
+	"math"
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/lib/std"
@@ -23,8 +24,7 @@ var natives = map[string]map[string]interp.Value{
 		"print": interp.VBuiltinFun(std.Print),
 	},
 	"std/math.vv": {
-		"floor": interp.VBuiltinFun(std.Floor),
-		"ceil":  interp.VBuiltinFun(std.Ceil),
+		"pi": interp.VFloat(math.Pi),
 	},
 	"std/char.vv": {
 		"to_upper": interp.VBuiltinFun(std.CharToUpper),
@@ -42,14 +42,20 @@ var natives = map[string]map[string]interp.Value{
 	},
 	"std/float.vv": {
 		"to_string": interp.VBuiltinFun(std.FloatToString),
-		"to_int":    interp.VBuiltinFun(std.FloatToInt),
+		"floor":     interp.VBuiltinFun(std.Floor),
+		"ceil":      interp.VBuiltinFun(std.Ceil),
+		"from_int":  interp.VBuiltinFun(std.FloatFromInt),
 	},
 	"std/int.vv": {
 		"to_string": interp.VBuiltinFun(std.IntToString),
-		"to_float":  interp.VBuiltinFun(std.IntToFloat),
 	},
 	"std/bool.vv": {
 		"to_string": interp.VBuiltinFun(std.BoolToString),
+	},
+	"std/random.vv": {
+		"seed":  interp.VBuiltinFun(std.RandomSeed),
+		"float": interp.VBuiltinFun(std.RandomFloat),
+		"int":   interp.VBuiltinFun(std.RandomInt),
 	},
 }
 

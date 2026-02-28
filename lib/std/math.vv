@@ -1,19 +1,9 @@
-/// The `math` module provides standard mathematical functions.
+/// The `math` module provides standard mathematical functions and constants.
 
-/// Returns the largest integer less than or equal to `n`.
+/// The ratio of the circumference of a circle to its diameter.
 ///
 /// Example:
 /// ```vv
-/// math.floor(3.7)  // 3.0
-/// math.floor(-3.2) // -4.0
+/// math.pi // 3.141592653589793
 /// ```
-pub extern "native" fun floor(n)
-
-/// Returns the smallest integer greater than or equal to `n`.
-///
-/// Example:
-/// ```vv
-/// math.ceil(3.2)  // 4.0
-/// math.ceil(-3.7) // -3.0
-/// ```
-pub extern "native" fun ceil(n)
+pub extern "native" let pi

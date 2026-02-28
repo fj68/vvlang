@@ -179,7 +179,7 @@
 <h1>Module <code>std/math.vv</code></h1>
 
 
-<div class='docstring module-doc'><p>The <code>math</code> module provides standard mathematical functions.</p>
+<div class='docstring module-doc'><p>The <code>math</code> module provides standard mathematical functions and constants.</p>
 </div>
 
 
@@ -188,9 +188,7 @@
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#floor">floor</a></li>
-        
-        <li><a href="#ceil">ceil</a></li>
+        <li><a href="#pi">pi</a></li>
         
     </ul>
 </div>
@@ -199,30 +197,14 @@
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='floor' class='signature-header'>
-        <code>fun floor(n)</code>
+    <h3 id='pi' class='signature-header'>
+        <code>let pi</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Returns the largest integer less than or equal to <code>n</code>.</p>
+    <div class='docstring'><p>The ratio of the circumference of a circle to its diameter.</p>
 <p>Example:</p>
-<pre><code class="language-vv">math.floor(3.7)  // 3.0
-math.floor(-3.2) // -4.0
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='ceil' class='signature-header'>
-        <code>fun ceil(n)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Returns the smallest integer greater than or equal to <code>n</code>.</p>
-<p>Example:</p>
-<pre><code class="language-vv">math.ceil(3.2)  // 4.0
-math.ceil(-3.7) // -3.0
+<pre><code class="language-vv">math.pi // 3.141592653589793
 </code></pre>
 </div>
     

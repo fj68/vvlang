@@ -4,7 +4,7 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>std/float.vv - vvlang documentation</title>
+    <title>std/random.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -176,10 +176,10 @@
     <main>
         
 <p><a href='../../../index.html'>← Back to Index</a></p>
-<h1>Module <code>std/float.vv</code></h1>
+<h1>Module <code>std/random.vv</code></h1>
 
 
-<div class='docstring module-doc'><p>The <code>float</code> module provides standard utilities for floating-point numbers.</p>
+<div class='docstring module-doc'><p>The <code>random</code> module provides functions for generating random numbers and making random choices.</p>
 </div>
 
 
@@ -188,13 +188,13 @@
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#to_string">to_string</a></li>
+        <li><a href="#seed">seed</a></li>
         
-        <li><a href="#floor">floor</a></li>
+        <li><a href="#float">float</a></li>
         
-        <li><a href="#ceil">ceil</a></li>
+        <li><a href="#int">int</a></li>
         
-        <li><a href="#from_int">from_int</a></li>
+        <li><a href="#choice">choice</a></li>
         
     </ul>
 </div>
@@ -203,58 +203,56 @@
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='to_string' class='signature-header'>
-        <code>fun to_string(f)</code>
+    <h3 id='seed' class='signature-header'>
+        <code>fun seed(n)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Converts a floating-point number to its string representation.</p>
+    <div class='docstring'><p>Seeds the random number generator with the given integer.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.to_string(3.14) // &quot;3.14&quot;
+<pre><code class="language-vv">random.seed(42)
 </code></pre>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='floor' class='signature-header'>
-        <code>fun floor(f)</code>
+    <h3 id='float' class='signature-header'>
+        <code>fun float()</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Returns the largest integer less than or equal to <code>f</code>.</p>
+    <div class='docstring'><p>Returns a random floating-point number in the range [0.0, 1.0).</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.floor(3.7)  // 3.0
-float.floor(-3.2) // -4.0
+<pre><code class="language-vv">let f = random.float()
 </code></pre>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='ceil' class='signature-header'>
-        <code>fun ceil(f)</code>
+    <h3 id='int' class='signature-header'>
+        <code>fun int(min, max)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Returns the smallest integer greater than or equal to <code>f</code>.</p>
+    <div class='docstring'><p>Returns a random integer in the range [min, max) (exclusive).</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.ceil(3.2)  // 4.0
-float.ceil(-3.7) // -3.0
+<pre><code class="language-vv">let n = random.int(1, 10) // Returns 1-9
 </code></pre>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='from_int' class='signature-header'>
-        <code>fun from_int(i)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
+    <h3 id='choice' class='signature-header'>
+        <code>fun choice(xs)</code>
+        
     </h3>
     
-    <div class='docstring'><p>Converts an integer to a floating-point number.</p>
+    <div class='docstring'><p>Returns a random element from the given list.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.from_int(42) // 42.0
+<pre><code class="language-vv">let x = random.choice([1, 2, 3])
 </code></pre>
 </div>
     

@@ -28,7 +28,7 @@ test "list indexing"
 end
 
 test "conversions"
-    assert type(int.to_float(1)) == "float"
-    assert type(float.to_int(1.5)) == "int"
-    assert float.to_int(1.5) == 1
+    assert type(float.from_int(1)) == "float"
+    assert float.floor(1.5) == 1.0
+    assert float.ceil(1.5) == 2.0
 end

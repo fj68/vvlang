@@ -101,14 +101,14 @@ end</code></pre>
 end</code></pre>
 
     <h3 id="mutually-recursive-functions">Mutually Recursive Functions</h3>
-    <p>Multiple recursive functions that depend on each other can be defined simultaneously using the <code>and</code>
+    <p>Multiple recursive functions that depend on each other can be defined simultaneously using the <code>also</code>
         keyword.</p>
     <pre><code>fun rec is_even(n)
     if n == 0
         return true
     end
     return is_odd(n - 1)
-and is_odd(n)
+also is_odd(n)
     if n == 0
         return false
     end
