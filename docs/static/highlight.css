@@ -180,3 +180,7 @@ html {
 .docstring del {
     color: #999;
 }
+
+.docstring p code {
+    font-size: 0.9em;
+}
