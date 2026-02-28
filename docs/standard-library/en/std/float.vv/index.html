@@ -1,10 +1,10 @@
-{{define "layout"}}
+
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset='utf-8'>
-    <title>{{template "title" .}} - vvlang documentation</title>
+    <title>std/float.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -161,23 +161,77 @@
             font-size: 0.9rem;
         }
     </style>
-    <link rel="stylesheet" href="{{.RootRel}}static/highlight.css">
+    <link rel="stylesheet" href="../../../static/highlight.css">
 </head>
 
 <body>
     <header>
         <div class='logo'>vvlang docs</div>
         <nav class='langs'>
-            {{range .AllLangs}}
-            <a href='{{$.RootRel}}{{.}}/index.html' {{if eq . $.CurrentLang}}class='active' {{end}}>{{.}}</a>
-            {{end}}
+            
+            <a href='../../../ja/index.html' >ja</a>
+            
+            <a href='../../../en/index.html' class='active' >en</a>
+            
         </nav>
     </header>
     <main>
-        {{template "content" .}}
+        
+<p><a href='../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/float.vv</code></h1>
+
+
+<div class='docstring module-doc'><p>The <code>float</code> module provides standard utilities for floating-point numbers.</p>
+</div>
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#to_string">to_string</a></li>
+        
+        <li><a href="#to_int">to_int</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='to_string' class='signature-header'>
+        <code>fun to_string(f)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Converts a floating-point number to its string representation.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.to_string(3.14) // &quot;3.14&quot;
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='to_int' class='signature-header'>
+        <code>fun to_int(f)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Converts a floating-point number to an integer by truncating toward zero.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.to_int(3.14) // 3
+float.to_int(-2.5) // -2
+</code></pre>
+</div>
+    
+</div>
+
+
     </main>
-    <script type="module" src="{{.RootRel}}static/highlight.js"></script>
+    <script type="module" src="../../../static/highlight.js"></script>
 </body>
 
 </html>
-{{end}}

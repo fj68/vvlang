@@ -11,14 +11,21 @@ import (
 
 	"github.com/fj68/vvlang/ast"
 	"github.com/fj68/vvlang/parser"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
+	goldparser "github.com/yuin/goldmark/parser"
 )
 
 //go:embed doc-templates/*.html
 var templatesFS embed.FS
 
+//go:embed doc-static/*
+var staticFS embed.FS
+
 var (
 	moduleTemplate *template.Template
 	indexTemplate  *template.Template
+	md             goldmark.Markdown
 )
 
 func init() {
@@ -29,6 +36,18 @@ func init() {
 
 	indexTemplate = template.Must(layout.Clone())
 	template.Must(indexTemplate.ParseFS(templatesFS, "doc-templates/index.html"))
+
+	md = goldmark.New(
+		goldmark.WithExtensions(
+			extension.Table,
+			extension.TaskList,
+			extension.Strikethrough,
+			extension.DefinitionList,
+		),
+		goldmark.WithParserOptions(
+			goldparser.WithAutoHeadingID(),
+		),
+	)
 }
 
 func Doc() {
@@ -135,9 +154,9 @@ func collectVVFiles(target string) ([]string, error) {
 }
 
 type exportData struct {
-	Kind      string
+	Signature string
+	ExternTag string
 	Name      string
-	Arguments string
 	Doc       template.HTML
 }
 
@@ -171,6 +190,27 @@ type moduleMeta struct {
 func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName string) error {
 	langs := make(map[string]bool)
 	langs["en"] = true
+
+	// Copy static files
+	staticDir := filepath.Join(outputDir, "static")
+	if err := os.MkdirAll(staticDir, 0755); err != nil {
+		return fmt.Errorf("mkdir static: %v", err)
+	}
+
+	entries, err := staticFS.ReadDir("doc-static")
+	if err != nil {
+		return fmt.Errorf("read static fs: %v", err)
+	}
+
+	for _, entry := range entries {
+		data, err := staticFS.ReadFile("doc-static/" + entry.Name())
+		if err != nil {
+			return fmt.Errorf("read static file %s: %v", entry.Name(), err)
+		}
+		if err := os.WriteFile(filepath.Join(staticDir, entry.Name()), data, 0644); err != nil {
+			return fmt.Errorf("write static file %s: %v", entry.Name(), err)
+		}
+	}
 
 	for _, mod := range modules {
 		if mod.Docstring != nil {
@@ -226,21 +266,51 @@ func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName 
 				RootRel:     rootRel,
 			}
 
-			for name, stmt := range mod.Exports {
-				exp := exportData{Name: name}
+			for _, stmt := range mod.Statements {
 				switch s := stmt.(type) {
 				case *ast.VarDeclStmt:
-					exp.Kind = "variable"
+					if !s.Exported {
+						continue
+					}
+					exp := exportData{Name: s.Name}
 					if fun, ok := s.Body.(*ast.FunLiteralExpr); ok {
-						exp.Kind = "function"
-						exp.Arguments = "(" + strings.Join(fun.Args, ", ") + ")"
+						args := strings.Join(fun.Args, ", ")
+						exp.Signature = fmt.Sprintf("fun %s(%s)", s.Name, args)
+					} else {
+						exp.Signature = fmt.Sprintf("let %s", s.Name)
 					}
 					exp.Doc = template.HTML(formatDoc(getDocstring(s.Docstring, lang)))
+					data.Exports = append(data.Exports, exp)
 				case *ast.ExternStmt:
-					exp.Kind = "extern"
+					if !s.Exported {
+						continue
+					}
+					exp := exportData{Name: s.Name}
+					if s.Kind == "fun" {
+						args := strings.Join(s.Args, ", ")
+						exp.Signature = fmt.Sprintf("fun %s(%s)", s.Name, args)
+					} else {
+						exp.Signature = fmt.Sprintf("let %s", s.Name)
+					}
+					exp.ExternTag = fmt.Sprintf("extern %q", s.Type)
 					exp.Doc = template.HTML(formatDoc(getDocstring(s.Docstring, lang)))
+					data.Exports = append(data.Exports, exp)
+				case *ast.RecFunDeclStmt:
+					for _, fun := range s.Funs {
+						if !fun.Exported {
+							continue
+						}
+						exp := exportData{Name: fun.Name}
+						if f, ok := fun.Body.(*ast.FunLiteralExpr); ok {
+							args := strings.Join(f.Args, ", ")
+							exp.Signature = fmt.Sprintf("fun %s(%s)", fun.Name, args)
+						} else {
+							exp.Signature = fmt.Sprintf("let %s", fun.Name)
+						}
+						exp.Doc = template.HTML(formatDoc(getDocstring(fun.Docstring, lang)))
+						data.Exports = append(data.Exports, exp)
+					}
 				}
-				data.Exports = append(data.Exports, exp)
 			}
 
 			f, err := os.Create(filepath.Join(modDir, "index.html"))
@@ -323,6 +393,9 @@ func getDocstring(docs map[string]string, lang string) string {
 }
 
 func formatDoc(doc string) string {
-	lines := strings.Split(doc, "\n")
-	return strings.Join(lines, "<br>\n")
+	var buf strings.Builder
+	if err := md.Convert([]byte(doc), &buf); err != nil {
+		return doc
+	}
+	return buf.String()
 }

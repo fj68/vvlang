@@ -1,10 +1,10 @@
-{{define "layout"}}
+
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset='utf-8'>
-    <title>{{template "title" .}} - vvlang documentation</title>
+    <title>std/option.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -161,23 +161,121 @@
             font-size: 0.9rem;
         }
     </style>
-    <link rel="stylesheet" href="{{.RootRel}}static/highlight.css">
+    <link rel="stylesheet" href="../../../static/highlight.css">
 </head>
 
 <body>
     <header>
         <div class='logo'>vvlang docs</div>
         <nav class='langs'>
-            {{range .AllLangs}}
-            <a href='{{$.RootRel}}{{.}}/index.html' {{if eq . $.CurrentLang}}class='active' {{end}}>{{.}}</a>
-            {{end}}
+            
+            <a href='../../../ja/index.html' >ja</a>
+            
+            <a href='../../../en/index.html' class='active' >en</a>
+            
         </nav>
     </header>
     <main>
-        {{template "content" .}}
+        
+<p><a href='../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/option.vv</code></h1>
+
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#none">none</a></li>
+        
+        <li><a href="#some">some</a></li>
+        
+        <li><a href="#is_some">is_some</a></li>
+        
+        <li><a href="#is_none">is_none</a></li>
+        
+        <li><a href="#get_or">get_or</a></li>
+        
+        <li><a href="#map">map</a></li>
+        
+        <li><a href="#flat_map">flat_map</a></li>
+        
+        <li><a href="#flat_map_none">flat_map_none</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='none' class='signature-header'>
+        <code>let none</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='some' class='signature-header'>
+        <code>fun some(value)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='is_some' class='signature-header'>
+        <code>fun is_some(v)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='is_none' class='signature-header'>
+        <code>fun is_none(v)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='get_or' class='signature-header'>
+        <code>fun get_or(v, default_value)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='map' class='signature-header'>
+        <code>fun map(v, f)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat_map' class='signature-header'>
+        <code>fun flat_map(v, f)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat_map_none' class='signature-header'>
+        <code>fun flat_map_none(v, f)</code>
+        
+    </h3>
+    
+</div>
+
+
     </main>
-    <script type="module" src="{{.RootRel}}static/highlight.js"></script>
+    <script type="module" src="../../../static/highlight.js"></script>
 </body>
 
 </html>
-{{end}}

@@ -317,8 +317,11 @@ func (p *Parser) parseExternStmt() (*ast.ExternStmt, error) {
 	}
 
 	var name string
+	var kind string
+	var args []string
 	switch p.curToken.Type {
 	case lexer.TFun:
+		kind = "fun"
 		if err := p.readToken(); err != nil {
 			return nil, err
 		}
@@ -329,11 +332,13 @@ func (p *Parser) parseExternStmt() (*ast.ExternStmt, error) {
 		if err := p.expect(lexer.TLParen); err != nil {
 			return nil, err
 		}
-		_, err := p.parseFunLiteralArgs()
+		var err error
+		args, err = p.parseFunLiteralArgs()
 		if err != nil {
 			return nil, err
 		}
 	case lexer.TLet:
+		kind = "let"
 		if err := p.readToken(); err != nil {
 			return nil, err
 		}
@@ -347,7 +352,9 @@ func (p *Parser) parseExternStmt() (*ast.ExternStmt, error) {
 
 	return &ast.ExternStmt{
 		Type: extType,
+		Kind: kind,
 		Name: name,
+		Args: args,
 	}, nil
 }
 

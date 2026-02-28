@@ -1,10 +1,10 @@
-{{define "layout"}}
+
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset='utf-8'>
-    <title>{{template "title" .}} - vvlang documentation</title>
+    <title>std/math.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -161,23 +161,78 @@
             font-size: 0.9rem;
         }
     </style>
-    <link rel="stylesheet" href="{{.RootRel}}static/highlight.css">
+    <link rel="stylesheet" href="../../../static/highlight.css">
 </head>
 
 <body>
     <header>
         <div class='logo'>vvlang docs</div>
         <nav class='langs'>
-            {{range .AllLangs}}
-            <a href='{{$.RootRel}}{{.}}/index.html' {{if eq . $.CurrentLang}}class='active' {{end}}>{{.}}</a>
-            {{end}}
+            
+            <a href='../../../ja/index.html' >ja</a>
+            
+            <a href='../../../en/index.html' class='active' >en</a>
+            
         </nav>
     </header>
     <main>
-        {{template "content" .}}
+        
+<p><a href='../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/math.vv</code></h1>
+
+
+<div class='docstring module-doc'><p>The <code>math</code> module provides standard mathematical functions.</p>
+</div>
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#floor">floor</a></li>
+        
+        <li><a href="#ceil">ceil</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='floor' class='signature-header'>
+        <code>fun floor(n)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the largest integer less than or equal to <code>n</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">math.floor(3.7)  // 3.0
+math.floor(-3.2) // -4.0
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='ceil' class='signature-header'>
+        <code>fun ceil(n)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the smallest integer greater than or equal to <code>n</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">math.ceil(3.2)  // 4.0
+math.ceil(-3.7) // -3.0
+</code></pre>
+</div>
+    
+</div>
+
+
     </main>
-    <script type="module" src="{{.RootRel}}static/highlight.js"></script>
+    <script type="module" src="../../../static/highlight.js"></script>
 </body>
 
 </html>
-{{end}}

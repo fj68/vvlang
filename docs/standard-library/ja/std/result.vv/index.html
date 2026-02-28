@@ -1,10 +1,10 @@
-{{define "layout"}}
+
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset='utf-8'>
-    <title>{{template "title" .}} - vvlang documentation</title>
+    <title>std/result.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -161,23 +161,164 @@
             font-size: 0.9rem;
         }
     </style>
-    <link rel="stylesheet" href="{{.RootRel}}static/highlight.css">
+    <link rel="stylesheet" href="../../../static/highlight.css">
 </head>
 
 <body>
     <header>
         <div class='logo'>vvlang docs</div>
         <nav class='langs'>
-            {{range .AllLangs}}
-            <a href='{{$.RootRel}}{{.}}/index.html' {{if eq . $.CurrentLang}}class='active' {{end}}>{{.}}</a>
-            {{end}}
+            
+            <a href='../../../ja/index.html' class='active' >ja</a>
+            
+            <a href='../../../en/index.html' >en</a>
+            
         </nav>
     </header>
     <main>
-        {{template "content" .}}
+        
+<p><a href='../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/result.vv</code></h1>
+
+
+<div class='docstring module-doc'><p>成功または失敗する可能性のある操作を処理するためのモジュール。</p>
+</div>
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#ok">ok</a></li>
+        
+        <li><a href="#error">error</a></li>
+        
+        <li><a href="#is_ok">is_ok</a></li>
+        
+        <li><a href="#is_error">is_error</a></li>
+        
+        <li><a href="#map">map</a></li>
+        
+        <li><a href="#flat_map">flat_map</a></li>
+        
+        <li><a href="#map_error">map_error</a></li>
+        
+        <li><a href="#flat_map_error">flat_map_error</a></li>
+        
+        <li><a href="#get_or">get_or</a></li>
+        
+        <li><a href="#get_error_or">get_error_or</a></li>
+        
+        <li><a href="#to_option">to_option</a></li>
+        
+        <li><a href="#from_option">from_option</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='ok' class='signature-header'>
+        <code>fun ok(value)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='error' class='signature-header'>
+        <code>fun error(value)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='is_ok' class='signature-header'>
+        <code>fun is_ok(v)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='is_error' class='signature-header'>
+        <code>fun is_error(v)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='map' class='signature-header'>
+        <code>fun map(v, f)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat_map' class='signature-header'>
+        <code>fun flat_map(v, f)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='map_error' class='signature-header'>
+        <code>fun map_error(v, f)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat_map_error' class='signature-header'>
+        <code>fun flat_map_error(v, f)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='get_or' class='signature-header'>
+        <code>fun get_or(v, default_value)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='get_error_or' class='signature-header'>
+        <code>fun get_error_or(v, default_value)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='to_option' class='signature-header'>
+        <code>fun to_option(v)</code>
+        
+    </h3>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='from_option' class='signature-header'>
+        <code>fun from_option(v, error_value)</code>
+        
+    </h3>
+    
+</div>
+
+
     </main>
-    <script type="module" src="{{.RootRel}}static/highlight.js"></script>
+    <script type="module" src="../../../static/highlight.js"></script>
 </body>
 
 </html>
-{{end}}

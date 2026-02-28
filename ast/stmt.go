@@ -286,7 +286,9 @@ func (stmt *DeferStmt) Equals(other Stmt) bool {
 
 type ExternStmt struct {
 	Type      string // e.g. "native"
+	Kind      string // "fun" or "let"
 	Name      string
+	Args      []string
 	Exported  bool
 	Docstring map[string]string
 }
