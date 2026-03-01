@@ -135,11 +135,12 @@ func (p *Parser) parseInfixOp(op lexer.TokenType) ast.InfixOp {
 }
 
 func (p *Parser) parseInfixExpr(left ast.Expr) (ast.Expr, error) {
+	precedence := precedenceOf(p.curToken.Type)
 	op := p.parseInfixOp(p.curToken.Type)
 	if err := p.readToken(); err != nil {
 		return nil, err
 	}
-	right, err := p.parseExpr(PPrefix)
+	right, err := p.parseExpr(precedence)
 	if err != nil {
 		return nil, err
 	}

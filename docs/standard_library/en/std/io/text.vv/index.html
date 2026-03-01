@@ -4,7 +4,7 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>std/fs/file.vv - vvlang documentation</title>
+    <title>std/io/text.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -176,10 +176,10 @@
     <main>
         
 <p><a href='../../../../index.html'>← Back to Index</a></p>
-<h1>Module <code>std/fs/file.vv</code></h1>
+<h1>Module <code>std/io/text.vv</code></h1>
 
 
-<div class='docstring module-doc'><p>The <code>fs/file</code> module provides low-level file I/O operations.</p>
+<div class='docstring module-doc'><p>The <code>io/text</code> module provides a buffered text reader using an encoding.</p>
 </div>
 
 
@@ -188,25 +188,15 @@
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#open">open</a></li>
-        
-        <li><a href="#open_read">open_read</a></li>
-        
-        <li><a href="#open_write">open_write</a></li>
-        
-        <li><a href="#create">create</a></li>
-        
-        <li><a href="#exists">exists</a></li>
-        
-        <li><a href="#close">close</a></li>
+        <li><a href="#reader">reader</a></li>
         
         <li><a href="#read">read</a></li>
         
-        <li><a href="#write">write</a></li>
+        <li><a href="#peek">peek</a></li>
         
-        <li><a href="#reader">reader</a></li>
+        <li><a href="#read_line">read_line</a></li>
         
-        <li><a href="#writer">writer</a></li>
+        <li><a href="#read_all">read_all</a></li>
         
     </ul>
 </div>
@@ -215,155 +205,77 @@
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='open' class='signature-header'>
-        <code>fun open(path, is_append)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
+    <h3 id='reader' class='signature-header'>
+        <code>fun reader(source_reader, encoding_module)</code>
+        
     </h3>
     
-    <div class='docstring'><p>Opens a file in read and write mode.</p>
+    <div class='docstring'><p>Creates a buffered text reader using an encoding.</p>
 <ul>
-<li><code>path</code>: The path to the file.</li>
-<li><code>is_append</code>: If true, opens the file in append mode.</li>
+<li><code>source_reader</code>: An object with a <code>read(length)</code> method.</li>
+<li><code>encoding_module</code>: An encoding module (e.g., <code>utf8</code> or <code>sjis</code>).</li>
 </ul>
-<p>Returns the file descriptor (<code>fd</code>).</p>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='open_read' class='signature-header'>
-        <code>fun open_read(path)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Opens a file in read-only mode.</p>
-<ul>
-<li><code>path</code>: The path to the file.</li>
-</ul>
-<p>Returns the file descriptor (<code>fd</code>).</p>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='open_write' class='signature-header'>
-        <code>fun open_write(path, is_append)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Opens a file in write-only mode.</p>
-<ul>
-<li><code>path</code>: The path to the file.</li>
-<li><code>is_append</code>: If true, opens the file in append mode.</li>
-</ul>
-<p>Returns the file descriptor (<code>fd</code>).</p>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='create' class='signature-header'>
-        <code>fun create(path)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Creates a new file.</p>
-<ul>
-<li><code>path</code>: The path to the file.</li>
-</ul>
-<p>Returns the file descriptor (<code>fd</code>).</p>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='exists' class='signature-header'>
-        <code>fun exists(path)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Checks if a file exists.</p>
-<ul>
-<li><code>path</code>: The path to the file.</li>
-</ul>
-<p>Returns a boolean indicating if the file exists.</p>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='close' class='signature-header'>
-        <code>fun close(fd)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Closes a file descriptor.</p>
-<ul>
-<li><code>fd</code>: The file descriptor to close.</li>
-</ul>
+<p>Returns a result containing a text reader record.</p>
 </div>
     
 </div>
 
 <div class='export-item'>
     <h3 id='read' class='signature-header'>
-        <code>fun read(fd, length)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Reads bytes from a file.</p>
-<ul>
-<li><code>fd</code>: The file descriptor to read from.</li>
-<li><code>length</code>: The number of bytes to read.</li>
-</ul>
-<p>Returns the read content as a list of integers (bytes).</p>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='write' class='signature-header'>
-        <code>fun write(fd, content)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Writes bytes to a file.</p>
-<ul>
-<li><code>fd</code>: The file descriptor to write to.</li>
-<li><code>content</code>: The bytes (list of integers or characters) to write.</li>
-</ul>
-<p>Returns the number of bytes written.</p>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='reader' class='signature-header'>
-        <code>fun reader(path)</code>
+        <code>fun read(r)</code>
         
     </h3>
     
-    <div class='docstring'><p>Creates a generalized reader stream for a file.</p>
+    <div class='docstring'><p>Reads a single character from the reader.</p>
 <ul>
-<li><code>path</code>: The path to the file.</li>
+<li><code>r</code>: The text reader record.</li>
 </ul>
-<p>Returns a record with <code>fd</code>, <code>read</code>, and <code>close</code> functions.</p>
+<p>Returns a result containing a record <code>{ char = c, size = n }</code>.</p>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='writer' class='signature-header'>
-        <code>fun writer(path, is_append)</code>
+    <h3 id='peek' class='signature-header'>
+        <code>fun peek(r)</code>
         
     </h3>
     
-    <div class='docstring'><p>Creates a generalized writer stream for a file.</p>
+    <div class='docstring'><p>Peeks a single character without advancing the position.</p>
 <ul>
-<li><code>path</code>: The path to the file.</li>
-<li><code>is_append</code>: If true, opens the file in append mode.</li>
+<li><code>r</code>: The text reader record.</li>
 </ul>
-<p>Returns a record with <code>fd</code>, <code>write</code>, and <code>close</code> functions.</p>
+<p>Returns a result containing a record <code>{ char = c, size = n }</code>.</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='read_line' class='signature-header'>
+        <code>fun read_line(r)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Reads a line from the reader.</p>
+<ul>
+<li><code>r</code>: The text reader record.</li>
+</ul>
+<p>Returns a result containing a list of characters (excluding line breaks).</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='read_all' class='signature-header'>
+        <code>fun read_all(r)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Reads all remaining content as a list of characters.</p>
+<ul>
+<li><code>r</code>: The text reader record.</li>
+</ul>
+<p>Returns a result containing a list of characters.</p>
 </div>
     
 </div>

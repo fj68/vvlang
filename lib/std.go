@@ -6,6 +6,7 @@ import (
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/lib/std"
+	"github.com/fj68/vvlang/lib/std/encoding"
 	"github.com/fj68/vvlang/lib/std/fs"
 )
 
@@ -42,7 +43,6 @@ var natives = map[string]map[string]interp.Value{
 		"to_lower": interp.VBuiltinFun(std.CharToLower),
 		"is_digit": interp.VBuiltinFun(std.CharIsDigit),
 		"is_space": interp.VBuiltinFun(std.CharIsSpace),
-		"to_bytes": interp.VBuiltinFun(std.CharToBytes),
 	},
 	"std/list.vv": {
 		"push":    interp.VBuiltinFun(std.Push),
@@ -90,6 +90,14 @@ var natives = map[string]map[string]interp.Value{
 		"create": interp.VBuiltinFun(fs.DirCreate),
 		"remove": interp.VBuiltinFun(fs.DirRemove),
 		"exists": interp.VBuiltinFun(fs.DirExists),
+	},
+	"std/encoding/sjis.vv": {
+		"encode": interp.VBuiltinFun(encoding.SJISEncode),
+		"decode": interp.VBuiltinFun(encoding.SJISDecode),
+	},
+	"std/encoding/utf8.vv": {
+		"encode": interp.VBuiltinFun(encoding.UTF8Encode),
+		"decode": interp.VBuiltinFun(encoding.UTF8Decode),
 	},
 }
 

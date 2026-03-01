@@ -4,7 +4,7 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>std/char.vv - vvlang documentation</title>
+    <title>std/encoding/sjis.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -161,7 +161,7 @@
             font-size: 0.9rem;
         }
     </style>
-    <link rel="stylesheet" href="../../../static/highlight.css">
+    <link rel="stylesheet" href="../../../../static/highlight.css">
 </head>
 
 <body>
@@ -169,18 +169,17 @@
         <div class='logo'>vvlang docs</div>
         <nav class='langs'>
             
-            <a href='../../../en/index.html' class='active' >en</a>
+            <a href='../../../../en/index.html' class='active' >en</a>
             
         </nav>
     </header>
     <main>
         
-<p><a href='../../../index.html'>← Back to Index</a></p>
-<h1>Module <code>std/char.vv</code></h1>
+<p><a href='../../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/encoding/sjis.vv</code></h1>
 
 
-<div class='docstring module-doc'><p>The <code>char</code> module provides utilities for working with characters.
-Characters are typically represented by single quotes.</p>
+<div class='docstring module-doc'><p>The <code>encoding/sjis</code> module provides Shift-JIS encoding and decoding utilities.</p>
 </div>
 
 
@@ -189,13 +188,9 @@ Characters are typically represented by single quotes.</p>
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#to_upper">to_upper</a></li>
+        <li><a href="#encode">encode</a></li>
         
-        <li><a href="#to_lower">to_lower</a></li>
-        
-        <li><a href="#is_digit">is_digit</a></li>
-        
-        <li><a href="#is_space">is_space</a></li>
+        <li><a href="#decode">decode</a></li>
         
     </ul>
 </div>
@@ -204,69 +199,38 @@ Characters are typically represented by single quotes.</p>
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='to_upper' class='signature-header'>
-        <code>fun to_upper(c)</code>
+    <h3 id='encode' class='signature-header'>
+        <code>fun encode(c)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Converts a character to its uppercase equivalent.</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.to_upper('a') // 'A'
-char.to_upper('1') // '1'
-</code></pre>
+    <div class='docstring'><p>Encodes a character to a list of Shift-JIS bytes.</p>
+<ul>
+<li><code>c</code>: The character to encode.</li>
+</ul>
+<p>Returns a list of integers representing Shift-JIS bytes.</p>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='to_lower' class='signature-header'>
-        <code>fun to_lower(c)</code>
+    <h3 id='decode' class='signature-header'>
+        <code>fun decode(bytes)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Converts a character to its lowercase equivalent.</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.to_lower('A') // 'a'
-char.to_lower('!') // '!'
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='is_digit' class='signature-header'>
-        <code>fun is_digit(c)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Checks if a character is an ASCII decimal digit ('0'-'9').</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.is_digit('5') // true
-char.is_digit('a') // false
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='is_space' class='signature-header'>
-        <code>fun is_space(c)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Checks if a character is a whitespace character (e.g., space, tab, newline).</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.is_space(' ')  // true
-char.is_space('\n') // true
-char.is_space('a')  // false
-</code></pre>
+    <div class='docstring'><p>Decodes a list of bytes to a character.</p>
+<ul>
+<li><code>bytes</code>: A list of integers representing Shift-JIS bytes.</li>
+</ul>
+<p>Returns a result containing a record <code>{ char = c, size = n }</code> or an error.</p>
 </div>
     
 </div>
 
 
     </main>
-    <script type="module" src="../../../static/highlight.js"></script>
+    <script type="module" src="../../../../static/highlight.js"></script>
 </body>
 
 </html>

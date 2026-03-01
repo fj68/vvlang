@@ -47,13 +47,13 @@ pub extern "native" fun close(fd)
 /// - `fd`: The file descriptor to read from.
 /// - `length`: The number of bytes to read.
 /// 
-/// Returns the read content as a list of characters.
+/// Returns the read content as a list of integers (bytes).
 pub extern "native" fun read(fd, length)
 
 /// Writes bytes to a file.
 /// 
 /// - `fd`: The file descriptor to write to.
-/// - `content`: The bytes (list of characters) to write.
+/// - `content`: The bytes (list of integers or characters) to write.
 /// 
 /// Returns the number of bytes written.
 pub extern "native" fun write(fd, content)

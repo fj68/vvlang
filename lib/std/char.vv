@@ -38,11 +38,3 @@ pub extern 'native' fun is_digit(c)
 /// ```
 pub extern 'native' fun is_space(c)
 
-/// Converts a character to a list of its UTF-8 byte values.
-///
-/// Example:
-/// ```vv
-/// char.to_bytes('a') // [97]
-/// char.to_bytes('€') // [226, 130, 172]
-/// ```
-pub extern 'native' fun to_bytes(c)

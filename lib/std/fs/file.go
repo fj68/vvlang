@@ -154,13 +154,13 @@ func FileRead(s *interp.State, args []interp.Value) (interp.Value, error) {
 		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
 
-	// Convert read bytes (up to n) to list of chars
-	chars := make([]interp.Value, n)
+	// Convert read bytes (up to n) to list of ints
+	ints := make([]interp.Value, n)
 	for i := 0; i < n; i++ {
-		chars[i] = interp.VChar(buf[i])
+		ints[i] = interp.VInt(int64(buf[i]))
 	}
 
-	return interp.OkValue(&interp.VList{Elements: chars}), nil
+	return interp.OkValue(&interp.VList{Elements: ints}), nil
 }
 
 func FileWrite(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -180,14 +180,16 @@ func FileWrite(s *interp.State, args []interp.Value) (interp.Value, error) {
 		return nil, fmt.Errorf("write expects content to be a string (list of chars)")
 	}
 
-	// extract bytes from string
+	// extract bytes from string or list of ints
 	buf := make([]byte, len(contentVal.Elements))
 	for i, v := range contentVal.Elements {
-		c, ok := v.(interp.VChar)
-		if !ok {
-			return nil, fmt.Errorf("write content must be list of chars")
+		if c, ok := v.(interp.VChar); ok {
+			buf[i] = byte(c)
+		} else if n, ok := v.(interp.VInt); ok {
+			buf[i] = byte(n)
+		} else {
+			return nil, fmt.Errorf("write content must be list of chars or ints, got %s at index %d", v.Type(), i)
 		}
-		buf[i] = byte(c)
 	}
 
 	n, err := f.Write(buf)

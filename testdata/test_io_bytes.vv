@@ -1,0 +1,45 @@
+import bytes from "std/io/bytes.vv"
+import fs from "std/fs/file.vv"
+
+test "buffered read"
+    // Create a temporary file
+    let path = "tmp_test_bytes.txt"
+    let f = fs.create(path)!
+    fs.write(f, [97, 98, 99, 100, 101]) // abcde
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = bytes.reader(source, 2)!
+    
+    let b1 = r.read(r, 2)!
+    assert b1 == [97, 98]
+    
+    let b2 = r.read(r, 2)!
+    assert b2 == [99, 100]
+    
+    let b3 = r.read(r, 2)!
+    assert b3 == [101]
+    
+    r.close(r)
+end
+
+test "peek"
+    let path = "tmp_test_peek.txt"
+    let f = fs.create(path)!
+    fs.write(f, [97, 98, 99])
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = bytes.reader(source, 2)!
+    
+    let p1 = r.peek(r, 2)!
+    assert p1 == [97, 98]
+    
+    let b1 = r.read(r, 1)!
+    assert b1 == [97]
+    
+    let p2 = r.peek(r, 2)!
+    assert p2 == [98, 99]
+    
+    r.close(r)
+end

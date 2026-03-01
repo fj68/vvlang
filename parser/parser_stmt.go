@@ -54,29 +54,12 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 		return nil, fmt.Errorf("unexpected EOF")
 	}
 
-	if p.curToken.Type == lexer.TFun {
-		if p.peekToken.Type == lexer.TIdent || p.peekToken.Type == lexer.TRec {
-			return p.parseFunDeclStmt()
-		}
-	}
-
-	if p.curToken.Type == lexer.TIdent {
-		if p.peekToken.Type == lexer.TAssign {
-			// `x = expr` form
-			stmt, err := p.parseVarAssignStmt()
-			if err != nil {
-				return nil, err
-			}
-			return []ast.Stmt{stmt}, nil
-		}
-		if p.peekToken.Type == lexer.TIncr || p.peekToken.Type == lexer.TDecr {
-			// `x += expr` or `x -= expr` form
-			stmt, err := p.parseVarIncrDecrStmt()
-			if err != nil {
-				return nil, err
-			}
-			return []ast.Stmt{stmt}, nil
-		}
+	// Case for assignment or expression statement
+	// These start with an expression (Ident, Call, Field access, Index, etc.)
+	// We use the precedence to stop before reaching assignment operators if possible,
+	// but since TAssign/TIncr/TDecr are not in infixParsers, parseExpr(PLowest) will stop there.
+	if p.isExprStart() {
+		return p.parseExprOrAssignmentStmt()
 	}
 
 	if p.curToken.Type == lexer.TLet {
@@ -109,6 +92,14 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 
 	if p.curToken.Type == lexer.TIf {
 		stmt, err := p.parseIfStmt()
+		if err != nil {
+			return nil, err
+		}
+		return []ast.Stmt{stmt}, nil
+	}
+
+	if p.curToken.Type == lexer.TImport || p.curToken.Type == lexer.TFrom {
+		stmt, err := p.parseImportStmt()
 		if err != nil {
 			return nil, err
 		}
@@ -151,12 +142,7 @@ func (p *Parser) parseStmt() ([]ast.Stmt, error) {
 		return []ast.Stmt{stmt}, nil
 	}
 
-	expr, err := p.parseExpr(PLowest)
-	if err != nil {
-		return nil, err
-	}
-
-	return []ast.Stmt{&ast.ExprStmt{Expr: expr}}, nil
+	return nil, fmt.Errorf("unexpected token in statement: %s (%s)", p.curToken.Text, p.curToken.Type)
 }
 
 func (p *Parser) parseBodyStmt() ([]ast.Stmt, error) {
@@ -489,8 +475,8 @@ func (p *Parser) parseRecordDestructStmt() ([]ast.Stmt, error) {
 		if f.alias != "" {
 			targetName = f.alias
 		}
-		blockBody = append(blockBody, &ast.AssignStmt{
-			Name: targetName,
+		blockBody = append(blockBody, &ast.AssignmentStmt{
+			Left: &ast.VarRefExpr{Name: targetName},
 			Body: &ast.FieldAccessExpr{
 				Record: &ast.VarRefExpr{Name: tempVar},
 				Field:  f.name,
@@ -502,14 +488,12 @@ func (p *Parser) parseRecordDestructStmt() ([]ast.Stmt, error) {
 	return stmts, nil
 }
 
-func (p *Parser) parseVarAssignStmt() (*ast.VarAssignStmt, error) {
-	name := p.curToken.Text
-
-	if err := p.expectNext(lexer.TAssign); err != nil {
-		return nil, err
-	}
-	if err := p.readToken(); err != nil {
-		return nil, err
+func (p *Parser) parseExprOrAssignmentStmt() ([]ast.Stmt, error) {
+	// If it's `fun IDENT` or `fun rec`, it's a declaration statement
+	if p.curToken.Type == lexer.TFun {
+		if p.peekToken.Type == lexer.TIdent || p.peekToken.Type == lexer.TRec {
+			return p.parseFunDeclStmt()
+		}
 	}
 
 	expr, err := p.parseExpr(PLowest)
@@ -517,46 +501,62 @@ func (p *Parser) parseVarAssignStmt() (*ast.VarAssignStmt, error) {
 		return nil, err
 	}
 
-	return &ast.VarAssignStmt{
-		Name: name,
-		Body: expr,
-	}, nil
+	if p.curToken.Type == lexer.TAssign {
+		if err := p.readToken(); err != nil { // consume '='
+			return nil, err
+		}
+		rhs, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+		return []ast.Stmt{&ast.AssignmentStmt{
+			Left: expr,
+			Body: rhs,
+		}}, nil
+	}
+
+	if p.curToken.Type == lexer.TIncr || p.curToken.Type == lexer.TDecr {
+		op := p.curToken.Type
+		if err := p.readToken(); err != nil {
+			return nil, err
+		}
+		rhs_inc, err := p.parseExpr(PLowest)
+		if err != nil {
+			return nil, err
+		}
+
+		var finalRhs ast.Expr
+		if op == lexer.TIncr {
+			finalRhs = &ast.InfixExpr{
+				Op:    ast.OpAdd,
+				Left:  expr,
+				Right: rhs_inc,
+			}
+		} else {
+			finalRhs = &ast.InfixExpr{
+				Op:    ast.OpSub,
+				Left:  expr,
+				Right: rhs_inc,
+			}
+		}
+
+		return []ast.Stmt{&ast.AssignmentStmt{
+			Left: expr,
+			Body: finalRhs,
+		}}, nil
+	}
+
+	return []ast.Stmt{&ast.ExprStmt{Expr: expr}}, nil
 }
 
-func (p *Parser) parseVarIncrDecrStmt() (*ast.VarAssignStmt, error) {
-	name := p.curToken.Text
-	op := p.peekToken.Type
-
-	if err := p.readToken(); err != nil {
-		return nil, err
+func (p *Parser) isExprStart() bool {
+	switch p.curToken.Type {
+	case lexer.TIdent, lexer.TInt, lexer.TFloat, lexer.TLiteral, lexer.TInterpolated,
+		lexer.TTrue, lexer.TFalse, lexer.TLParen, lexer.TLBrace,
+		lexer.TLBracket, lexer.TFun, lexer.THyphen, lexer.TExclam, lexer.TNot:
+		return true
 	}
-	if err := p.readToken(); err != nil {
-		return nil, err
-	}
-
-	expr, err := p.parseExpr(PLowest)
-	if err != nil {
-		return nil, err
-	}
-
-	if op == lexer.TIncr {
-		return &ast.VarAssignStmt{
-			Name: name,
-			Body: &ast.InfixExpr{
-				Op:    ast.OpAdd,
-				Left:  &ast.VarRefExpr{Name: name},
-				Right: expr,
-			},
-		}, nil
-	}
-	return &ast.VarAssignStmt{
-		Name: name,
-		Body: &ast.InfixExpr{
-			Op:    ast.OpSub,
-			Left:  &ast.VarRefExpr{Name: name},
-			Right: expr,
-		},
-	}, nil
+	return false
 }
 
 func (p *Parser) parseWhileStmt() (*ast.WhileStmt, error) {

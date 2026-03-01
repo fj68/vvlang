@@ -4,7 +4,7 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>std/char.vv - vvlang documentation</title>
+    <title>std/io/bytes.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -161,7 +161,7 @@
             font-size: 0.9rem;
         }
     </style>
-    <link rel="stylesheet" href="../../../static/highlight.css">
+    <link rel="stylesheet" href="../../../../static/highlight.css">
 </head>
 
 <body>
@@ -169,18 +169,17 @@
         <div class='logo'>vvlang docs</div>
         <nav class='langs'>
             
-            <a href='../../../en/index.html' class='active' >en</a>
+            <a href='../../../../en/index.html' class='active' >en</a>
             
         </nav>
     </header>
     <main>
         
-<p><a href='../../../index.html'>← Back to Index</a></p>
-<h1>Module <code>std/char.vv</code></h1>
+<p><a href='../../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/io/bytes.vv</code></h1>
 
 
-<div class='docstring module-doc'><p>The <code>char</code> module provides utilities for working with characters.
-Characters are typically represented by single quotes.</p>
+<div class='docstring module-doc'><p>The <code>io/bytes</code> module provides a buffered byte reader.</p>
 </div>
 
 
@@ -189,13 +188,13 @@ Characters are typically represented by single quotes.</p>
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#to_upper">to_upper</a></li>
+        <li><a href="#reader">reader</a></li>
         
-        <li><a href="#to_lower">to_lower</a></li>
+        <li><a href="#read">read</a></li>
         
-        <li><a href="#is_digit">is_digit</a></li>
+        <li><a href="#peek">peek</a></li>
         
-        <li><a href="#is_space">is_space</a></li>
+        <li><a href="#read_all">read_all</a></li>
         
     </ul>
 </div>
@@ -204,69 +203,71 @@ Characters are typically represented by single quotes.</p>
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='to_upper' class='signature-header'>
-        <code>fun to_upper(c)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
+    <h3 id='reader' class='signature-header'>
+        <code>fun reader(source_reader, size)</code>
+        
     </h3>
     
-    <div class='docstring'><p>Converts a character to its uppercase equivalent.</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.to_upper('a') // 'A'
-char.to_upper('1') // '1'
-</code></pre>
+    <div class='docstring'><p>Creates a buffered reader with the specified buffer size.</p>
+<ul>
+<li><code>source_reader</code>: An object with a <code>read(length)</code> method.</li>
+<li><code>size</code>: The size of the internal buffer.</li>
+</ul>
+<p>Returns a result containing a reader record.</p>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='to_lower' class='signature-header'>
-        <code>fun to_lower(c)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
+    <h3 id='read' class='signature-header'>
+        <code>fun read(r, n)</code>
+        
     </h3>
     
-    <div class='docstring'><p>Converts a character to its lowercase equivalent.</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.to_lower('A') // 'a'
-char.to_lower('!') // '!'
-</code></pre>
+    <div class='docstring'><p>Reads <code>n</code> bytes from the reader.</p>
+<ul>
+<li><code>r</code>: The reader record.</li>
+<li><code>n</code>: The number of bytes to read.</li>
+</ul>
+<p>Returns a result containing a list of bytes.</p>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='is_digit' class='signature-header'>
-        <code>fun is_digit(c)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
+    <h3 id='peek' class='signature-header'>
+        <code>fun peek(r, n)</code>
+        
     </h3>
     
-    <div class='docstring'><p>Checks if a character is an ASCII decimal digit ('0'-'9').</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.is_digit('5') // true
-char.is_digit('a') // false
-</code></pre>
+    <div class='docstring'><p>Peeks <code>n</code> bytes from the reader without advancing the position.</p>
+<ul>
+<li><code>r</code>: The reader record.</li>
+<li><code>n</code>: The number of bytes to peek.</li>
+</ul>
+<p>Returns a result containing a list of bytes.</p>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='is_space' class='signature-header'>
-        <code>fun is_space(c)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
+    <h3 id='read_all' class='signature-header'>
+        <code>fun read_all(r)</code>
+        
     </h3>
     
-    <div class='docstring'><p>Checks if a character is a whitespace character (e.g., space, tab, newline).</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.is_space(' ')  // true
-char.is_space('\n') // true
-char.is_space('a')  // false
-</code></pre>
+    <div class='docstring'><p>Reads all remaining content from the reader.</p>
+<ul>
+<li><code>r</code>: The reader record.</li>
+</ul>
+<p>Returns a result containing a list of all remaining bytes.</p>
 </div>
     
 </div>
 
 
     </main>
-    <script type="module" src="../../../static/highlight.js"></script>
+    <script type="module" src="../../../../static/highlight.js"></script>
 </body>
 
 </html>

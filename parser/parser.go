@@ -21,6 +21,8 @@ type Precedence int
 
 const (
 	PLowest Precedence = iota
+	POr
+	PAnd
 	PEquals
 	PLess
 	PSum
@@ -32,6 +34,8 @@ const (
 
 var precedences = map[lexer.TokenType]Precedence{
 	lexer.TIdent:      PLowest,
+	lexer.TOr:         POr,
+	lexer.TAnd:        PAnd,
 	lexer.TEqual:      PEquals,
 	lexer.TLessEq:     PLess,
 	lexer.TLess:       PLess,
@@ -113,6 +117,8 @@ func (p *Parser) registerInfixParsers() {
 		lexer.TSlash:      p.parseInfixExpr,
 		lexer.TSlashColon: p.parseInfixExpr,
 		lexer.TPercent:    p.parseInfixExpr,
+		lexer.TAnd:        p.parseInfixExpr,
+		lexer.TOr:         p.parseInfixExpr,
 		lexer.TExclam:     p.parsePostfixExpr,
 	}
 }
