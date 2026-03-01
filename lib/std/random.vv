@@ -1,4 +1,14 @@
 /// The `random` module provides functions for generating random numbers and making random choices.
+///
+/// Example:
+/// ```vv
+/// import random from "std/random.vv"
+///
+/// random.seed(42)
+/// let n = random.int(1, 100)
+/// let x = random.choice(["a", "b", "c"])
+/// ```
+
 import option from "std/option.vv"
 
 /// Seeds the random number generator with the given integer.

@@ -1,4 +1,12 @@
 /// The `console` module provides standard input and output utilities.
+///
+/// Example:
+/// ```vv
+/// import console from "std/console.vv"
+///
+/// console.print("Hello, World!")
+/// ```
+
 
 /// Prints a value to the standard output, followed by a newline.
 ///

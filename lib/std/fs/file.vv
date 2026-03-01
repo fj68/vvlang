@@ -1,4 +1,14 @@
 /// The `fs/file` module provides low-level file I/O operations.
+///
+/// Example:
+/// ```vv
+/// import file from "std/fs/file.vv"
+///
+/// let fd = file.create("test.txt")!
+/// file.write(fd, "hello")
+/// file.close(fd)
+/// ```
+
 
 import result from "std/result.vv"
 

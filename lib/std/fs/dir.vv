@@ -1,4 +1,14 @@
 /// The `fs/dir` module provides low-level directory operations.
+///
+/// Example:
+/// ```vv
+/// import dir from "std/fs/dir.vv"
+///
+/// if dir.exists("test")
+///     let files = dir.read("test")!
+/// end
+/// ```
+
 
 /// Reads the contents of a directory.
 /// 

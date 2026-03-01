@@ -1,4 +1,14 @@
 /// The `encoding/sjis` module provides Shift-JIS encoding and decoding utilities.
+///
+/// Example:
+/// ```vv
+/// import sjis from "std/encoding/sjis.vv"
+///
+/// let bytes = sjis.encode('あ')
+/// let res = sjis.decode(bytes)
+/// console.print(res.value.char) // 'あ'
+/// ```
+
 
 /// Encodes a character to a list of Shift-JIS bytes.
 ///

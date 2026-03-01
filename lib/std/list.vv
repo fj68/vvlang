@@ -1,5 +1,15 @@
 /// The `list` module provides utilities for working with lists (arrays).
 /// Lists are ordered, mutable collections of elements of any type.
+///
+/// Example:
+/// ```vv
+/// import list from "std/list.vv"
+///
+/// let l = [1, 2, 3]
+/// list.push(l, 4)
+/// let doubled = list.map(l, fun (i, x) x * 2 end)
+/// ```
+
 
 /// Adds a value to the end of a list.
 /// Returns the modified list.

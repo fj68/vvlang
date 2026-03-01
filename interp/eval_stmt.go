@@ -298,12 +298,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 		}
 	}()
 
-	for stdPath, funcs := range modState.BuiltinModules {
-		if targetPath == mod.GetPackagePath(stdPath) {
-			modState.RegisterNatives(funcs)
-			break
-		}
-	}
+	modState.registerNativesForPath(targetPath)
 
 	if err := modState.evalModule(module); err != nil {
 		return err

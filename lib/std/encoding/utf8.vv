@@ -1,4 +1,14 @@
 /// The `encoding/utf8` module provides UTF-8 encoding and decoding utilities.
+///
+/// Example:
+/// ```vv
+/// import utf8 from "std/encoding/utf8.vv"
+///
+/// let bytes = utf8.encode('A')
+/// let res = utf8.decode(bytes)
+/// console.print(res.value.char) // 'A'
+/// ```
+
 
 /// Encodes a character to a list of UTF-8 bytes.
 pub extern "native" fun encode(c)

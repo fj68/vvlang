@@ -1,4 +1,13 @@
 /// The `bool` module provides standard utilities for boolean values.
+///
+/// Example:
+/// ```vv
+/// import bool from "std/bool.vv"
+///
+/// console.print(bool.to_string(true)) // "true"
+/// ```
+
+
 
 /// Converts a boolean value to its string representation.
 ///
