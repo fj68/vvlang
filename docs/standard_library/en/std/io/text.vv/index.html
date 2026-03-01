@@ -194,7 +194,9 @@ import utf8 from &quot;std/encoding/utf8.vv&quot;
 
 let f = file.reader(&quot;test.txt&quot;)!
 let r = text.reader(f, utf8)!
-let line = r.read_line(r)!
+// text.close also closes the internal reader (f), so no need for a separate defer for f.
+defer text.close(r)
+let line = text.read_line(r)!
 </code></pre>
 </div>
 
@@ -204,7 +206,7 @@ let line = r.read_line(r)!
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#reader">reader</a></li>
+        <li><a href="#close">close</a></li>
         
         <li><a href="#read">read</a></li>
         
@@ -214,6 +216,8 @@ let line = r.read_line(r)!
         
         <li><a href="#read_all">read_all</a></li>
         
+        <li><a href="#reader">reader</a></li>
+        
     </ul>
 </div>
 
@@ -221,17 +225,15 @@ let line = r.read_line(r)!
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='reader' class='signature-header'>
-        <code>fun reader(source_reader, encoding_module)</code>
+    <h3 id='close' class='signature-header'>
+        <code>fun close(r)</code>
         
     </h3>
     
-    <div class='docstring'><p>Creates a buffered text reader using an encoding.</p>
+    <div class='docstring'><p>Closes the reader.</p>
 <ul>
-<li><code>source_reader</code>: An object with a <code>read(length)</code> method.</li>
-<li><code>encoding_module</code>: An encoding module (e.g., <code>utf8</code> or <code>sjis</code>).</li>
+<li><code>r</code>: The reader record.</li>
 </ul>
-<p>Returns a result containing a text reader record.</p>
 </div>
     
 </div>
@@ -292,6 +294,22 @@ let line = r.read_line(r)!
 <li><code>r</code>: The text reader record.</li>
 </ul>
 <p>Returns a result containing a list of characters.</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='reader' class='signature-header'>
+        <code>fun reader(source_reader, encoding_module)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Creates a buffered text reader using an encoding.</p>
+<ul>
+<li><code>source_reader</code>: An object with a <code>read(length)</code> method.</li>
+<li><code>encoding_module</code>: An encoding module (e.g., <code>utf8</code> or <code>sjis</code>).</li>
+</ul>
+<p>Returns a result containing a text reader record.</p>
 </div>
     
 </div>

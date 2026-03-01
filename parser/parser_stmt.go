@@ -285,11 +285,17 @@ func (p *Parser) parseDeferStmt() (*ast.DeferStmt, error) {
 	if err := p.expect(lexer.TDefer); err != nil {
 		return nil, err
 	}
-	expr, err := p.parseExpr(PLowest)
+	stmts, err := p.parseStmt()
 	if err != nil {
 		return nil, err
 	}
-	return &ast.DeferStmt{Body: expr}, nil
+	var body ast.Stmt
+	if len(stmts) == 1 {
+		body = stmts[0]
+	} else {
+		body = &ast.BlockStmt{Body: stmts}
+	}
+	return &ast.DeferStmt{Body: body}, nil
 }
 
 func (p *Parser) parseExternStmt() (*ast.ExternStmt, error) {

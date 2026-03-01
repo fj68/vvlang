@@ -252,7 +252,7 @@ func (stmt *AssertStmt) Equals(other Stmt) bool {
 }
 
 type DeferStmt struct {
-	Body Expr
+	Body Stmt
 }
 
 func (stmt *DeferStmt) Inspect() string {

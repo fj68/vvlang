@@ -8,7 +8,9 @@
 ///
 /// let f = file.reader("test.txt")!
 /// let r = text.reader(f, utf8)!
-/// let line = r.read_line(r)!
+/// // text.close also closes the internal reader (f), so no need for a separate defer for f.
+/// defer text.close(r)
+/// let line = text.read_line(r)!
 /// ```
 
 
@@ -45,7 +47,7 @@ pub fun read(r)
 
     let entry = dec_res.value
     // Advance b_reader by entry.size
-    r.b_reader.read(r.b_reader, entry.size)
+    let _ = r.b_reader.read(r.b_reader, entry.size)!
     return result.ok({ char = entry.char, size = entry.size })
 end
 
@@ -87,7 +89,7 @@ pub fun read_line(r)
             // Peek next to see if it's \n
             let next_res = peek(r)
             if result.is_ok(next_res) and next_res.value.char == '\n'
-                read(r) // consume \n
+                let _ = read(r)! // consume \n
             end
             break
         end
@@ -136,7 +138,7 @@ test "reader / read"
     let f = file.create(path)!
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [97, 226, 130, 172, 10]) // a€\n
+    file.write(f, [97, 226, 130, 172, 10])! // a€\n
 
     let source = file.reader(path)!
     let r = reader(source, utf8)!
@@ -157,7 +159,7 @@ test "peek"
     let f = file.create(path)!
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [65, 66]) // AB
+    file.write(f, [65, 66])! // AB
 
     let source = file.reader(path)!
     let r = reader(source, utf8)!
@@ -179,7 +181,7 @@ test "read_line"
     let f = file.create(path)!
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [97, 98, 10, 99, 100]) // ab\ncd
+    file.write(f, [97, 98, 10, 99, 100])! // ab\ncd
 
     let source = file.reader(path)!
     let r = reader(source, utf8)!
@@ -197,7 +199,7 @@ test "read_all"
     let f = file.create(path)!
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [104, 105]) // hi
+    file.write(f, [104, 105])! // hi
 
     let source = file.reader(path)!
     let r = reader(source, utf8)!

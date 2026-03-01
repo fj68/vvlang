@@ -299,7 +299,7 @@ result.is_error(result.ok(1))    // false
     
     <div class='docstring'><p>Applies <code>f</code> to the value of an <code>ok</code> result.</p>
 <p>Example:</p>
-<pre><code class="language-vv">result.map(result.ok(2), fun(x) x * 2 end) // ok(4)
+<pre><code class="language-vv">result.map(result.ok(2), fun(x) return x * 2 end) // ok(4)
 </code></pre>
 </div>
     
@@ -313,7 +313,7 @@ result.is_error(result.ok(1))    // false
     
     <div class='docstring'><p>Applies a function <code>f</code> that returns a result to the value of an <code>ok</code> result.</p>
 <p>Example:</p>
-<pre><code class="language-vv">result.flat_map(result.ok(1), fun(x) result.ok(x + 1) end) // ok(2)
+<pre><code class="language-vv">result.flat_map(result.ok(1), fun(x) return result.ok(x + 1) end) // ok(2)
 </code></pre>
 </div>
     
@@ -327,7 +327,7 @@ result.is_error(result.ok(1))    // false
     
     <div class='docstring'><p>Applies <code>f</code> to the value of an <code>error</code> result.</p>
 <p>Example:</p>
-<pre><code class="language-vv">result.map_error(result.error(&quot;fail&quot;), fun(e) e + &quot;!&quot; end) // error(&quot;fail!&quot;)
+<pre><code class="language-vv">result.map_error(result.error(&quot;fail&quot;), fun(e) return e + &quot;!&quot; end) // error(&quot;fail!&quot;)
 </code></pre>
 </div>
     
@@ -341,7 +341,7 @@ result.is_error(result.ok(1))    // false
     
     <div class='docstring'><p>Applies a function <code>f</code> that returns a result to the value of an <code>error</code> result.</p>
 <p>Example:</p>
-<pre><code class="language-vv">result.flat_map_error(result.error(1), fun(e) result.error(e + 1) end) // error(2)
+<pre><code class="language-vv">result.flat_map_error(result.error(1), fun(e) return result.error(e + 1) end) // error(2)
 </code></pre>
 </div>
     

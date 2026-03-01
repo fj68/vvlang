@@ -8,7 +8,7 @@
 ///
 /// if dir.exists("test")
 ///     let files = dir.read("test")!
-///     list.each(files, fun(file)
+///     list.each(files, fun(i, file)
 ///         console.print(file)
 ///     end)
 /// end

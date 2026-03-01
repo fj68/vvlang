@@ -60,10 +60,10 @@ func (s *State) evalIfStmt(stmt *ast.IfStmt) error {
 
 func (s *State) evalExprStmt(stmt *ast.ExprStmt) error {
 	_, err := s.evalExpr(stmt.Expr)
-	if err != nil && err != ErrNoValue {
-		return err
+	if err == ErrNoValue {
+		return nil
 	}
-	return nil
+	return err
 }
 
 func (s *State) evalVarDeclStmt(stmt *ast.VarDeclStmt) error {
@@ -71,7 +71,9 @@ func (s *State) evalVarDeclStmt(stmt *ast.VarDeclStmt) error {
 	if err != nil {
 		return err
 	}
-	s.Env.Set(stmt.Name, v)
+	if stmt.Name != "_" {
+		s.Env.Set(stmt.Name, v)
+	}
 	return nil
 }
 
@@ -105,6 +107,9 @@ func (s *State) evalAssignmentStmt(stmt *ast.AssignmentStmt) error {
 
 	switch l := stmt.Left.(type) {
 	case *ast.VarRefExpr:
+		if l.Name == "_" {
+			return nil
+		}
 		s.Env.SetOuter(l.Name, val)
 		return nil
 	case *ast.FieldAccessExpr:

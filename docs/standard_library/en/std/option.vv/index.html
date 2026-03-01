@@ -305,8 +305,8 @@ option.get_or(option.none, 0)    // 0
     
     <div class='docstring'><p>Applies a function to the wrapped value if it exists, returning a new <code>option</code>.</p>
 <p>Example:</p>
-<pre><code class="language-vv">option.map(option.some(2), fun(x) x * 2 end) // some(4)
-option.map(option.none, fun(x) x * 2 end)    // none
+<pre><code class="language-vv">option.map(option.some(2), fun(x) return x * 2 end) // some(4)
+option.map(option.none, fun(x) return x * 2 end)    // none
 </code></pre>
 </div>
     
@@ -320,7 +320,7 @@ option.map(option.none, fun(x) x * 2 end)    // none
     
     <div class='docstring'><p>Applies a function that returns an <code>option</code> to the wrapped value.</p>
 <p>Example:</p>
-<pre><code class="language-vv">let f = fun(x) option.some(x + 1) end
+<pre><code class="language-vv">let f = fun(x) return option.some(x + 1) end
 option.flat_map(option.some(1), f) // some(2)
 </code></pre>
 </div>
@@ -335,7 +335,7 @@ option.flat_map(option.some(1), f) // some(2)
     
     <div class='docstring'><p>Applies a function if the <code>option</code> is <code>none</code>. Useful for chaining fallbacks.</p>
 <p>Example:</p>
-<pre><code class="language-vv">option.flat_map_none(option.none, fun() option.some(1) end) // some(1)
+<pre><code class="language-vv">option.flat_map_none(option.none, fun() return option.some(1) end) // some(1)
 </code></pre>
 </div>
     

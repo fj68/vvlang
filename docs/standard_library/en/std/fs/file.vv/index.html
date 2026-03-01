@@ -192,7 +192,7 @@
 
 let fd = file.create(&quot;test.txt&quot;)!
 defer file.close(fd)
-file.write(fd, &quot;hello&quot;)
+file.write(fd, &quot;hello&quot;)!
 </code></pre>
 </div>
 
@@ -217,6 +217,8 @@ file.write(fd, &quot;hello&quot;)
         <li><a href="#read">read</a></li>
         
         <li><a href="#write">write</a></li>
+        
+        <li><a href="#remove">remove</a></li>
         
         <li><a href="#reader">reader</a></li>
         
@@ -347,6 +349,20 @@ file.write(fd, &quot;hello&quot;)
 <li><code>content</code>: The bytes (list of integers or characters) to write.</li>
 </ul>
 <p>Returns the number of bytes written.</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='remove' class='signature-header'>
+        <code>fun remove(path)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Removes a file.</p>
+<ul>
+<li><code>path</code>: The path to the file.</li>
+</ul>
 </div>
     
 </div>

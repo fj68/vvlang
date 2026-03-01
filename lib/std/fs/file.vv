@@ -6,7 +6,7 @@
 ///
 /// let fd = file.create("test.txt")!
 /// defer file.close(fd)
-/// file.write(fd, "hello")
+/// file.write(fd, "hello")!
 /// ```
 
 

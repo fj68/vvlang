@@ -23,7 +23,7 @@ type State struct {
 	ModuleCache       map[string]*VModule
 	Env               *Env
 	RetVals           stack.Stack[Value]
-	Defers            [][]ast.Expr
+	Defers            [][]ast.Stmt
 	NativeValues      map[string]Value
 	BuiltinModules    map[string]map[string]Value
 	NewState          func(sourcePath string) *State
@@ -131,7 +131,7 @@ func (s *State) Eval(text []rune) error {
 }
 
 func (s *State) pushDeferScope() {
-	s.Defers = append(s.Defers, []ast.Expr{})
+	s.Defers = append(s.Defers, []ast.Stmt{})
 }
 
 func (s *State) popDeferScope() error {
@@ -143,12 +143,23 @@ func (s *State) popDeferScope() error {
 
 	// Execute defers in LIFO order
 	for i := len(scope) - 1; i >= 0; i-- {
-		_, err := s.evalExpr(scope[i])
+		err := s.evalStmt(scope[i])
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (s *State) formatUnhandledError(v Value) string {
+	if rec, ok := v.(*VRecord); ok {
+		if typ, ok := rec.Fields["type"]; ok && typ.Str() == "error" {
+			if val, ok := rec.Fields["value"]; ok {
+				return val.Str()
+			}
+		}
+	}
+	return v.String()
 }
 
 var ErrBreak = fmt.Errorf("break")
@@ -174,7 +185,7 @@ func (s *State) evalTestModule(module *ast.Module) (err error) {
 		case *ast.TestStmt, *ast.VarDeclStmt, *ast.ExternStmt, *ast.ImportStmt, *ast.RecFunDeclStmt:
 			if err := s.evalStmt(stmt); err != nil {
 				if err == ErrReturn {
-					return fmt.Errorf("top-level return is not allowed")
+					return fmt.Errorf("unhandled error: %s", s.formatUnhandledError(s.RetVals.Pop()))
 				}
 				return err
 			}
@@ -198,7 +209,7 @@ func (s *State) evalModule(module *ast.Module) (err error) {
 	for _, stmt := range module.Statements {
 		if err := s.evalStmt(stmt); err != nil {
 			if err == ErrReturn {
-				return fmt.Errorf("top-level return is not allowed")
+				return fmt.Errorf("unhandled error: %s", s.formatUnhandledError(s.RetVals.Pop()))
 			}
 			return err
 		}

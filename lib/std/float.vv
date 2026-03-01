@@ -4,8 +4,8 @@
 /// ```vv
 /// import float from "std/float.vv"
 ///
-/// float.to_string(3.14) // "3.14"
-/// float.floor(3.9)      // 3.0
+/// let s = float.to_string(3.14) // "3.14"
+/// let f = float.floor(3.9)      // 3.0
 /// ```
 
 import sys from "std/sys.vv"
@@ -15,7 +15,7 @@ import sys from "std/sys.vv"
 ///
 /// Example:
 /// ```vv
-/// float.to_string(3.14) // "3.14"
+/// let s = float.to_string(3.14) // "3.14"
 /// ```
 pub extern "native" fun to_string(f)
 
@@ -29,8 +29,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// float.floor(3.7)  // 3.0
-/// float.floor(-3.2) // -4.0
+/// let f = float.floor(3.7)  // 3.0
+/// let g = float.floor(-3.2) // -4.0
 /// ```
 pub extern "native" fun floor(f)
 
@@ -44,8 +44,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// float.ceil(3.2)  // 4.0
-/// float.ceil(-3.7) // -3.0
+/// let f = float.ceil(3.2)  // 4.0
+/// let g = float.ceil(-3.7) // -3.0
 /// ```
 pub extern "native" fun ceil(f)
 
@@ -59,7 +59,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// float.from_int(42) // 42.0
+/// let f = float.from_int(42) // 42.0
 /// ```
 pub extern "native" fun from_int(i)
 
@@ -74,8 +74,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// float.round(3.5)  // 4.0
-/// float.round(-3.5) // -4.0
+/// let f = float.round(3.5)  // 4.0
+/// let g = float.round(-3.5) // -4.0
 /// ```
 pub extern "native" fun round(f)
 
@@ -89,8 +89,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// float.abs(-5.5) // 5.5
-/// float.abs(5.5)  // 5.5
+/// let f = float.abs(-5.5) // 5.5
+/// let g = float.abs(5.5)  // 5.5
 /// ```
 pub extern "native" fun abs(f)
 
@@ -104,7 +104,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// float.min(10.5, 5.2) // 5.2
+/// let m = float.min(10.5, 5.2) // 5.2
 /// ```
 pub extern "native" fun min(a, b)
 
@@ -118,7 +118,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// float.max(10.5, 5.2) // 10.5
+/// let m = float.max(10.5, 5.2) // 10.5
 /// ```
 pub extern "native" fun max(a, b)
 

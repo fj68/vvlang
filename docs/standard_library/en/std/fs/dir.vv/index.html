@@ -194,7 +194,7 @@ import console from &quot;std/console.vv&quot;
 
 if dir.exists(&quot;test&quot;)
     let files = dir.read(&quot;test&quot;)!
-    list.each(files, fun(file)
+    list.each(files, fun(i, file)
         console.print(file)
     end)
 end

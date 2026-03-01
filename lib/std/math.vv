@@ -39,7 +39,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.sin(math.pi / 2.0) // 1.0
+/// let s = math.sin(math.pi / 2.0) // 1.0
 /// ```
 pub extern "native" fun sin(x)
 
@@ -52,7 +52,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.asin(1.0) // 1.5707963267948966
+/// let a = math.asin(1.0) // 1.5707963267948966
 /// ```
 pub extern "native" fun asin(x)
 
@@ -65,7 +65,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.cos(math.pi) // -1.0
+/// let c = math.cos(math.pi) // -1.0
 /// ```
 pub extern "native" fun cos(x)
 
@@ -78,7 +78,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.acos(-1.0) // 3.141592653589793
+/// let a = math.acos(-1.0) // 3.141592653589793
 /// ```
 pub extern "native" fun acos(x)
 
@@ -91,7 +91,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.tan(0.0) // 0.0
+/// let t = math.tan(0.0) // 0.0
 /// ```
 pub extern "native" fun tan(x)
 
@@ -103,7 +103,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.atan(0.0) // 0.0
+/// let a = math.atan(0.0) // 0.0
 /// ```
 pub extern "native" fun atan(x)
 
@@ -115,7 +115,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.atan2(0.0, -1.0) // 3.141592653589793
+/// let a = math.atan2(0.0, -1.0) // 3.141592653589793
 /// ```
 pub extern "native" fun atan2(y, x)
 
@@ -128,7 +128,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.pow(2.0, 3.0) // 8.0
+/// let p = math.pow(2.0, 3.0) // 8.0
 /// ```
 pub extern "native" fun pow(x, y)
 
@@ -141,7 +141,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// math.sqrt(16.0) // 4.0
+/// let s = math.sqrt(16.0) // 4.0
 /// ```
 pub extern "native" fun sqrt(x)
 

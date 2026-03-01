@@ -189,6 +189,7 @@
 <div class='docstring module-doc'><p>The <code>sys</code> module provides system-level capabilities and interpreter control.</p>
 <p>Example:</p>
 <pre><code class="language-vv">import sys from &quot;std/sys.vv&quot;
+import console from &quot;std/console.vv&quot;
 
 console.print(sys.type(123)) // &quot;int&quot;
 </code></pre>
@@ -240,10 +241,13 @@ console.print(sys.type(123)) // &quot;int&quot;
     
     <div class='docstring'><p>Checks if two values refer to the exact same object in memory (physical equality).</p>
 <p>Example:</p>
-<pre><code class="language-vv">let a = [1]
+<pre><code class="language-vv">import sys from &quot;std/sys.vv&quot;
+import console from &quot;std/console.vv&quot;
+
+let a = [1]
 let b = [1]
-sys.phys_eq(a, b) // false
-sys.phys_eq(a, a) // true
+console.print(sys.phys_eq(a, b)) // false
+console.print(sys.phys_eq(a, a)) // true
 </code></pre>
 </div>
     
@@ -272,7 +276,10 @@ Prevents stack overflow panics by throwing a catchable runtime error instead.</p
     
     <div class='docstring'><p>Returns the current maximum recursion depth allowed by the interpreter.</p>
 <p>Example:</p>
-<pre><code class="language-vv">sys.get_max_recursion_depth() // 1000
+<pre><code class="language-vv">import sys from &quot;std/sys.vv&quot;
+import console from &quot;std/console.vv&quot;
+
+console.print(sys.get_max_recursion_depth()) // 1000
 </code></pre>
 </div>
     
@@ -286,9 +293,12 @@ Prevents stack overflow panics by throwing a catchable runtime error instead.</p
     
     <div class='docstring'><p>Returns the string representation of the type of the given value.</p>
 <p>Example:</p>
-<pre><code class="language-vv">sys.type(123) // &quot;int&quot;
-sys.type(&quot;hello&quot;) // &quot;list&quot; (string is a list of characters)
-sys.type({ a = 1 }) // &quot;record&quot;
+<pre><code class="language-vv">import sys from &quot;std/sys.vv&quot;
+import console from &quot;std/console.vv&quot;
+
+console.print(sys.type(123)) // &quot;int&quot;
+console.print(sys.type(&quot;hello&quot;)) // &quot;list&quot;
+console.print(sys.type({ a = 1 })) // &quot;record&quot;
 </code></pre>
 </div>
     
@@ -302,9 +312,12 @@ sys.type({ a = 1 }) // &quot;record&quot;
     
     <div class='docstring'><p>Returns the string representation of the given value.</p>
 <p>Example:</p>
-<pre><code class="language-vv">sys.str(123) // &quot;123&quot;
-sys.str([1, 2, 3]) // &quot;[1, 2, 3]&quot;
-sys.str(true) // &quot;true&quot;
+<pre><code class="language-vv">import sys from &quot;std/sys.vv&quot;
+import console from &quot;std/console.vv&quot;
+
+console.print(sys.str(123)) // &quot;123&quot;
+console.print(sys.str([1, 2, 3])) // &quot;[1, 2, 3]&quot;
+console.print(sys.str(true)) // &quot;true&quot;
 </code></pre>
 </div>
     

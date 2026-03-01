@@ -95,8 +95,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// option.map(option.some(2), fun(x) x * 2 end) // some(4)
-/// option.map(option.none, fun(x) x * 2 end)    // none
+/// option.map(option.some(2), fun(x) return x * 2 end) // some(4)
+/// option.map(option.none, fun(x) return x * 2 end)    // none
 /// ```
 pub fun map(v, f)
   if is_some(v)
@@ -118,7 +118,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// let f = fun(x) option.some(x + 1) end
+/// let f = fun(x) return option.some(x + 1) end
 /// option.flat_map(option.some(1), f) // some(2)
 /// ```
 pub fun flat_map(v, f)
@@ -141,7 +141,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// option.flat_map_none(option.none, fun() option.some(1) end) // some(1)
+/// option.flat_map_none(option.none, fun() return option.some(1) end) // some(1)
 /// ```
 pub fun flat_map_none(v, f)
   if is_some(v)

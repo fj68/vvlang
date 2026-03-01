@@ -4,8 +4,8 @@
 /// ```vv
 /// import int from "std/int.vv"
 ///
-/// int.to_string(42) // "42"
-/// int.abs(-5)       // 5
+/// let s = int.to_string(42) // "42"
+/// let a = int.abs(-5)       // 5
 /// ```
 
 
@@ -13,7 +13,7 @@
 ///
 /// Example:
 /// ```vv
-/// int.to_string(42) // "42"
+/// let s = int.to_string(42) // "42"
 /// ```
 pub extern "native" fun to_string(i)
 
@@ -27,8 +27,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// int.abs(-5) // 5
-/// int.abs(5)  // 5
+/// let a = int.abs(-5) // 5
+/// let b = int.abs(5)  // 5
 /// ```
 pub extern "native" fun abs(n)
 
@@ -42,7 +42,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// int.min(10, 5) // 5
+/// let m = int.min(10, 5) // 5
 /// ```
 pub extern "native" fun min(a, b)
 
@@ -56,7 +56,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// int.max(10, 5) // 10
+/// let m = int.max(10, 5) // 10
 /// ```
 pub extern "native" fun max(a, b)
 
