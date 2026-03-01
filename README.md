@@ -8,7 +8,6 @@ _This project is still in __early stage of development__. Nothing useful for end
 
  - simple and enough, friendly syntax
  - bool, number, string (with interpolation), list and record
- - sorry, we have `null` too
  - function, if-else-end, while, defer and variables
  - modular system with `import` and `pub`
 
