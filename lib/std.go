@@ -6,6 +6,7 @@ import (
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/lib/std"
+	"github.com/fj68/vvlang/lib/std/fs"
 )
 
 //go:embed std
@@ -73,6 +74,22 @@ var natives = map[string]map[string]interp.Value{
 		"seed":  interp.VBuiltinFun(std.RandomSeed),
 		"float": interp.VBuiltinFun(std.RandomFloat),
 		"int":   interp.VBuiltinFun(std.RandomInt),
+	},
+	"std/fs/file.vv": {
+		"open":       interp.VBuiltinFun(fs.FileOpen),
+		"open_read":  interp.VBuiltinFun(fs.FileOpenRead),
+		"open_write": interp.VBuiltinFun(fs.FileOpenWrite),
+		"create":     interp.VBuiltinFun(fs.FileCreate),
+		"exists":     interp.VBuiltinFun(fs.FileExists),
+		"close":      interp.VBuiltinFun(fs.FileClose),
+		"read":       interp.VBuiltinFun(fs.FileRead),
+		"write":      interp.VBuiltinFun(fs.FileWrite),
+	},
+	"std/fs/dir.vv": {
+		"read":   interp.VBuiltinFun(fs.DirRead),
+		"create": interp.VBuiltinFun(fs.DirCreate),
+		"remove": interp.VBuiltinFun(fs.DirRemove),
+		"exists": interp.VBuiltinFun(fs.DirExists),
 	},
 }
 

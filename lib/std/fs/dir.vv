@@ -1,0 +1,29 @@
+/// The `fs/dir` module provides low-level directory operations.
+
+/// Reads the contents of a directory.
+/// 
+/// - `path`: The path to the directory.
+/// 
+/// Returns a list of filenames (strings) in the directory on success, or an error.
+pub extern "native" fun read(path)
+
+/// Creates a new directory.
+/// 
+/// - `path`: The path to the directory to create.
+/// 
+/// Returns `ok(none)` on success, or an error on failure.
+pub extern "native" fun create(path)
+
+/// Removes a directory (and all its contents).
+/// 
+/// - `path`: The path to the directory to remove.
+/// 
+/// Returns `ok(none)` on success, or an error on failure.
+pub extern "native" fun remove(path)
+
+/// Checks if a directory exists.
+/// 
+/// - `path`: The path to check.
+/// 
+/// Returns true if it exists and is a directory.
+pub extern "native" fun exists(path)

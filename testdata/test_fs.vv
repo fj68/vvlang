@@ -1,0 +1,35 @@
+import file from 'std/fs/file.vv'
+import dir from 'std/fs/dir.vv'
+
+let test_dir = "test_fs_dir"
+let test_file = "test_fs_dir/test.txt"
+
+// Setup
+dir.create(test_dir)
+assert dir.exists(test_dir) == true
+
+// File operations
+let fd = file.create(test_file)
+let fd_info = file.exists(test_file)
+assert fd_info == true
+file.close(fd)
+
+// Write
+let w = file.writer(test_file, false)
+w.write(w, "hello world!")
+w.close(w)
+
+// Read
+let r = file.reader(test_file)
+let content = r.read(r, 12)
+assert content == "hello world!"
+r.close(r)
+
+// Dir read
+let files = dir.read(test_dir)
+assert len(files) == 1
+assert files[0] == "test.txt"
+
+// Cleanup
+dir.remove(test_dir)
+assert dir.exists(test_dir) == false

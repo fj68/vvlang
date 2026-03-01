@@ -1,0 +1,78 @@
+/// The `fs/file` module provides low-level file I/O operations.
+
+/// Opens a file in read and write mode.
+/// 
+/// - `path`: The path to the file.
+/// - `is_append`: If true, opens the file in append mode.
+/// 
+/// Returns the file descriptor (`fd`).
+pub extern "native" fun open(path, is_append)
+
+/// Opens a file in read-only mode.
+/// 
+/// - `path`: The path to the file.
+/// 
+/// Returns the file descriptor (`fd`).
+pub extern "native" fun open_read(path)
+
+/// Opens a file in write-only mode.
+/// 
+/// - `path`: The path to the file.
+/// - `is_append`: If true, opens the file in append mode.
+/// 
+/// Returns the file descriptor (`fd`).
+pub extern "native" fun open_write(path, is_append)
+
+/// Creates a new file.
+/// 
+/// - `path`: The path to the file.
+/// 
+/// Returns the file descriptor (`fd`).
+pub extern "native" fun create(path)
+
+/// Checks if a file exists.
+/// 
+/// - `path`: The path to the file.
+/// 
+/// Returns a boolean indicating if the file exists.
+pub extern "native" fun exists(path)
+
+/// Closes a file descriptor.
+/// 
+/// - `fd`: The file descriptor to close.
+pub extern "native" fun close(fd)
+
+/// Reads bytes from a file.
+/// 
+/// - `fd`: The file descriptor to read from.
+/// - `length`: The number of bytes to read.
+/// 
+/// Returns the read content as a list of characters.
+pub extern "native" fun read(fd, length)
+
+/// Writes bytes to a file.
+/// 
+/// - `fd`: The file descriptor to write to.
+/// - `content`: The bytes (list of characters) to write.
+/// 
+/// Returns the number of bytes written.
+pub extern "native" fun write(fd, content)
+
+/// Creates a generalized reader stream for a file.
+/// 
+/// - `path`: The path to the file.
+/// 
+/// Returns a record with `fd`, `read`, and `close` functions.
+pub fun reader(path)
+    return { fd = open_read(path), read = fun (r, length) return read(r.fd, length) end, close = fun (r) return close(r.fd) end }
+end
+
+/// Creates a generalized writer stream for a file.
+/// 
+/// - `path`: The path to the file.
+/// - `is_append`: If true, opens the file in append mode.
+/// 
+/// Returns a record with `fd`, `write`, and `close` functions.
+pub fun writer(path, is_append)
+    return { fd = open_write(path, is_append), write = fun (r, content) return write(r.fd, content) end, close = fun (r) return close(r.fd) end }
+end

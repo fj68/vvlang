@@ -21,6 +21,7 @@ const (
 	VTList
 	VTRecord
 	VTTailCall
+	VTUserData
 )
 
 type ptrPair struct {
@@ -47,6 +48,8 @@ func (ty ValueType) String() string {
 		return "record"
 	case VTTailCall:
 		return "tailcall"
+	case VTUserData:
+		return "userdata"
 	}
 	return "unknown"
 }
@@ -466,6 +469,36 @@ func (v *VTailCall) Equal(other Value) (bool, error) {
 
 func (v *VTailCall) LessThan(other Value) (bool, error) {
 	return false, fmt.Errorf("unable to compare tail calls")
+}
+
+// VUserData allows wrapping arbitrary Go values so they can be securely held inside
+// the vvlang interpreter without modifying vvlang types.
+type VUserData struct {
+	Value any
+}
+
+func (v *VUserData) Type() ValueType {
+	return VTUserData
+}
+
+func (v *VUserData) String() string {
+	return "<userdata>"
+}
+
+func (v *VUserData) Str() string {
+	return v.String()
+}
+
+func (v *VUserData) Equal(other Value) (bool, error) {
+	o, ok := other.(*VUserData)
+	if !ok {
+		return false, nil
+	}
+	return v.Value == o.Value, nil
+}
+
+func (v *VUserData) LessThan(other Value) (bool, error) {
+	return false, fmt.Errorf("unable to compare userdata")
 }
 
 func StringToValue(s string) Value {
