@@ -45,9 +45,9 @@ func FileOpenRead(s *interp.State, args []interp.Value) (interp.Value, error) {
 	path := pathVal.Str()
 	f, err := os.OpenFile(path, os.O_RDONLY, 0666)
 	if err != nil {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
-	return &interp.VUserData{Value: f}, nil
+	return interp.OkValue(&interp.VUserData{Value: f}), nil
 }
 
 func FileOpenWrite(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -87,9 +87,9 @@ func FileCreate(s *interp.State, args []interp.Value) (interp.Value, error) {
 	path := pathVal.Str()
 	f, err := os.Create(path)
 	if err != nil {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
-	return &interp.VUserData{Value: f}, nil
+	return interp.OkValue(&interp.VUserData{Value: f}), nil
 }
 
 func FileExists(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -104,12 +104,12 @@ func FileExists(s *interp.State, args []interp.Value) (interp.Value, error) {
 	path := pathVal.Str()
 	_, err := os.Stat(path)
 	if err == nil {
-		return interp.VBool(true), nil
+		return interp.OkValue(interp.VBool(true)), nil
 	}
 	if os.IsNotExist(err) {
-		return interp.VBool(false), nil
+		return interp.OkValue(interp.VBool(false)), nil
 	}
-	return nil, err
+	return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 }
 
 func FileClose(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -126,9 +126,9 @@ func FileClose(s *interp.State, args []interp.Value) (interp.Value, error) {
 	}
 	err := f.Close()
 	if err != nil {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
-	return interp.NoneValue, nil
+	return interp.OkValue(interp.NoneValue), nil
 }
 
 func FileRead(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -151,7 +151,7 @@ func FileRead(s *interp.State, args []interp.Value) (interp.Value, error) {
 	buf := make([]byte, lenVal)
 	n, err := f.Read(buf)
 	if err != nil && err != io.EOF {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
 
 	// Convert read bytes (up to n) to list of chars
@@ -160,7 +160,7 @@ func FileRead(s *interp.State, args []interp.Value) (interp.Value, error) {
 		chars[i] = interp.VChar(buf[i])
 	}
 
-	return &interp.VList{Elements: chars}, nil
+	return interp.OkValue(&interp.VList{Elements: chars}), nil
 }
 
 func FileWrite(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -192,8 +192,8 @@ func FileWrite(s *interp.State, args []interp.Value) (interp.Value, error) {
 
 	n, err := f.Write(buf)
 	if err != nil {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
 
-	return interp.VInt(n), nil
+	return interp.OkValue(interp.VInt(n)), nil
 }

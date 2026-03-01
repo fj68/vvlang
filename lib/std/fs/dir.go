@@ -19,7 +19,7 @@ func DirRead(s *interp.State, args []interp.Value) (interp.Value, error) {
 	path := pathVal.Str()
 	entries, err := os.ReadDir(path)
 	if err != nil {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
 
 	var names []interp.Value
@@ -27,7 +27,7 @@ func DirRead(s *interp.State, args []interp.Value) (interp.Value, error) {
 		names = append(names, interp.StringToValue(entry.Name()))
 	}
 
-	return &interp.VList{Elements: names}, nil
+	return interp.OkValue(&interp.VList{Elements: names}), nil
 }
 
 func DirCreate(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -42,9 +42,9 @@ func DirCreate(s *interp.State, args []interp.Value) (interp.Value, error) {
 	path := pathVal.Str()
 	err := os.MkdirAll(path, 0755)
 	if err != nil {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
-	return interp.NoneValue, nil
+	return interp.OkValue(interp.NoneValue), nil
 }
 
 func DirRemove(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -59,9 +59,9 @@ func DirRemove(s *interp.State, args []interp.Value) (interp.Value, error) {
 	path := pathVal.Str()
 	err := os.RemoveAll(path)
 	if err != nil {
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
-	return interp.NoneValue, nil
+	return interp.OkValue(interp.NoneValue), nil
 }
 
 func DirExists(s *interp.State, args []interp.Value) (interp.Value, error) {
@@ -77,12 +77,12 @@ func DirExists(s *interp.State, args []interp.Value) (interp.Value, error) {
 	info, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return interp.VBool(false), nil
+			return interp.OkValue(interp.VBool(false)), nil
 		}
-		return nil, err
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
 	}
 	if !info.IsDir() {
-		return interp.VBool(false), nil
+		return interp.OkValue(interp.VBool(false)), nil
 	}
-	return interp.VBool(true), nil
+	return interp.OkValue(interp.VBool(true)), nil
 }
