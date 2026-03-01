@@ -84,6 +84,7 @@ var natives = map[string]map[string]interp.Value{
 		"close":      interp.VBuiltinFun(fs.FileClose),
 		"read":       interp.VBuiltinFun(fs.FileRead),
 		"write":      interp.VBuiltinFun(fs.FileWrite),
+		"remove":     interp.VBuiltinFun(fs.FileRemove),
 	},
 	"std/fs/dir.vv": {
 		"read":   interp.VBuiltinFun(fs.DirRead),

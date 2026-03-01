@@ -371,7 +371,7 @@ list.each(l, fun (i, x) console.print(x) end)
 The applied function receives the index and the element as arguments.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3]
-list.map(l, fun (i, x) x * 2 end) // [2, 4, 6]
+list.map(l, fun (i, x) return x * 2 end) // [2, 4, 6]
 </code></pre>
 </div>
     
@@ -387,7 +387,7 @@ list.map(l, fun (i, x) x * 2 end) // [2, 4, 6]
 The testing function receives the index and the element as arguments.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3, 4]
-list.filter(l, fun (i, x) x % 2 == 0 end) // [2, 4]
+list.filter(l, fun (i, x) return x % 2 == 0 end) // [2, 4]
 </code></pre>
 </div>
     
@@ -418,7 +418,7 @@ list.reverse(l) // [3, 2, 1]
 The applied function receives the accumulator, the index, and the element as arguments.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3]
-list.fold_left(l, 0, fun (acc, i, x) acc + x end) // 6
+list.fold_left(l, 0, fun (acc, i, x) return acc + x end) // 6
 </code></pre>
 </div>
     
@@ -434,7 +434,7 @@ list.fold_left(l, 0, fun (acc, i, x) acc + x end) // 6
 The applied function receives the accumulator, the index, and the element as arguments.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]
-list.fold_right(l, &quot;&quot;, fun (acc, i, x) acc + x end) // &quot;cba&quot;
+list.fold_right(l, &quot;&quot;, fun (acc, i, x) return acc + x end) // &quot;cba&quot;
 </code></pre>
 </div>
     
@@ -495,7 +495,7 @@ list.flat(l) // [1, 2, 3, 4]
     <div class='docstring'><p>Maps a function over a list and optionally flattens the result by one level.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2]
-list.flat_map(l, fun (i, x) [x, x * 2] end) // [1, 2, 2, 4]
+list.flat_map(l, fun (i, x) return [x, x * 2] end) // [1, 2, 2, 4]
 </code></pre>
 </div>
     
@@ -524,7 +524,7 @@ list.join(l, 0) // [1, 0, 2, 0, 3]
     
     <div class='docstring'><p>Creates a list of size <code>n</code>, initializing each element using the function <code>f(index)</code>.</p>
 <p>Example:</p>
-<pre><code class="language-vv">list.init(3, fun (i) i * 2 end) // [0, 2, 4]
+<pre><code class="language-vv">list.init(3, fun (i) return i * 2 end) // [0, 2, 4]
 </code></pre>
 </div>
     
@@ -539,7 +539,7 @@ list.join(l, 0) // [1, 0, 2, 0, 3]
     <div class='docstring'><p>Returns the element that produces the maximum value when <code>f(element)</code> is applied.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 5, 2]
-list.max(l, fun (x) x end) // 5
+list.max(l, fun (x) return x end) // 5
 </code></pre>
 </div>
     
@@ -554,7 +554,7 @@ list.max(l, fun (x) x end) // 5
     <div class='docstring'><p>Returns the element that produces the minimum value when <code>f(element)</code> is applied.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 5, 2]
-list.min(l, fun (x) x end) // 1
+list.min(l, fun (x) return x end) // 1
 </code></pre>
 </div>
     
@@ -569,7 +569,7 @@ list.min(l, fun (x) x end) // 1
     <div class='docstring'><p>Splits a list into two lists: one containing elements that satisfy the condition <code>f(index, element)</code>, and another for elements that don't.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3, 4]
-list.partition(l, fun (i, x) x % 2 == 0 end) // [[2, 4], [1, 3]]
+list.partition(l, fun (i, x) return x % 2 == 0 end) // [[2, 4], [1, 3]]
 </code></pre>
 </div>
     
@@ -600,7 +600,7 @@ list.zip(a, b) // [[1, &quot;a&quot;], [2, &quot;b&quot;]]
     <div class='docstring'><p>Checks if all elements in the list satisfy the applied condition <code>f(index, element)</code>.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [2, 4, 6]
-list.every(l, fun (i, x) x % 2 == 0 end) // true
+list.every(l, fun (i, x) return x % 2 == 0 end) // true
 </code></pre>
 </div>
     
@@ -615,7 +615,7 @@ list.every(l, fun (i, x) x % 2 == 0 end) // true
     <div class='docstring'><p>Checks if at least one element in the list satisfies the applied condition <code>f(index, element)</code>.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3]
-list.some(l, fun (i, x) x % 2 == 0 end) // true
+list.some(l, fun (i, x) return x % 2 == 0 end) // true
 </code></pre>
 </div>
     
@@ -630,7 +630,7 @@ list.some(l, fun (i, x) x % 2 == 0 end) // true
     <div class='docstring'><p>Returns the first element in the list that satisfies the condition <code>f(index, element)</code>.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3]
-list.find(l, fun (i, x) x % 2 == 0 end) // 2
+list.find(l, fun (i, x) return x % 2 == 0 end) // 2
 </code></pre>
 </div>
     
@@ -646,7 +646,7 @@ list.find(l, fun (i, x) x % 2 == 0 end) // 2
 Returns <code>-1</code> if no such element is found.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3]
-list.find_index(l, fun (i, x) x % 2 == 0 end) // 1
+list.find_index(l, fun (i, x) return x % 2 == 0 end) // 1
 </code></pre>
 </div>
     
@@ -678,7 +678,7 @@ list.find_pattern(l, [2, 3]) // 1
 Stops at the first element that fails the condition.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3, 4]
-list.take_while(l, fun (i, x) x &lt; 3 end) // [1, 2]
+list.take_while(l, fun (i, x) return x &lt; 3 end) // [1, 2]
 </code></pre>
 </div>
     
@@ -694,7 +694,7 @@ list.take_while(l, fun (i, x) x &lt; 3 end) // [1, 2]
 Returns the remaining elements starting from the first element that fails the condition.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3, 4]
-list.drop_while(l, fun (i, x) x &lt; 3 end) // [3, 4]
+list.drop_while(l, fun (i, x) return x &lt; 3 end) // [3, 4]
 </code></pre>
 </div>
     

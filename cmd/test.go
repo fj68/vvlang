@@ -57,8 +57,8 @@ func Test() {
 
 	success := true
 	for _, file := range files {
-		if err := testFile(file); err != nil {
-			fmt.Printf("FAIL: %s\n  %v\n", file, err)
+		if err, testName := testFile(file); err != nil {
+			fmt.Printf("FAIL: %s [%s]\n  %v\n", file, testName, err)
 			success = false
 		} else {
 			fmt.Printf("PASS: %s\n", file)
@@ -70,18 +70,29 @@ func Test() {
 	}
 }
 
-func testFile(path string) error {
+func testFile(path string) (error, string) {
 	text, err := os.ReadFile(path)
 	if err != nil {
-		return err
+		return err, ""
 	}
 
 	s := interp.NewState(path)
 	s.RegisterBuiltinModules(lib.Std.Natives)
-
 	if err := s.EnsureSystemLibrary(lib.Std.Name, lib.Std.FS); err != nil {
-		return err
+		return err, ""
 	}
 
-	return s.EvalTest([]rune(string(text)))
+	defer func() {
+		if r := recover(); r != nil {
+			if s.CurrentTest != nil {
+				fmt.Printf("PANIC: %s [%s]\n", path, s.CurrentTest.Name)
+			} else {
+				fmt.Printf("PANIC: %s\n", path)
+			}
+			panic(r)
+		}
+	}()
+
+	err = s.EvalTest([]rune(string(text)))
+	return err, s.CurrentTest.Name
 }

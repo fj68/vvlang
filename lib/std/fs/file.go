@@ -199,3 +199,20 @@ func FileWrite(s *interp.State, args []interp.Value) (interp.Value, error) {
 
 	return interp.OkValue(interp.VInt(n)), nil
 }
+
+func FileRemove(s *interp.State, args []interp.Value) (interp.Value, error) {
+	if len(args) != 1 {
+		return nil, fmt.Errorf("remove expects 1 argument")
+	}
+	pathVal, ok := args[0].(*interp.VList)
+	if !ok {
+		return nil, fmt.Errorf("remove expects path to be a string")
+	}
+
+	path := pathVal.Str()
+	err := os.Remove(path)
+	if err != nil {
+		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
+	}
+	return interp.OkValue(interp.NoneValue), nil
+}

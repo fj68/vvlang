@@ -18,7 +18,10 @@ func Get(s *interp.State, args []interp.Value) (interp.Value, error) {
 	if !ok {
 		return nil, fmt.Errorf("argument for get() is expected string, but got %s", args[1].Type())
 	}
-	return record.Fields[key.Str()], nil
+	if v, ok := record.Fields[key.Str()]; ok {
+		return v, nil
+	}
+	return interp.NoneValue, nil
 }
 
 func Set(s *interp.State, args []interp.Value) (interp.Value, error) {

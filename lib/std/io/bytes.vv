@@ -13,23 +13,14 @@
 
 import list from "std/list.vv"
 import result from "std/result.vv"
+import file from "std/fs/file.vv"
 
-/// Creates a buffered reader with the specified buffer size.
+/// Closes the reader.
 ///
-/// - `source_reader`: An object with a `read(length)` method.
-/// - `size`: The size of the internal buffer.
+/// - `r`: The reader record.
 ///
-/// Returns a result containing a reader record.
-pub fun reader(source_reader, size)
-    return result.ok({
-        source = source_reader,
-        buffer = [],
-        pos = 0,
-        size = size,
-        read = read,
-        peek = peek,
-        close = fun (r) return r.source.close(r.source) end
-    })
+pub fun close(r)
+    return r.source.close(r.source)
 end
 
 /// Reads `n` bytes from the reader.
@@ -109,16 +100,34 @@ pub fun read_all(r)
     return result.ok(res)
 end
 
-import fs from "std/fs/file.vv"
+/// Creates a buffered reader with the specified buffer size.
+///
+/// - `source_reader`: An object with a `read(length)` method.
+/// - `size`: The size of the internal buffer.
+///
+/// Returns a result containing a reader record.
+pub fun reader(source_reader, size)
+    return result.ok({
+        source = source_reader,
+        buffer = [],
+        pos = 0,
+        size = size,
+        read = read,
+        peek = peek,
+        close = close,
+    })
+end
 
 test "reader / read"
     let path = "tmp_test_bytes_read_inline.txt"
-    let f = fs.create(path)!
-    fs.write(f, [97, 98, 99, 100, 101]) // abcde
-    fs.close(f)
+    let f = file.create(path)!
+    defer file.remove(path)
+    defer file.close(f)
+    file.write(f, [97, 98, 99, 100, 101]) // abcde
 
-    let source = fs.reader(path)!
+    let source = file.reader(path)!
     let r = reader(source, 2)!
+    defer close(r)
 
     let b1 = r.read(r, 2)!
     assert b1 == [97, 98]
@@ -128,18 +137,18 @@ test "reader / read"
 
     let b3 = r.read(r, 2)!
     assert b3 == [101]
-
-    r.close(r)
 end
 
 test "peek"
     let path = "tmp_test_bytes_peek_inline.txt"
-    let f = fs.create(path)!
-    fs.write(f, [97, 98, 99])
-    fs.close(f)
+    let f = file.create(path)!
+    defer file.remove(path)
+    defer file.close(f)
+    file.write(f, [97, 98, 99])
 
-    let source = fs.reader(path)!
+    let source = file.reader(path)!
     let r = reader(source, 2)!
+    defer close(r)
 
     let p1 = r.peek(r, 2)!
     assert p1 == [97, 98]
@@ -149,19 +158,18 @@ test "peek"
 
     let p2 = r.peek(r, 2)!
     assert p2 == [98, 99]
-
-    r.close(r)
 end
 
 test "read_all"
     let path = "tmp_test_bytes_all_inline.txt"
-    let f = fs.create(path)!
-    fs.write(f, [10, 20, 30, 40])
-    fs.close(f)
+    let f = file.create(path)!
+    defer file.remove(path)
+    defer file.close(f)
+    file.write(f, [10, 20, 30, 40])
 
-    let source = fs.reader(path)!
+    let source = file.reader(path)!
     let r = reader(source, 2)!
-    let all = r.read_all(r)!
+    defer close(r)
+    let all = read_all(r)!
     assert all == [10, 20, 30, 40]
-    r.close(r)
 end

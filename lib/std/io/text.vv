@@ -15,25 +15,15 @@
 import bytes from "std/io/bytes.vv"
 import list from "std/list.vv"
 import result from "std/result.vv"
+import file from "std/fs/file.vv"
+import utf8 from "std/encoding/utf8.vv"
 
-/// Creates a buffered text reader using an encoding.
+/// Closes the reader.
 ///
-/// - `source_reader`: An object with a `read(length)` method.
-/// - `encoding_module`: An encoding module (e.g., `utf8` or `sjis`).
+/// - `r`: The reader record.
 ///
-/// Returns a result containing a text reader record.
-pub fun reader(source_reader, encoding_module)
-    let b_reader_res = bytes.reader(source_reader, 4096)
-    let b_reader = b_reader_res.value
-    return result.ok({
-        b_reader = b_reader,
-        encoding = encoding_module,
-        read = read,
-        peek = peek,
-        read_line = read_line,
-        read_all = read_all,
-        close = fun (r) return r.b_reader.close(r.b_reader) end
-    })
+pub fun close(r)
+    return r.b_reader.close(r.b_reader)
 end
 
 /// Reads a single character from the reader.
@@ -123,79 +113,96 @@ pub fun read_all(r)
     return result.ok(res)
 end
 
-import fs from "std/fs/file.vv"
-import utf8 from "std/encoding/utf8.vv"
+/// Creates a buffered text reader using an encoding.
+///
+/// - `source_reader`: An object with a `read(length)` method.
+/// - `encoding_module`: An encoding module (e.g., `utf8` or `sjis`).
+///
+/// Returns a result containing a text reader record.
+pub fun reader(source_reader, encoding_module)
+    let b_reader_res = bytes.reader(source_reader, 4096)
+    let b_reader = b_reader_res.value
+    return result.ok({
+        b_reader = b_reader,
+        encoding = encoding_module,
+        read = read,
+        peek = peek,
+        close = close,
+    })
+end
 
 test "reader / read"
     let path = "tmp_test_text_read_inline.txt"
-    let f = fs.create(path)!
-    fs.write(f, [97, 226, 130, 172, 10]) // a€\n
-    fs.close(f)
+    let f = file.create(path)!
+    defer file.remove(path)
+    defer file.close(f)
+    file.write(f, [97, 226, 130, 172, 10]) // a€\n
 
-    let source = fs.reader(path)!
+    let source = file.reader(path)!
     let r = reader(source, utf8)!
+    defer close(r)
 
-    let c1 = r.read(r)!
+    let c1 = read(r)!
     assert c1.char == 'a'
 
-    let c2 = r.read(r)!
+    let c2 = read(r)!
     assert c2.char == '€'
 
-    let c3 = r.read(r)!
+    let c3 = read(r)!
     assert c3.char == '\n'
-
-    r.close(r)
 end
 
 test "peek"
     let path = "tmp_test_text_peek_inline.txt"
-    let f = fs.create(path)!
-    fs.write(f, [65, 66]) // AB
-    fs.close(f)
+    let f = file.create(path)!
+    defer file.remove(path)
+    defer file.close(f)
+    file.write(f, [65, 66]) // AB
 
-    let source = fs.reader(path)!
+    let source = file.reader(path)!
     let r = reader(source, utf8)!
+    defer close(r)
 
-    let p1 = r.peek(r)!
+    let p1 = peek(r)!
     assert p1.char == 'A'
 
     // Position should not advance
-    let p2 = r.peek(r)!
+    let p2 = peek(r)!
     assert p2.char == 'A'
 
-    let c1 = r.read(r)!
+    let c1 = read(r)!
     assert c1.char == 'A'
-
-    r.close(r)
 end
 
 test "read_line"
     let path = "tmp_test_text_line_inline.txt"
-    let f = fs.create(path)!
-    fs.write(f, [97, 98, 10, 99, 100]) // ab\ncd
-    fs.close(f)
+    let f = file.create(path)!
+    defer file.remove(path)
+    defer file.close(f)
+    file.write(f, [97, 98, 10, 99, 100]) // ab\ncd
 
-    let source = fs.reader(path)!
+    let source = file.reader(path)!
     let r = reader(source, utf8)!
+    defer close(r)
 
-    let l1 = r.read_line(r)!
+    let l1 = read_line(r)!
     assert l1 == ['a', 'b']
 
-    let l2 = r.read_line(r)!
+    let l2 = read_line(r)!
     assert l2 == ['c', 'd']
-
-    r.close(r)
 end
 
 test "read_all"
     let path = "tmp_test_text_all_inline.txt"
-    let f = fs.create(path)!
-    fs.write(f, [104, 105]) // hi
-    fs.close(f)
+    let f = file.create(path)!
+    defer file.remove(path)
+    defer file.close(f)
+    file.write(f, [104, 105]) // hi
 
-    let source = fs.reader(path)!
+    let source = file.reader(path)!
     let r = reader(source, utf8)!
-    let all = r.read_all(r)!
+    defer close(r)
+
+    let all = read_all(r)!
     assert all == ['h', 'i']
-    r.close(r)
 end

@@ -9,6 +9,7 @@
 /// let empty = option.none
 /// ```
 
+import console from "std/console.vv"
 
 /// Represents the absence of a value.
 ///
@@ -17,6 +18,10 @@
 /// let empty = option.none
 /// ```
 pub let none = { type = "none" }
+
+test "none"
+    assert none.type == "none"
+end
 
 /// Wraps a value in an `option`.
 ///
@@ -101,7 +106,7 @@ pub fun map(v, f)
 end
 
 test "map"
-    let double = fun(x) x * 2 end
+    let double = fun(x) return x * 2 end
     let r1 = map(some(3), double)
     assert r1.type == "some"
     assert r1.value == 6
@@ -124,7 +129,7 @@ pub fun flat_map(v, f)
 end
 
 test "flat_map"
-    let f = fun(x) some(x + 1) end
+    let f = fun(x) return some(x + 1) end
     let r1 = flat_map(some(1), f)
     assert r1.type == "some"
     assert r1.value == 2
@@ -142,11 +147,11 @@ pub fun flat_map_none(v, f)
   if is_some(v)
     return v
   end
-  return f(v.value)
+  return f()
 end
 
 test "flat_map_none"
-    let fallback = fun() some(99) end
+    let fallback = fun() return some(99) end
     let r1 = flat_map_none(none, fallback)
     assert r1.type == "some"
     assert r1.value == 99

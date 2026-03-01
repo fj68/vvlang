@@ -18,7 +18,7 @@
 pub extern "native" let pi
 
 test "pi"
-    assert pi > 3.14159
+    assert 3.14159 < pi
     assert pi < 3.14160
 end
 
@@ -31,7 +31,7 @@ end
 pub extern "native" let e
 
 test "e"
-    assert e > 2.71828
+    assert 2.71828 < e
     assert e < 2.71829
 end
 
