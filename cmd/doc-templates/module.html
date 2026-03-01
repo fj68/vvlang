@@ -1,7 +1,7 @@
 {{define "title"}}{{ .ModName }}{{end}}
 
 {{define "content"}}
-<p><a href='{{.RootRel}}index.html'>← Back to Index</a></p>
+<p><a href='{{.RootRel}}{{.CurrentLang}}/index.html'>← Back to Index</a></p>
 <h1>Module <code>{{ .ModName }}</code></h1>
 
 {{if .Docstring}}

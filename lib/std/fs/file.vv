@@ -1,5 +1,7 @@
 /// The `fs/file` module provides low-level file I/O operations.
 
+import result from "std/result.vv"
+
 /// Opens a file in read and write mode.
 /// 
 /// - `path`: The path to the file.
@@ -58,7 +60,7 @@ pub extern "native" fun read(fd, length)
 /// Returns the number of bytes written.
 pub extern "native" fun write(fd, content)
 
-import result from "std/result.vv"
+
 
 /// Creates a generalized reader stream for a file.
 /// 

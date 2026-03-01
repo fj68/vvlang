@@ -86,6 +86,7 @@ end
 /// - `r`: The reader record.
 ///
 /// Returns a result containing a list of all remaining bytes.
+pub fun read_all(r)
     let res = []
     while true
         let chunk_res = read(r, r.size)
