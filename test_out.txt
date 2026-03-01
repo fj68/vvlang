@@ -1,6 +1,0 @@
---- FAIL: TestParseStmt (0.00s)
-    --- FAIL: TestParseStmt/invalid_extern_placement (0.00s)
-        test_util_test.go:22: expected error containing "extern statement must be after import statements and before other statements", got nil
-FAIL
-FAIL	github.com/fj68/vvlang/parser	0.712s
-FAIL

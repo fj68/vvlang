@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>std/option.vv - vvlang documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        nav.langs a {
+            color: #666;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: #2c3e50;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 0;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 2rem;
+        }
+
+        .docstring {
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .module-doc {
+            font-size: 1.1rem;
+        }
+
+        .export-item {
+            margin-bottom: 2rem;
+        }
+
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #3498db;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .extern-tag {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: normal;
+            font-family: monospace;
+            background: #eee;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            background: #ffffff;
+            color: #333;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #eee;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #ffffff;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid #eee;
+        }
+
+        h3 code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        pre code {
+            padding: 0;
+            border: none;
+            background-color: transparent;
+        }
+
+        .toc {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid #eee;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .toc li a {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../static/highlight.css">
+</head>
+
+<body>
+    <header>
+        <div class='logo'>vvlang docs</div>
+        <nav class='langs'>
+            
+            <a href='../../../en/index.html' class='active' >en</a>
+            
+        </nav>
+    </header>
+    <main>
+        
+<p><a href='../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/option.vv</code></h1>
+
+
+<div class='docstring module-doc'><p>The <code>option</code> module provides a way to represent optional values.
+An <code>option</code> value is either <code>some(value)</code> or <code>none</code>.</p>
+</div>
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#none">none</a></li>
+        
+        <li><a href="#some">some</a></li>
+        
+        <li><a href="#is_some">is_some</a></li>
+        
+        <li><a href="#is_none">is_none</a></li>
+        
+        <li><a href="#get_or">get_or</a></li>
+        
+        <li><a href="#map">map</a></li>
+        
+        <li><a href="#flat_map">flat_map</a></li>
+        
+        <li><a href="#flat_map_none">flat_map_none</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='none' class='signature-header'>
+        <code>let none</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Represents the absence of a value.</p>
+<p>Example:</p>
+<pre><code class="language-vv">let empty = option.none
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='some' class='signature-header'>
+        <code>fun some(value)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Wraps a value in an <code>option</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">let some_val = option.some(42)
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='is_some' class='signature-header'>
+        <code>fun is_some(v)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Checks if an <code>option</code> contains a value.</p>
+<p>Example:</p>
+<pre><code class="language-vv">option.is_some(option.some(1)) // true
+option.is_some(option.none)    // false
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='is_none' class='signature-header'>
+        <code>fun is_none(v)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Checks if an <code>option</code> is empty (<code>none</code>).</p>
+<p>Example:</p>
+<pre><code class="language-vv">option.is_none(option.none)    // true
+option.is_none(option.some(1)) // false
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='get_or' class='signature-header'>
+        <code>fun get_or(v, default_value)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Returns the wrapped value if it exists, otherwise returns the provided <code>default_value</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">option.get_or(option.some(1), 0) // 1
+option.get_or(option.none, 0)    // 0
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='map' class='signature-header'>
+        <code>fun map(v, f)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Applies a function to the wrapped value if it exists, returning a new <code>option</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">option.map(option.some(2), fun(x) x * 2 end) // some(4)
+option.map(option.none, fun(x) x * 2 end)    // none
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat_map' class='signature-header'>
+        <code>fun flat_map(v, f)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Applies a function that returns an <code>option</code> to the wrapped value.</p>
+<p>Example:</p>
+<pre><code class="language-vv">let f = fun(x) option.some(x + 1) end
+option.flat_map(option.some(1), f) // some(2)
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='flat_map_none' class='signature-header'>
+        <code>fun flat_map_none(v, f)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Applies a function if the <code>option</code> is <code>none</code>. Useful for chaining fallbacks.</p>
+<p>Example:</p>
+<pre><code class="language-vv">option.flat_map_none(option.none, fun() option.some(1) end) // some(1)
+</code></pre>
+</div>
+    
+</div>
+
+
+    </main>
+    <script type="module" src="../../../static/highlight.js"></script>
+</body>
+
+</html>

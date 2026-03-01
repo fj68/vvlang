@@ -1,0 +1,40 @@
+/// The `random` module provides functions for generating random numbers and making random choices.
+import option from "std/option.vv"
+
+/// Seeds the random number generator with the given integer.
+///
+/// Example:
+/// ```vv
+/// random.seed(42)
+/// ```
+pub extern "native" fun seed(n)
+
+/// Returns a random floating-point number in the range [0.0, 1.0).
+///
+/// Example:
+/// ```vv
+/// let f = random.float()
+/// ```
+pub extern "native" fun float()
+
+/// Returns a random integer in the range [min, max) (exclusive).
+///
+/// Example:
+/// ```vv
+/// let n = random.int(1, 10) // Returns 1-9
+/// ```
+pub extern "native" fun int(min, max)
+
+/// Returns a random element from the given list.
+///
+/// Example:
+/// ```vv
+/// let x = random.choice([1, 2, 3])
+/// ```
+pub fun choice(xs)
+    if len(xs) == 0
+        return option.none
+    end
+    let i = int(0, len(xs))
+    return xs[i]
+end

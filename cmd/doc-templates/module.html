@@ -1,16 +1,31 @@
 {{define "title"}}{{ .ModName }}{{end}}
 
 {{define "content"}}
-<h1><a href='{{.RootRel}}index.html'>Home</a> / Module <code>{{ .ModName }}</code></h1>
+<p><a href='{{.RootRel}}index.html'>← Back to Index</a></p>
+<h1>Module <code>{{ .ModName }}</code></h1>
 
 {{if .Docstring}}
 <div class='docstring module-doc'>{{.Docstring}}</div>
 {{end}}
 
+{{if .Exports}}
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        {{range .Exports}}
+        <li><a href="#{{.Name}}">{{.Name}}</a></li>
+        {{end}}
+    </ul>
+</div>
+{{end}}
+
 <h2>Exports</h2>
 {{range .Exports}}
 <div class='export-item'>
-    <h3 id='{{.Name}}'><span class='kind'>{{.Kind}}</span> <code>{{.Name}}{{.Arguments}}</code></h3>
+    <h3 id='{{.Name}}' class='signature-header'>
+        <code>{{.Signature}}</code>
+        {{if .ExternTag}}<span class='extern-tag'>{{.ExternTag}}</span>{{end}}
+    </h3>
     {{if .Doc}}
     <div class='docstring'>{{.Doc}}</div>
     {{end}}

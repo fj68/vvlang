@@ -1,17 +1,53 @@
+/// The `option` module provides a way to represent optional values.
+/// An `option` value is either `some(value)` or `none`.
+
+/// Represents the absence of a value.
+///
+/// Example:
+/// ```vv
+/// let empty = option.none
+/// ```
 pub let none = { type = "none" }
 
+/// Wraps a value in an `option`.
+///
+/// Example:
+/// ```vv
+/// let some_val = option.some(42)
+/// ```
 pub fun some(value)
   return { type = "some", value = value }
 end
 
+/// Checks if an `option` contains a value.
+///
+/// Example:
+/// ```vv
+/// option.is_some(option.some(1)) // true
+/// option.is_some(option.none)    // false
+/// ```
 pub fun is_some(v)
    return v.type == "some"
 end
 
+/// Checks if an `option` is empty (`none`).
+///
+/// Example:
+/// ```vv
+/// option.is_none(option.none)    // true
+/// option.is_none(option.some(1)) // false
+/// ```
 pub fun is_none(v)
    return v.type == "none"
 end
 
+/// Returns the wrapped value if it exists, otherwise returns the provided `default_value`.
+///
+/// Example:
+/// ```vv
+/// option.get_or(option.some(1), 0) // 1
+/// option.get_or(option.none, 0)    // 0
+/// ```
 pub fun get_or(v, default_value)
   if is_some(v)
     return v.value
@@ -19,6 +55,13 @@ pub fun get_or(v, default_value)
   return default_value
 end
 
+/// Applies a function to the wrapped value if it exists, returning a new `option`.
+///
+/// Example:
+/// ```vv
+/// option.map(option.some(2), fun(x) x * 2 end) // some(4)
+/// option.map(option.none, fun(x) x * 2 end)    // none
+/// ```
 pub fun map(v, f)
   if is_some(v)
     return some(f(v.value))
@@ -26,6 +69,13 @@ pub fun map(v, f)
   return v
 end
 
+/// Applies a function that returns an `option` to the wrapped value.
+///
+/// Example:
+/// ```vv
+/// let f = fun(x) option.some(x + 1) end
+/// option.flat_map(option.some(1), f) // some(2)
+/// ```
 pub fun flat_map(v, f)
   if is_some(v)
     return f(v.value)
@@ -33,6 +83,12 @@ pub fun flat_map(v, f)
   return v
 end
 
+/// Applies a function if the `option` is `none`. Useful for chaining fallbacks.
+///
+/// Example:
+/// ```vv
+/// option.flat_map_none(option.none, fun() option.some(1) end) // some(1)
+/// ```
 pub fun flat_map_none(v, f)
   if is_some(v)
     return v

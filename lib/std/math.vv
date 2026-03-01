@@ -1,19 +1,89 @@
-/// The `math` module provides standard mathematical functions.
+/// The `math` module provides standard mathematical functions and constants.
 
-/// Returns the largest integer less than or equal to `n`.
+/// The ratio of the circumference of a circle to its diameter.
 ///
 /// Example:
 /// ```vv
-/// math.floor(3.7)  // 3.0
-/// math.floor(-3.2) // -4.0
+/// math.pi // 3.141592653589793
 /// ```
-pub extern "native" fun floor(n)
+pub extern "native" let pi
 
-/// Returns the smallest integer greater than or equal to `n`.
+/// The base of the natural logarithm.
 ///
 /// Example:
 /// ```vv
-/// math.ceil(3.2)  // 4.0
-/// math.ceil(-3.7) // -3.0
+/// math.e // 2.718281828459045
 /// ```
-pub extern "native" fun ceil(n)
+pub extern "native" let e
+
+/// Returns the sine of the radian argument `x`.
+///
+/// Example:
+/// ```vv
+/// math.sin(math.pi / 2.0) // 1.0
+/// ```
+pub extern "native" fun sin(x)
+
+/// Returns the arcsine, in radians, of `x`.
+///
+/// Example:
+/// ```vv
+/// math.asin(1.0) // 1.5707963267948966
+/// ```
+pub extern "native" fun asin(x)
+
+/// Returns the cosine of the radian argument `x`.
+///
+/// Example:
+/// ```vv
+/// math.cos(math.pi) // -1.0
+/// ```
+pub extern "native" fun cos(x)
+
+/// Returns the arccosine, in radians, of `x`.
+///
+/// Example:
+/// ```vv
+/// math.acos(-1.0) // 3.141592653589793
+/// ```
+pub extern "native" fun acos(x)
+
+/// Returns the tangent of the radian argument `x`.
+///
+/// Example:
+/// ```vv
+/// math.tan(0.0) // 0.0
+/// ```
+pub extern "native" fun tan(x)
+
+/// Returns the arctangent, in radians, of `x`.
+///
+/// Example:
+/// ```vv
+/// math.atan(0.0) // 0.0
+/// ```
+pub extern "native" fun atan(x)
+
+/// Returns the arc tangent of `y/x`, using the signs of the two to determine the quadrant of the return value.
+///
+/// Example:
+/// ```vv
+/// math.atan2(0.0, -1.0) // 3.141592653589793
+/// ```
+pub extern "native" fun atan2(y, x)
+
+/// Returns `x` strictly raised to the power of `y`.
+///
+/// Example:
+/// ```vv
+/// math.pow(2.0, 3.0) // 8.0
+/// ```
+pub extern "native" fun pow(x, y)
+
+/// Returns the square root of `x`.
+///
+/// Example:
+/// ```vv
+/// math.sqrt(16.0) // 4.0
+/// ```
+pub extern "native" fun sqrt(x)

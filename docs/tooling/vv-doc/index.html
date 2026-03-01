@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vv doc - vv Language Reference</title>
+    <title>vv doc - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -30,48 +30,125 @@
             text-decoration: underline;
         }
 
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        nav.langs a {
+            color: #666;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: #2c3e50;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 0;
+        }
+
         code {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
+            border: 1px solid #eee;
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: monospace;
         }
 
         pre {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             padding: 1rem;
             border-radius: 5px;
             overflow-x: auto;
+            border: 1px solid #eee;
         }
 
         pre code {
             background-color: transparent;
             padding: 0;
+            border: none;
         }
 
-        .command {
+        h1 {
             border-left: 4px solid #3498db;
             padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .command-header {
             margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        th,
+        td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: bold;
         }
     </style>
     <link rel="stylesheet" href="../../static/highlight.css">
 </head>
 
 <body>
-    <p><a href="../index.html">← Back to Tooling</a></p>
-    <h1>vv doc</h1>
-    <div class="command">
-        <p>Generates HTML documentation from <code>.vv</code> source files. It extracts docstrings (<code>///</code>)
-            preceding module declarations and exported variables or functions.</p>
+    <header>
+        <div class='logo'>vvlang docs</div>
+        <nav class='langs'>
+            <a href='#' class='active'>en</a>
+            <a href='#'>ja</a>
+        </nav>
+    </header>
+    <main>
+        <p><a href="../index.html">← Back to Tooling</a></p>
+        <div class="command-header">
+            <h1>vv doc</h1>
+            <p>Generates HTML documentation from <code>.vv</code> source files. It extracts docstrings
+                (<code>///</code>) preceding module declarations and exported variables or functions.</p>
+        </div>
+
         <pre><code>vv doc [target_dir_or_file] [-o output_dir]</code></pre>
 
         <h3>Options</h3>
-        <ul>
-            <li><code>-o, --output</code>: Specifies the output directory for the generated documentation (default:
-                <code>docs</code>).
-            </li>
-        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Option</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>-o, --output</code></td>
+                    <td>Specifies the output directory for the generated documentation (default: <code>docs</code>).
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
         <h3>Docstring Syntax</h3>
         <p>Docstrings are written using triple slashes (<code>///</code>). They must appear immediately before the
@@ -83,15 +160,15 @@ end</code></pre>
 
         <h3>Multilingual Support</h3>
         <p><code>vv doc</code> supports multilingual documentation using the <code>@lang</code> tag. Documentation for
-            different languages is generated in subdirectories (e.g., <code>docs/en/</code>, <code>docs/jp/</code>).</p>
+            different languages is generated in subdirectories (e.g., <code>docs/en/</code>, <code>docs/ja/</code>).</p>
         <pre><code>/// @lang en
 /// English description.
-/// @lang jp
+/// @lang ja
 /// 日本語の説明。
 pub let hello = fun()
     "hello"
 end</code></pre>
-    </div>
+    </main>
     <script type="module" src="../../static/highlight.js"></script>
 </body>
 

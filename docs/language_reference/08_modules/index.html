@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8. Modules - vv Language Reference</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .nav {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+    <link rel="stylesheet" href="../../static/highlight.css">
+</head>
+
+<body>
+    <p><a href="../index.html">← Back to Index</a></p>
+    <h1>8. Modules and Program Structure</h1>
+
+
+    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
+        <h2 style="margin-top: 0;">In this chapter</h2>
+        <ul>
+            <li><a href="#module-structure">Module Structure</a></li>
+            <li><a href="#importing-modules">Importing Modules</a></li>
+            <li><a href="#exporting-with-pub">Exporting with <code>pub</code></a></li>
+            <li><a href="#system-imports">System Imports</a></li>
+        </ul>
+    </div>
+    <h2 id="module-structure">Module Structure</h2>
+    <p>A <code>vv</code> file typically represents a module. Code is executed sequentially from top to bottom.</p>
+
+    <h2 id="importing-modules">Importing Modules</h2>
+    <p>To use code from another module, you use the <code>import name from "path"</code> syntax.</p>
+    <pre><code>import math from "./math_utils.vv"
+let result = math.add(10, 5)</code></pre>
+
+    <h2 id="exporting-with-pub">Exporting with <code>pub</code></h2>
+    <p>By default, all declarations in a module are private to that module. To make them accessible to other
+        modules that import it, you must use the <code>pub</code> keyword. Only <code>let</code>, <code>fun</code>,
+        and <code>extern</code> declarations can be exported.</p>
+
+    <pre><code>// math_utils.vv
+let secret_key = "12345" // Private to this module
+pub let PI = 3.14159     // Publicly accessible
+
+fun calculate_internal() // Private function
+    // ...
+end
+
+pub fun calculate_area(radius) // Public function
+    return PI * radius * radius
+end</code></pre>
+
+    <h3>Exporting Variables</h3>
+    <p>Prefix a <code>let</code> declaration with <code>pub</code> to export a variable or constant.</p>
+    <pre><code>pub let PI = 3.14159</code></pre>
+
+    <h3>Exporting Functions</h3>
+    <p>Prefix a <code>fun</code> declaration with <code>pub</code> to export a named function.</p>
+    <pre><code>pub fun calculate_area(radius)
+    return PI * radius * radius
+end</code></pre>
+
+    <h3>Exporting External Declarations</h3>
+    <p>You can also export external (native) declarations using <code>pub extern</code>. This allows other modules
+        to use the native functions or variables provided by the host environment.</p>
+    <pre><code>pub extern "native" fun cos(x)</code></pre>
+
+    <h2 id="system-imports">System Imports</h2>
+    <p>Standard library modules can be imported by specifying the <code>std/</code> prefix followed by the module name.
+    </p>
+    <pre><code>import console from "std/console.vv"
+console.print("Hello, system!")</code></pre>
+
+    <div class="nav">
+        <a href="../07_functions/index.html">← Previous: 7. Functions</a>
+        <a href="../09_testing/index.html">Next: 9. Testing Framework →</a>
+    </div>
+    <script type="module" src="../../static/highlight.js"></script>
+</body>
+
+</html>

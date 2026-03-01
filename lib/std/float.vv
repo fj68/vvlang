@@ -8,11 +8,62 @@
 /// ```
 pub extern "native" fun to_string(f)
 
-/// Converts a floating-point number to an integer by truncating toward zero.
+/// Returns the largest integer less than or equal to `f`.
 ///
 /// Example:
 /// ```vv
-/// float.to_int(3.14) // 3
-/// float.to_int(-2.5) // -2
+/// float.floor(3.7)  // 3.0
+/// float.floor(-3.2) // -4.0
 /// ```
-pub extern "native" fun to_int(f)
+pub extern "native" fun floor(f)
+
+/// Returns the smallest integer greater than or equal to `f`.
+///
+/// Example:
+/// ```vv
+/// float.ceil(3.2)  // 4.0
+/// float.ceil(-3.7) // -3.0
+/// ```
+pub extern "native" fun ceil(f)
+
+/// Converts an integer to a floating-point number.
+///
+/// Example:
+/// ```vv
+/// float.from_int(42) // 42.0
+/// ```
+pub extern "native" fun from_int(i)
+
+/// Returns the nearest integer to `f`, rounding half away from zero.
+///
+/// Example:
+/// ```vv
+/// float.round(3.5)  // 4.0
+/// float.round(-3.5) // -4.0
+/// ```
+pub extern "native" fun round(f)
+
+/// Returns the absolute value of `f`.
+///
+/// Example:
+/// ```vv
+/// float.abs(-5.5) // 5.5
+/// float.abs(5.5)  // 5.5
+/// ```
+pub extern "native" fun abs(f)
+
+/// Returns the smaller of `a` and `b`.
+///
+/// Example:
+/// ```vv
+/// float.min(10.5, 5.2) // 5.2
+/// ```
+pub extern "native" fun min(a, b)
+
+/// Returns the larger of `a` and `b`.
+///
+/// Example:
+/// ```vv
+/// float.max(10.5, 5.2) // 10.5
+/// ```
+pub extern "native" fun max(a, b)

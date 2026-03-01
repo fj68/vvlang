@@ -101,14 +101,14 @@ end</code></pre>
 end</code></pre>
 
     <h3 id="mutually-recursive-functions">Mutually Recursive Functions</h3>
-    <p>Multiple recursive functions that depend on each other can be defined simultaneously using the <code>and</code>
+    <p>Multiple recursive functions that depend on each other can be defined simultaneously using the <code>also</code>
         keyword.</p>
     <pre><code>fun rec is_even(n)
     if n == 0
         return true
     end
     return is_odd(n - 1)
-and is_odd(n)
+also is_odd(n)
     if n == 0
         return false
     end
@@ -168,7 +168,7 @@ end</code></pre>
 
     <div class="nav">
         <a href="../06_control_flow/index.html">← Previous: 6. Control Flow</a>
-        <a href="../08_resource_management/index.html">Next: 8. Resource Management →</a>
+        <a href="../08_modules/index.html">Next: 8. Modules and Program Structure →</a>
     </div>
     <script type="module" src="../../static/highlight.js"></script>
 </body>

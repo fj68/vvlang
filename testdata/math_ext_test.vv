@@ -1,0 +1,30 @@
+import int from "std/int.vv"
+import float from "std/float.vv"
+import math from "std/math.vv"
+
+test "int functions"
+    assert int.abs(-5) == 5
+    assert int.abs(5) == 5
+    assert int.min(10, 5) == 5
+    assert int.max(10, 5) == 10
+end
+
+test "float functions"
+    assert float.round(3.5) == 4.0
+    assert float.round(3.4) == 3.0
+    assert float.round(-3.5) == -4.0
+    assert float.abs(-5.5) == 5.5
+    assert float.abs(5.5) == 5.5
+    assert float.min(10.5, 5.2) == 5.2
+    assert float.max(10.5, 5.2) == 10.5
+end
+
+test "math functions"
+    assert math.e > 2.71
+    assert math.sin(0.0) == 0.0
+    assert math.cos(0.0) == 1.0
+    assert math.tan(0.0) == 0.0
+    assert math.sqrt(16.0) == 4.0
+    assert math.pow(2.0, 3.0) == 8.0
+    assert math.atan2(0.0, -1.0) == math.pi
+end

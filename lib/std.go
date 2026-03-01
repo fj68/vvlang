@@ -2,6 +2,7 @@ package lib
 
 import (
 	"embed"
+	"math"
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/lib/std"
@@ -23,8 +24,17 @@ var natives = map[string]map[string]interp.Value{
 		"print": interp.VBuiltinFun(std.Print),
 	},
 	"std/math.vv": {
-		"floor": interp.VBuiltinFun(std.Floor),
-		"ceil":  interp.VBuiltinFun(std.Ceil),
+		"pi":    interp.VFloat(math.Pi),
+		"e":     interp.VFloat(math.E),
+		"sin":   interp.VBuiltinFun(std.MathSin),
+		"asin":  interp.VBuiltinFun(std.MathAsin),
+		"cos":   interp.VBuiltinFun(std.MathCos),
+		"acos":  interp.VBuiltinFun(std.MathAcos),
+		"tan":   interp.VBuiltinFun(std.MathTan),
+		"atan":  interp.VBuiltinFun(std.MathAtan),
+		"atan2": interp.VBuiltinFun(std.MathAtan2),
+		"pow":   interp.VBuiltinFun(std.MathPow),
+		"sqrt":  interp.VBuiltinFun(std.MathSqrt),
 	},
 	"std/char.vv": {
 		"to_upper": interp.VBuiltinFun(std.CharToUpper),
@@ -42,14 +52,27 @@ var natives = map[string]map[string]interp.Value{
 	},
 	"std/float.vv": {
 		"to_string": interp.VBuiltinFun(std.FloatToString),
-		"to_int":    interp.VBuiltinFun(std.FloatToInt),
+		"floor":     interp.VBuiltinFun(std.Floor),
+		"ceil":      interp.VBuiltinFun(std.Ceil),
+		"from_int":  interp.VBuiltinFun(std.FloatFromInt),
+		"round":     interp.VBuiltinFun(std.Round),
+		"abs":       interp.VBuiltinFun(std.FloatAbs),
+		"min":       interp.VBuiltinFun(std.FloatMin),
+		"max":       interp.VBuiltinFun(std.FloatMax),
 	},
 	"std/int.vv": {
 		"to_string": interp.VBuiltinFun(std.IntToString),
-		"to_float":  interp.VBuiltinFun(std.IntToFloat),
+		"abs":       interp.VBuiltinFun(std.IntAbs),
+		"min":       interp.VBuiltinFun(std.IntMin),
+		"max":       interp.VBuiltinFun(std.IntMax),
 	},
 	"std/bool.vv": {
 		"to_string": interp.VBuiltinFun(std.BoolToString),
+	},
+	"std/random.vv": {
+		"seed":  interp.VBuiltinFun(std.RandomSeed),
+		"float": interp.VBuiltinFun(std.RandomFloat),
+		"int":   interp.VBuiltinFun(std.RandomInt),
 	},
 }
 

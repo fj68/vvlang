@@ -8,8 +8,12 @@ html {
     .shiki,
     .shiki span {
         color: var(--shiki-dark) !important;
-        background-color: var(--shiki-dark-bg) !important;
+        background-color: #1e1e1e !important;
     }
+}
+
+.shiki {
+    background-color: #ffffff !important;
 }
 
 /* Wrapper to position the copy button */
@@ -127,4 +131,56 @@ html {
     .shiki-copy-btn:active {
         background: #555;
     }
+}
+
+/* Markdown Elements */
+.docstring table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.docstring th,
+.docstring td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.docstring th {
+    background: #f8f9fa;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.docstring ul:has(input[type="checkbox"]) {
+    list-style: none;
+    padding-left: 0;
+}
+
+.docstring .task-list-item input {
+    margin-right: 0.5rem;
+}
+
+.docstring dl {
+    margin: 1rem 0;
+}
+
+.docstring dt {
+    font-weight: bold;
+    margin-top: 1rem;
+    color: #2c3e50;
+}
+
+.docstring dd {
+    margin-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.docstring del {
+    color: #999;
+}
+
+.docstring p code {
+    font-size: 0.9em;
 }

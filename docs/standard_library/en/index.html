@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Index - vvlang documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        nav.langs a {
+            color: #666;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: #2c3e50;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 0;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 2rem;
+        }
+
+        .docstring {
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .module-doc {
+            font-size: 1.1rem;
+        }
+
+        .export-item {
+            margin-bottom: 2rem;
+        }
+
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #3498db;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .extern-tag {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: normal;
+            font-family: monospace;
+            background: #eee;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            background: #ffffff;
+            color: #333;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #eee;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #ffffff;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid #eee;
+        }
+
+        h3 code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        pre code {
+            padding: 0;
+            border: none;
+            background-color: transparent;
+        }
+
+        .toc {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid #eee;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .toc li a {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="../static/highlight.css">
+</head>
+
+<body>
+    <header>
+        <div class='logo'>vvlang docs</div>
+        <nav class='langs'>
+            
+            <a href='../en/index.html' class='active' >en</a>
+            
+        </nav>
+    </header>
+    <main>
+        
+<h1>Modules</h1>
+
+<div class='category'>
+    <h2>std</h2>
+    <ul>
+        
+        <li>
+            <a href='std/bool.vv/index.html'>std/bool.vv</a>
+             — <span class='summary'>The `bool` module provides standard utilities for boolean values.</span>
+        </li>
+        
+        <li>
+            <a href='std/char.vv/index.html'>std/char.vv</a>
+             — <span class='summary'>The `char` module provides utilities for working with characters.</span>
+        </li>
+        
+        <li>
+            <a href='std/console.vv/index.html'>std/console.vv</a>
+             — <span class='summary'>The `console` module provides standard input and output utilities.</span>
+        </li>
+        
+        <li>
+            <a href='std/float.vv/index.html'>std/float.vv</a>
+             — <span class='summary'>The `float` module provides standard utilities for floating-point numbers.</span>
+        </li>
+        
+        <li>
+            <a href='std/int.vv/index.html'>std/int.vv</a>
+             — <span class='summary'>The `int` module provides standard utilities for integer numbers.</span>
+        </li>
+        
+        <li>
+            <a href='std/list.vv/index.html'>std/list.vv</a>
+             — <span class='summary'>The `list` module provides utilities for working with lists (arrays).</span>
+        </li>
+        
+        <li>
+            <a href='std/math.vv/index.html'>std/math.vv</a>
+             — <span class='summary'>The `math` module provides standard mathematical functions and constants.</span>
+        </li>
+        
+        <li>
+            <a href='std/option.vv/index.html'>std/option.vv</a>
+             — <span class='summary'>The `option` module provides a way to represent optional values.</span>
+        </li>
+        
+        <li>
+            <a href='std/random.vv/index.html'>std/random.vv</a>
+             — <span class='summary'>The `random` module provides functions for generating random numbers and making random choices.</span>
+        </li>
+        
+        <li>
+            <a href='std/record.vv/index.html'>std/record.vv</a>
+             — <span class='summary'>The `record` module provides utilities for working with records (key-value maps).</span>
+        </li>
+        
+        <li>
+            <a href='std/result.vv/index.html'>std/result.vv</a>
+             — <span class='summary'>The `result` module handles operations that can succeed with a value (`ok`) or fail with an error (`error`).</span>
+        </li>
+        
+        <li>
+            <a href='std/sys.vv/index.html'>std/sys.vv</a>
+             — <span class='summary'>The `sys` module provides system-level capabilities and interpreter control.</span>
+        </li>
+        
+    </ul>
+</div>
+
+<style>
+    .category h2 {
+        background: #f8f9fa;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 1.2rem;
+        color: #2c3e50;
+    }
+
+    .summary {
+        color: #666;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    ul {
+        list-style: none;
+        padding-left: 1rem;
+    }
+
+    li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+    </main>
+    <script type="module" src="../static/highlight.js"></script>
+</body>
+
+</html>

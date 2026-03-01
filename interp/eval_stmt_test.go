@@ -304,12 +304,12 @@ let result = sum(1500, 0)
 			ExpectedEnv: map[string]Value{"result": VInt(1125750)},
 		},
 		{
-			Name: "mutual recursion with and",
+			Name: "mutual recursion with also",
 			Input: `
 fun rec is_even(n)
 	if n == 0 return true end
 	return is_odd(n - 1)
-and is_odd(n)
+also is_odd(n)
 	if n == 0 return false end
 	return is_even(n - 1)
 end

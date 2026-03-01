@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>std/float.vv - vvlang documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        nav.langs a {
+            color: #666;
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: #2c3e50;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 0;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 2rem;
+        }
+
+        .docstring {
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .module-doc {
+            font-size: 1.1rem;
+        }
+
+        .export-item {
+            margin-bottom: 2rem;
+        }
+
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #3498db;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .extern-tag {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: normal;
+            font-family: monospace;
+            background: #eee;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            background: #ffffff;
+            color: #333;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #eee;
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #ffffff;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid #eee;
+        }
+
+        h3 code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        pre code {
+            padding: 0;
+            border: none;
+            background-color: transparent;
+        }
+
+        .toc {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid #eee;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .toc li a {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../static/highlight.css">
+</head>
+
+<body>
+    <header>
+        <div class='logo'>vvlang docs</div>
+        <nav class='langs'>
+            
+            <a href='../../../en/index.html' class='active' >en</a>
+            
+        </nav>
+    </header>
+    <main>
+        
+<p><a href='../../../index.html'>← Back to Index</a></p>
+<h1>Module <code>std/float.vv</code></h1>
+
+
+<div class='docstring module-doc'><p>The <code>float</code> module provides standard utilities for floating-point numbers.</p>
+</div>
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#to_string">to_string</a></li>
+        
+        <li><a href="#floor">floor</a></li>
+        
+        <li><a href="#ceil">ceil</a></li>
+        
+        <li><a href="#from_int">from_int</a></li>
+        
+        <li><a href="#round">round</a></li>
+        
+        <li><a href="#abs">abs</a></li>
+        
+        <li><a href="#min">min</a></li>
+        
+        <li><a href="#max">max</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='to_string' class='signature-header'>
+        <code>fun to_string(f)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Converts a floating-point number to its string representation.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.to_string(3.14) // &quot;3.14&quot;
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='floor' class='signature-header'>
+        <code>fun floor(f)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the largest integer less than or equal to <code>f</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.floor(3.7)  // 3.0
+float.floor(-3.2) // -4.0
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='ceil' class='signature-header'>
+        <code>fun ceil(f)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the smallest integer greater than or equal to <code>f</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.ceil(3.2)  // 4.0
+float.ceil(-3.7) // -3.0
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='from_int' class='signature-header'>
+        <code>fun from_int(i)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Converts an integer to a floating-point number.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.from_int(42) // 42.0
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='round' class='signature-header'>
+        <code>fun round(f)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the nearest integer to <code>f</code>, rounding half away from zero.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.round(3.5)  // 4.0
+float.round(-3.5) // -4.0
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='abs' class='signature-header'>
+        <code>fun abs(f)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the absolute value of <code>f</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.abs(-5.5) // 5.5
+float.abs(5.5)  // 5.5
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='min' class='signature-header'>
+        <code>fun min(a, b)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the smaller of <code>a</code> and <code>b</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.min(10.5, 5.2) // 5.2
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='max' class='signature-header'>
+        <code>fun max(a, b)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Returns the larger of <code>a</code> and <code>b</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">float.max(10.5, 5.2) // 10.5
+</code></pre>
+</div>
+    
+</div>
+
+
+    </main>
+    <script type="module" src="../../../static/highlight.js"></script>
+</body>
+
+</html>

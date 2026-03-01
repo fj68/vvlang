@@ -8,10 +8,27 @@
 /// ```
 pub extern "native" fun to_string(i)
 
-/// Converts an integer to a floating-point number.
+/// Returns the absolute value of `n`.
 ///
 /// Example:
 /// ```vv
-/// int.to_float(42) // 42.0
+/// int.abs(-5) // 5
+/// int.abs(5)  // 5
 /// ```
-pub extern "native" fun to_float(i)
+pub extern "native" fun abs(n)
+
+/// Returns the smaller of `a` and `b`.
+///
+/// Example:
+/// ```vv
+/// int.min(10, 5) // 5
+/// ```
+pub extern "native" fun min(a, b)
+
+/// Returns the larger of `a` and `b`.
+///
+/// Example:
+/// ```vv
+/// int.max(10, 5) // 10
+/// ```
+pub extern "native" fun max(a, b)

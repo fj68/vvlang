@@ -71,33 +71,164 @@
             <li><a href="#arithmetic-operators">Arithmetic Operators</a></li>
             <li><a href="#comparison-operators">Comparison Operators</a></li>
             <li><a href="#logical-operators">Logical Operators</a></li>
+            <li><a href="#assignment-operators">Assignment Operators</a></li>
+            <li>
+                <a href="#other-operators">Other Operators</a>
+                <ul>
+                    <li><a href="#prefix-operators">Prefix Operators</a></li>
+                    <li><a href="#postfix-operators">Postfix Operators</a></li>
+                </ul>
+            </li>
             <li><a href="#prefix-infix-and-postfix-expressions">Prefix, Infix, and Postfix Expressions</a></li>
         </ul>
     </div>
     <h2 id="arithmetic-operators">Arithmetic Operators</h2>
     <p><code>vv</code> supports standard arithmetic operations on numbers:</p>
-    <ul>
-        <li>Addition: <code>+</code></li>
-        <li>Subtraction: <code>-</code></li>
-        <li>Multiplication: <code>*</code></li>
-        <li>Division: <code>/</code></li>
-    </ul>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>+</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Addition</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Subtraction</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>*</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Multiplication</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>/</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Division</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>/:</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Integer Division</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>%</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Modulo</td>
+            </tr>
+        </tbody>
+    </table>
 
     <h2 id="comparison-operators">Comparison Operators</h2>
     <p>Comparison operations evaluate to a boolean value (<code>true</code> or <code>false</code>):</p>
-    <ul>
-        <li>Equal: <code>==</code></li>
-        <li>Less Than: <code>&lt;</code></li>
-        <li>Less Than or Equal: <code>&lt;=</code></li>
-    </ul>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>==</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Equal</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>&lt;</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Less Than</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>&lt;=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Less Than or Equal</td>
+            </tr>
+        </tbody>
+    </table>
 
     <h2 id="logical-operators">Logical Operators</h2>
     <p>Logical operators work on boolean values.</p>
-    <ul>
-        <li>Logical NOT: <code>not(expr)</code></li>
-        <li>Logical AND: <code>and</code></li>
-        <li>Logical OR: <code>or</code></li>
-    </ul>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>not()</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Logical NOT (Function)</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>and</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Logical AND (Reserved)</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>or</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Logical OR (Reserved)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="assignment-operators">Assignment Operators</h2>
+    <p>Used to assign or update values of variables:</p>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Assignment</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>+=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Add and Assign</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Subtract and Assign</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="other-operators">Other Operators</h2>
+
+    <h3 id="prefix-operators">Prefix Operators</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Negation - Inverts the sign of a number</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 id="postfix-operators">Postfix Operators</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+        <thead>
+            <tr>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>!</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Unwrap - Extracts value from
+                    <code>ok</code> result or panics on <code>err</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
     <h2 id="prefix-infix-and-postfix-expressions">Prefix, Infix, and Postfix Expressions</h2>
     <p>Expressions can be combined using prefix (e.g., <code>not(true)</code>, <code>-5</code>), infix (e.g.,

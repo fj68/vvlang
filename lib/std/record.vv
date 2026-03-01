@@ -12,7 +12,7 @@ import list from "./list.vv"
 /// record.get(r, "a") // 1
 /// record.get(r, "b") // none
 /// ```
-extern "native" fun get(r, k)
+pub extern "native" fun get(r, k)
 
 /// Sets the value for the given key in a record, modifying it in place.
 /// Returns the modified record.
@@ -22,7 +22,7 @@ extern "native" fun get(r, k)
 /// let r = {}
 /// record.set(r, "a", 1) // {a: 1}
 /// ```
-extern "native" fun set(r, k, v)
+pub extern "native" fun set(r, k, v)
 
 /// Converts a record to a list of key-value pairs (each pair is a list of [key, value]).
 ///
@@ -31,7 +31,7 @@ extern "native" fun set(r, k, v)
 /// let r = {a: 1, b: 2}
 /// record.to_list(r) // [["a", 1], ["b", 2]]
 /// ```
-extern "native" fun to_list(r)
+pub extern "native" fun to_list(r)
 
 /// Returns a list of all keys in the record.
 ///
