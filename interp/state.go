@@ -154,6 +154,7 @@ func (s *State) popDeferScope() error {
 var ErrBreak = fmt.Errorf("break")
 var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
+var ErrNoValue = fmt.Errorf("function did not return a value")
 
 func (s *State) evalTestModule(module *ast.Module) (err error) {
 	s.CurrentTest = &TestState{}
@@ -252,6 +253,17 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 }
 
 func (s *State) evalExpr(expr ast.Expr) (Value, error) {
+	v, err := s.evalExprInner(expr)
+	if err != nil {
+		return nil, err
+	}
+	if v == nil {
+		return nil, ErrNoValue
+	}
+	return v, nil
+}
+
+func (s *State) evalExprInner(expr ast.Expr) (Value, error) {
 	switch v := expr.(type) {
 	case *ast.BoolLiteralExpr:
 		return VBool(v.Value), nil

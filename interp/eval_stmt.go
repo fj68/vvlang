@@ -60,7 +60,7 @@ func (s *State) evalIfStmt(stmt *ast.IfStmt) error {
 
 func (s *State) evalExprStmt(stmt *ast.ExprStmt) error {
 	_, err := s.evalExpr(stmt.Expr)
-	if err != nil {
+	if err != nil && err != ErrNoValue {
 		return err
 	}
 	return nil
