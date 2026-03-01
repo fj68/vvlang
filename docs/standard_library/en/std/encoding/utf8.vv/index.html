@@ -83,9 +83,7 @@
             margin: 1rem 0;
         }
 
-        .module-doc {
-            font-size: 1.1rem;
-        }
+
 
         .export-item {
             margin-bottom: 2rem;
@@ -193,8 +191,8 @@
 <pre><code class="language-vv">import utf8 from &quot;std/encoding/utf8.vv&quot;
 
 let bytes = utf8.encode('A')
-let res = utf8.decode(bytes)
-console.print(res.value.char) // 'A'
+let res = utf8.decode(bytes)!
+console.print(res.char) // 'A'
 </code></pre>
 </div>
 

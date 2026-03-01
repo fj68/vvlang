@@ -5,8 +5,8 @@
 /// import utf8 from "std/encoding/utf8.vv"
 ///
 /// let bytes = utf8.encode('A')
-/// let res = utf8.decode(bytes)
-/// console.print(res.value.char) // 'A'
+/// let res = utf8.decode(bytes)!
+/// console.print(res.char) // 'A'
 /// ```
 
 
