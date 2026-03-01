@@ -7,7 +7,7 @@
 ///
 /// let f = file.reader("test.bin")!
 /// let r = bytes.reader(f, 4096)!
-/// let content = r.read(r, 10)!
+/// let content = bytes.read(r, 10)!
 /// ```
 
 
@@ -123,7 +123,7 @@ test "reader / read"
     let f = file.create(path)!
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [97, 98, 99, 100, 101]) // abcde
+    file.write(f, [97, 98, 99, 100, 101])! // abcde
 
     let source = file.reader(path)!
     let r = reader(source, 2)!
@@ -144,7 +144,7 @@ test "peek"
     let f = file.create(path)!
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [97, 98, 99])
+    file.write(f, [97, 98, 99])!
 
     let source = file.reader(path)!
     let r = reader(source, 2)!
@@ -165,7 +165,7 @@ test "read_all"
     let f = file.create(path)!
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [10, 20, 30, 40])
+    file.write(f, [10, 20, 30, 40])!
 
     let source = file.reader(path)!
     let r = reader(source, 2)!

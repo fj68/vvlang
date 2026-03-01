@@ -165,6 +165,28 @@ end</code></pre>
     <h2 id="returning-values">Returning Values</h2>
     <p>The <code>return</code> statement immediately exits the function and evaluates the expression as the function's
         return value.</p>
+    <p>If a function finishes execution without reaching a <code>return</code> statement, it effectively returns a
+        <code>none</code> record (<code>{ type = "none" }</code>).
+    </p>
+
+    <h3>Ignored Return Values</h3>
+    <p>Calling a function as a standalone statement silently discards its return value. This is useful when you want to
+        call a function only for its side effects:</p>
+    <pre><code>import result from "std/result.vv"
+
+fun f()
+    return result.ok(123)
+end
+
+f() // OK: return value is silently discarded</code></pre>
+
+    <p>You can also use the <code>!</code> operator on a function call as a statement. This will propagate any
+        <code>error</code> result to the caller, while silently discarding the <code>ok</code> value:
+    </p>
+    <pre><code>import file from "std/fs/file.vv"
+
+let fd = file.create("out.txt")!
+file.write(fd, "hello")! // propagates write error; ok value (bytes written) is discarded</code></pre>
 
     <div class="nav">
         <a href="../03_types_and_literals/index.html">← Previous: 3. Types and Literals</a>

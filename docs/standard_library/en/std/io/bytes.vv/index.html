@@ -193,7 +193,7 @@ import file from &quot;std/fs/file.vv&quot;
 
 let f = file.reader(&quot;test.bin&quot;)!
 let r = bytes.reader(f, 4096)!
-let content = r.read(r, 10)!
+let content = bytes.read(r, 10)!
 </code></pre>
 </div>
 
@@ -203,13 +203,15 @@ let content = r.read(r, 10)!
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#reader">reader</a></li>
+        <li><a href="#close">close</a></li>
         
         <li><a href="#read">read</a></li>
         
         <li><a href="#peek">peek</a></li>
         
         <li><a href="#read_all">read_all</a></li>
+        
+        <li><a href="#reader">reader</a></li>
         
     </ul>
 </div>
@@ -218,17 +220,15 @@ let content = r.read(r, 10)!
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='reader' class='signature-header'>
-        <code>fun reader(source_reader, size)</code>
+    <h3 id='close' class='signature-header'>
+        <code>fun close(r)</code>
         
     </h3>
     
-    <div class='docstring'><p>Creates a buffered reader with the specified buffer size.</p>
+    <div class='docstring'><p>Closes the reader.</p>
 <ul>
-<li><code>source_reader</code>: An object with a <code>read(length)</code> method.</li>
-<li><code>size</code>: The size of the internal buffer.</li>
+<li><code>r</code>: The reader record.</li>
 </ul>
-<p>Returns a result containing a reader record.</p>
 </div>
     
 </div>
@@ -276,6 +276,22 @@ let content = r.read(r, 10)!
 <li><code>r</code>: The reader record.</li>
 </ul>
 <p>Returns a result containing a list of all remaining bytes.</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='reader' class='signature-header'>
+        <code>fun reader(source_reader, size)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>Creates a buffered reader with the specified buffer size.</p>
+<ul>
+<li><code>source_reader</code>: An object with a <code>read(length)</code> method.</li>
+<li><code>size</code>: The size of the internal buffer.</li>
+</ul>
+<p>Returns a result containing a reader record.</p>
 </div>
     
 </div>

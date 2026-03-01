@@ -81,7 +81,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// result.map(result.ok(2), fun(x) x * 2 end) // ok(4)
+/// result.map(result.ok(2), fun(x) return x * 2 end) // ok(4)
 /// ```
 pub fun map(v, f)
   if is_ok(v)
@@ -103,7 +103,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// result.flat_map(result.ok(1), fun(x) result.ok(x + 1) end) // ok(2)
+/// result.flat_map(result.ok(1), fun(x) return result.ok(x + 1) end) // ok(2)
 /// ```
 pub fun flat_map(v, f)
   if is_ok(v)
@@ -125,7 +125,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// result.map_error(result.error("fail"), fun(e) e + "!" end) // error("fail!")
+/// result.map_error(result.error("fail"), fun(e) return e + "!" end) // error("fail!")
 /// ```
 pub fun map_error(v, f)
   if is_error(v)
@@ -146,7 +146,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// result.flat_map_error(result.error(1), fun(e) result.error(e + 1) end) // error(2)
+/// result.flat_map_error(result.error(1), fun(e) return result.error(e + 1) end) // error(2)
 /// ```
 pub fun flat_map_error(v, f)
   if is_error(v)

@@ -12,8 +12,8 @@
 ///
 /// Example:
 /// ```vv
-/// bool.to_string(true)  // "true"
-/// bool.to_string(false) // "false"
+/// let s = bool.to_string(true)  // "true"
+/// let t = bool.to_string(false) // "false"
 /// ```
 pub extern "native" fun to_string(b)
 

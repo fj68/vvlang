@@ -191,8 +191,8 @@ Characters are typically represented by single quotes.</p>
 <p>Example:</p>
 <pre><code class="language-vv">import char from &quot;std/char.vv&quot;
 
-char.to_upper('a') // 'A'
-char.is_digit('1') // true
+let u = char.to_upper('a') // 'A'
+let d = char.is_digit('1') // true
 </code></pre>
 </div>
 
@@ -224,8 +224,8 @@ char.is_digit('1') // true
     
     <div class='docstring'><p>Converts a character to its uppercase equivalent.</p>
 <p>Example:</p>
-<pre><code class="language-vv">char.to_upper('a') // 'A'
-char.to_upper('1') // '1'
+<pre><code class="language-vv">let a = char.to_upper('a') // 'A'
+let b = char.to_upper('1') // '1'
 </code></pre>
 </div>
     
@@ -239,8 +239,8 @@ char.to_upper('1') // '1'
     
     <div class='docstring'><p>Converts a character to its lowercase equivalent.</p>
 <p>Example:</p>
-<pre><code class="language-vv">char.to_lower('A') // 'a'
-char.to_lower('!') // '!'
+<pre><code class="language-vv">let a = char.to_lower('A') // 'a'
+let b = char.to_lower('!') // '!'
 </code></pre>
 </div>
     
@@ -254,8 +254,8 @@ char.to_lower('!') // '!'
     
     <div class='docstring'><p>Checks if a character is an ASCII decimal digit ('0'-'9').</p>
 <p>Example:</p>
-<pre><code class="language-vv">char.is_digit('5') // true
-char.is_digit('a') // false
+<pre><code class="language-vv">let d = char.is_digit('5') // true
+let e = char.is_digit('a') // false
 </code></pre>
 </div>
     
@@ -269,9 +269,9 @@ char.is_digit('a') // false
     
     <div class='docstring'><p>Checks if a character is a whitespace character (e.g., space, tab, newline).</p>
 <p>Example:</p>
-<pre><code class="language-vv">char.is_space(' ')  // true
-char.is_space('\n') // true
-char.is_space('a')  // false
+<pre><code class="language-vv">let a = char.is_space(' ')  // true
+let b = char.is_space('\n') // true
+let c = char.is_space('a')  // false
 </code></pre>
 </div>
     

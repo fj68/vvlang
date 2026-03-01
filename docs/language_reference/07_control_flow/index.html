@@ -161,12 +161,40 @@ fun calculate()
     return result.ok(val)
 end</code></pre>
 
+    <h3>Unhandled Errors (<code>!</code> at Top-Level)</h3>
+    <p>If an error is propagated via <code>!</code> and reaches the top-level of a module (outside of any function),
+        the interpreter will stop execution and print the error content to the standard output.</p>
+    <pre><code>import result from "std/result.vv"
+
+fun f()
+    return result.error("something went wrong")
+end
+
+fun g()
+    // The ! operator here triggers an early return from g() 
+    // and propagates the error from f() up to g's caller.
+    let val = f()!
+    return result.ok(val)
+end
+
+// g()! at the top level will cause the program to exit
+// and print: "unhandled error: something went wrong"
+g()!</code></pre>
+
     <h2 id="deferred-execution-defer">Deferred Execution (<code>defer</code>)</h2>
-    <p>The <code>defer</code> statement schedules an expression to be executed just before the current scope (block,
+    <p>The <code>defer</code> statement schedules a statement to be executed just before the current scope (block,
         function, or module) exits.</p>
     <p>This is extremely useful for ensuring that resources are cleaned up properly, regardless of whether the scope
         exits normally or via a <code>return</code> statement.</p>
     <p>The execution order of multiple <code>defer</code> statements is "last defer, first executed".</p>
+    <p>Because <code>defer</code> supports statements, you can use <code>!</code> to propagate errors from cleanup
+        code, or just call functions directly to ignore their return values:
+    </p>
+    <pre><code>import file from "std/fs/file.vv"
+
+let f = file.create("temp.txt")!
+// close() return value is silently discarded since we're cleaning up
+defer file.close(f)</code></pre>
     <pre><code>import console from "std/console.vv"
 
 let process_file = fun()

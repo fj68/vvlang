@@ -193,7 +193,7 @@ Lists are ordered, mutable collections of elements of any type.</p>
 
 let l = [1, 2, 3]
 list.push(l, 4)
-let doubled = list.map(l, fun (i, x) x * 2 end)
+let doubled = list.map(l, fun (i, x) return x * 2 end)
 </code></pre>
 </div>
 
@@ -290,7 +290,7 @@ list.push(l, 3) // [1, 2, 3]
     <div class='docstring'><p>Removes and returns the last element from a list.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3]
-list.pop(l) // 3
+let v = list.pop(l) // 3
 // l is now [1, 2]
 </code></pre>
 </div>
@@ -306,7 +306,7 @@ list.pop(l) // 3
     <div class='docstring'><p>Removes and returns the first element from a list.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3]
-list.shift(l) // 1
+let v = list.shift(l) // 1
 // l is now [2, 3]
 </code></pre>
 </div>
@@ -339,7 +339,7 @@ list.unshift(l, 1) // [1, 2, 3]
 Returns a new list.</p>
 <p>Example:</p>
 <pre><code class="language-vv">let l = [1, 2, 3, 2, 3, 4]
-list.replace(l, [2, 3], [5, 6]) // [1, 5, 6, 5, 6, 4]
+let r = list.replace(l, [2, 3], [5, 6]) // [1, 5, 6, 5, 6, 4]
 </code></pre>
 </div>
     

@@ -23,7 +23,7 @@ type State struct {
 	ModuleCache       map[string]*VModule
 	Env               *Env
 	RetVals           stack.Stack[Value]
-	Defers            [][]ast.Expr
+	Defers            [][]ast.Stmt
 	NativeValues      map[string]Value
 	BuiltinModules    map[string]map[string]Value
 	NewState          func(sourcePath string) *State
@@ -131,7 +131,7 @@ func (s *State) Eval(text []rune) error {
 }
 
 func (s *State) pushDeferScope() {
-	s.Defers = append(s.Defers, []ast.Expr{})
+	s.Defers = append(s.Defers, []ast.Stmt{})
 }
 
 func (s *State) popDeferScope() error {
@@ -143,7 +143,7 @@ func (s *State) popDeferScope() error {
 
 	// Execute defers in LIFO order
 	for i := len(scope) - 1; i >= 0; i-- {
-		_, err := s.evalExpr(scope[i])
+		err := s.evalStmt(scope[i])
 		if err != nil {
 			return err
 		}

@@ -5,8 +5,8 @@
 /// ```vv
 /// import char from "std/char.vv"
 ///
-/// char.to_upper('a') // 'A'
-/// char.is_digit('1') // true
+/// let u = char.to_upper('a') // 'A'
+/// let d = char.is_digit('1') // true
 /// ```
 
 
@@ -14,8 +14,8 @@
 ///
 /// Example:
 /// ```vv
-/// char.to_upper('a') // 'A'
-/// char.to_upper('1') // '1'
+/// let a = char.to_upper('a') // 'A'
+/// let b = char.to_upper('1') // '1'
 /// ```
 pub extern 'native' fun to_upper(c)
 
@@ -30,8 +30,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// char.to_lower('A') // 'a'
-/// char.to_lower('!') // '!'
+/// let a = char.to_lower('A') // 'a'
+/// let b = char.to_lower('!') // '!'
 /// ```
 pub extern 'native' fun to_lower(c)
 
@@ -46,8 +46,8 @@ end
 ///
 /// Example:
 /// ```vv
-/// char.is_digit('5') // true
-/// char.is_digit('a') // false
+/// let d = char.is_digit('5') // true
+/// let e = char.is_digit('a') // false
 /// ```
 pub extern 'native' fun is_digit(c)
 
@@ -63,9 +63,9 @@ end
 ///
 /// Example:
 /// ```vv
-/// char.is_space(' ')  // true
-/// char.is_space('\n') // true
-/// char.is_space('a')  // false
+/// let a = char.is_space(' ')  // true
+/// let b = char.is_space('\n') // true
+/// let c = char.is_space('a')  // false
 /// ```
 pub extern 'native' fun is_space(c)
 

@@ -190,8 +190,8 @@
 <p>Example:</p>
 <pre><code class="language-vv">import float from &quot;std/float.vv&quot;
 
-float.to_string(3.14) // &quot;3.14&quot;
-float.floor(3.9)      // 3.0
+let s = float.to_string(3.14) // &quot;3.14&quot;
+let f = float.floor(3.9)      // 3.0
 </code></pre>
 </div>
 
@@ -231,7 +231,7 @@ float.floor(3.9)      // 3.0
     
     <div class='docstring'><p>Converts a floating-point number to its string representation.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.to_string(3.14) // &quot;3.14&quot;
+<pre><code class="language-vv">let s = float.to_string(3.14) // &quot;3.14&quot;
 </code></pre>
 </div>
     
@@ -245,8 +245,8 @@ float.floor(3.9)      // 3.0
     
     <div class='docstring'><p>Returns the largest integer less than or equal to <code>f</code>.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.floor(3.7)  // 3.0
-float.floor(-3.2) // -4.0
+<pre><code class="language-vv">let f = float.floor(3.7)  // 3.0
+let g = float.floor(-3.2) // -4.0
 </code></pre>
 </div>
     
@@ -260,8 +260,8 @@ float.floor(-3.2) // -4.0
     
     <div class='docstring'><p>Returns the smallest integer greater than or equal to <code>f</code>.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.ceil(3.2)  // 4.0
-float.ceil(-3.7) // -3.0
+<pre><code class="language-vv">let f = float.ceil(3.2)  // 4.0
+let g = float.ceil(-3.7) // -3.0
 </code></pre>
 </div>
     
@@ -275,7 +275,7 @@ float.ceil(-3.7) // -3.0
     
     <div class='docstring'><p>Converts an integer to a floating-point number.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.from_int(42) // 42.0
+<pre><code class="language-vv">let f = float.from_int(42) // 42.0
 </code></pre>
 </div>
     
@@ -289,8 +289,8 @@ float.ceil(-3.7) // -3.0
     
     <div class='docstring'><p>Returns the nearest integer to <code>f</code>, rounding half away from zero.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.round(3.5)  // 4.0
-float.round(-3.5) // -4.0
+<pre><code class="language-vv">let f = float.round(3.5)  // 4.0
+let g = float.round(-3.5) // -4.0
 </code></pre>
 </div>
     
@@ -304,8 +304,8 @@ float.round(-3.5) // -4.0
     
     <div class='docstring'><p>Returns the absolute value of <code>f</code>.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.abs(-5.5) // 5.5
-float.abs(5.5)  // 5.5
+<pre><code class="language-vv">let f = float.abs(-5.5) // 5.5
+let g = float.abs(5.5)  // 5.5
 </code></pre>
 </div>
     
@@ -319,7 +319,7 @@ float.abs(5.5)  // 5.5
     
     <div class='docstring'><p>Returns the smaller of <code>a</code> and <code>b</code>.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.min(10.5, 5.2) // 5.2
+<pre><code class="language-vv">let m = float.min(10.5, 5.2) // 5.2
 </code></pre>
 </div>
     
@@ -333,7 +333,7 @@ float.abs(5.5)  // 5.5
     
     <div class='docstring'><p>Returns the larger of <code>a</code> and <code>b</code>.</p>
 <p>Example:</p>
-<pre><code class="language-vv">float.max(10.5, 5.2) // 10.5
+<pre><code class="language-vv">let m = float.max(10.5, 5.2) // 10.5
 </code></pre>
 </div>
     
