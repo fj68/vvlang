@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10. Interop & Builtin - vv Language Reference</title>
+    <title>10. Native Interoperability - vv Language Reference</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -62,14 +62,15 @@
 
 <body>
     <p><a href="../index.html">← Back to Index</a></p>
-    <h1>10. Interoperability & Core Syntactic Elements</h1>
+    <h1>10. Native Interoperability</h1>
 
 
     <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
         <h2 style="margin-top: 0;">In this chapter</h2>
         <ul>
             <li><a href="#native-functions-extern-native">Native Functions (<code>extern "native"</code>)</a></li>
-            <li><a href="#syntactic-elements">Syntactic Elements</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#registering-native-values">Registering Native Values</a></li>
+            <li><a href="#user-data">User Data (<code>VUserData</code>)</a></li>
         </ul>
     </div>
     <h2 id="native-functions-extern-native">Native Functions (<code>extern "native"</code>)</h2>
@@ -81,13 +82,82 @@ extern "native" let system_name</code></pre>
     <p>When declared in this manner, the interpreter looks for a host-registered implementation by that name rather than
         executing <code>vv</code> source code.</p>
 
-    <h2 id="syntactic-elements">Syntactic Elements</h2>
-    <p>Instead of traditional built-in functions, <code>vv</code> includes specific syntactic elements parsed directly
-        as expressions. These look like functions but are built closely into the AST. Key elements include:</p>
-    <ul>
-        <li><code>len(expr)</code>: Retrieves the length of a list or string representation.</li>
-        <li><code>not(expr)</code>: Logical NOT operation on a boolean.</li>
-    </ul>
+    <h3 id="registering-native-values">Registering Native Values</h3>
+    <p>On the Go host side, native functions and values must be registered with the interpreter state before
+        <code>vv</code> code is evaluated. There are two patterns:
+    </p>
+
+    <h4>1. Registering individual natives (<code>RegisterNative</code>)</h4>
+    <p>Call <code>s.RegisterNative(name, value)</code> (or <code>s.RegisterNatives(map)</code> for a batch) directly
+        on a <code>*interp.State</code>. Any <code>interp.Value</code> can be registered &mdash; most commonly
+        a <code>interp.VBuiltinFun</code> wrapping a Go function.</p>
+    <p>Go side:</p>
+    <pre><code>s := interp.NewState(sourcePath)
+s.RegisterNative("system_clock", interp.VBuiltinFun(SystemClock))
+s.RegisterNative("system_name",  interp.VList{...}) // any Value
+
+// Or register several at once:
+s.RegisterNatives(map[string]interp.Value{
+    "system_clock": interp.VBuiltinFun(SystemClock),
+    "system_name":  interp.StringToValue("linux"),
+})</code></pre>
+    <p>vv side:</p>
+    <pre><code>extern "native" fun system_clock()
+extern "native" let system_name
+let t  = system_clock()
+let os = system_name</code></pre>
+
+    <h4>2. Registering a builtin module (<code>RegisterBuiltinModule</code>)</h4>
+    <p>For standard-library style modules, register a whole map of natives keyed by the module's logical
+        path. The interpreter will automatically load them when that module is imported or tested.</p>
+    <p>Go side:</p>
+    <pre><code>s.RegisterBuiltinModule("std/console.vv", map[string]interp.Value{
+    "print": interp.VBuiltinFun(Print),
+})
+
+// Or register several modules at once:
+s.RegisterBuiltinModules(map[string]map[string]interp.Value{
+    "std/console.vv": {"print": interp.VBuiltinFun(Print)},
+    "std/math.vv":    {"pi": interp.VFloat(3.14159)},
+})</code></pre>
+    <p>vv side (std/console.vv):</p>
+    <pre><code>pub extern "native" fun print(value)</code></pre>
+
+    <h2 id="user-data">User Data (<code>VUserData</code>)</h2>
+    <p>Native Go functions can wrap arbitrary Go values in a <code>VUserData</code> struct in order to pass opaque
+        handles (such as file descriptors, network connections, or any other Go object) back into <code>vv</code> code.
+        The <code>vv</code> runtime treats <code>VUserData</code> as a black box — it cannot be inspected or modified
+        from within <code>vv</code>, but it can be stored in variables and records, and passed back to other native
+        functions.</p>
+    <p>This is the recommended pattern for representing resources that have native lifecycle semantics (open/close,
+        connect/disconnect, etc.).</p>
+
+    <h3>Go side (native function)</h3>
+    <pre><code>// Wrapping a Go value
+func FileOpen(s *interp.State, args []interp.Value) (interp.Value, error) {
+    f, err := os.Open(args[0].Str())
+    if err != nil {
+        return interp.ErrorValue(err.Error()), nil
+    }
+    return interp.OkValue(&amp;interp.VUserData{Value: f}), nil
+}
+
+// Unwrapping a Go value
+func FileClose(s *interp.State, args []interp.Value) (interp.Value, error) {
+    fd, ok := args[0].(*interp.VUserData)
+    if !ok {
+        return nil, fmt.Errorf("expected user data")
+    }
+    f := fd.Value.(*os.File)
+    return interp.NoneValue, f.Close()
+}</code></pre>
+
+    <h3>vv side</h3>
+    <pre><code>import file from "std/fs/file.vv"
+
+let fd = file.open_read("data.txt")!
+// fd holds an opaque VUserData wrapping a *os.File
+file.close(fd)</code></pre>
 
     <div class="nav">
         <a href="../09_testing/index.html">← Previous: 9. Testing Framework</a>
