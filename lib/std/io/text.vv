@@ -122,3 +122,80 @@ pub fun read_all(r)
     end
     return result.ok(res)
 end
+
+import fs from "std/fs/file.vv"
+import utf8 from "std/encoding/utf8.vv"
+
+test "reader / read"
+    let path = "tmp_test_text_read_inline.txt"
+    let f = fs.create(path)!
+    fs.write(f, [97, 226, 130, 172, 10]) // a€\n
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = reader(source, utf8)!
+
+    let c1 = r.read(r)!
+    assert c1.char == 'a'
+
+    let c2 = r.read(r)!
+    assert c2.char == '€'
+
+    let c3 = r.read(r)!
+    assert c3.char == '\n'
+
+    r.close(r)
+end
+
+test "peek"
+    let path = "tmp_test_text_peek_inline.txt"
+    let f = fs.create(path)!
+    fs.write(f, [65, 66]) // AB
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = reader(source, utf8)!
+
+    let p1 = r.peek(r)!
+    assert p1.char == 'A'
+
+    // Position should not advance
+    let p2 = r.peek(r)!
+    assert p2.char == 'A'
+
+    let c1 = r.read(r)!
+    assert c1.char == 'A'
+
+    r.close(r)
+end
+
+test "read_line"
+    let path = "tmp_test_text_line_inline.txt"
+    let f = fs.create(path)!
+    fs.write(f, [97, 98, 10, 99, 100]) // ab\ncd
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = reader(source, utf8)!
+
+    let l1 = r.read_line(r)!
+    assert l1 == ['a', 'b']
+
+    let l2 = r.read_line(r)!
+    assert l2 == ['c', 'd']
+
+    r.close(r)
+end
+
+test "read_all"
+    let path = "tmp_test_text_all_inline.txt"
+    let f = fs.create(path)!
+    fs.write(f, [104, 105]) // hi
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = reader(source, utf8)!
+    let all = r.read_all(r)!
+    assert all == ['h', 'i']
+    r.close(r)
+end

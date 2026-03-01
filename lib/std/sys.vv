@@ -27,6 +27,13 @@ pub extern "native" fun help()
 /// ```
 pub extern "native" fun phys_eq(a, b)
 
+test "phys_eq"
+    let a = [1]
+    let b = [1]
+    assert phys_eq(a, a) == true
+    assert phys_eq(a, b) == false
+end
+
 /// Sets the maximum recursion depth allowed by the interpreter.
 /// Prevents stack overflow panics by throwing a catchable runtime error instead.
 ///
@@ -44,6 +51,13 @@ pub extern "native" fun set_max_recursion_depth(depth)
 /// ```
 pub extern "native" fun get_max_recursion_depth()
 
+test "set_max_recursion_depth / get_max_recursion_depth"
+    let prev = get_max_recursion_depth()
+    set_max_recursion_depth(500)
+    assert get_max_recursion_depth() == 500
+    set_max_recursion_depth(prev)
+end
+
 /// Returns the string representation of the type of the given value.
 ///
 /// Example:
@@ -54,6 +68,15 @@ pub extern "native" fun get_max_recursion_depth()
 /// ```
 pub extern "native" fun type(v)
 
+test "type"
+    assert type(1) == "int"
+    assert type(1.0) == "float"
+    assert type(true) == "bool"
+    assert type("hi") == "list"
+    assert type([]) == "list"
+    assert type({ a = 1 }) == "record"
+end
+
 /// Returns the string representation of the given value.
 ///
 /// Example:
@@ -63,3 +86,8 @@ pub extern "native" fun type(v)
 /// sys.str(true) // "true"
 /// ```
 pub extern "native" fun str(v)
+
+test "str"
+    assert str(123) == "123"
+    assert str(true) == "true"
+end

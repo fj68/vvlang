@@ -8,6 +8,8 @@
 /// float.floor(3.9)      // 3.0
 /// ```
 
+import sys from "std/sys.vv"
+
 
 /// Converts a floating-point number to its string representation.
 ///
@@ -16,6 +18,12 @@
 /// float.to_string(3.14) // "3.14"
 /// ```
 pub extern "native" fun to_string(f)
+
+test "to_string"
+    assert to_string(3.14) == "3.14"
+    assert to_string(0.0) == "0"
+    assert to_string(-1.5) == "-1.5"
+end
 
 /// Returns the largest integer less than or equal to `f`.
 ///
@@ -26,6 +34,12 @@ pub extern "native" fun to_string(f)
 /// ```
 pub extern "native" fun floor(f)
 
+test "floor"
+    assert floor(3.7) == 3.0
+    assert floor(3.0) == 3.0
+    assert floor(-3.2) == -4.0
+end
+
 /// Returns the smallest integer greater than or equal to `f`.
 ///
 /// Example:
@@ -35,6 +49,12 @@ pub extern "native" fun floor(f)
 /// ```
 pub extern "native" fun ceil(f)
 
+test "ceil"
+    assert ceil(3.2) == 4.0
+    assert ceil(3.0) == 3.0
+    assert ceil(-3.7) == -3.0
+end
+
 /// Converts an integer to a floating-point number.
 ///
 /// Example:
@@ -42,6 +62,13 @@ pub extern "native" fun ceil(f)
 /// float.from_int(42) // 42.0
 /// ```
 pub extern "native" fun from_int(i)
+
+test "from_int"
+    assert from_int(42) == 42.0
+    assert from_int(0) == 0.0
+    assert from_int(-3) == -3.0
+    assert sys.type(from_int(1)) == "float"
+end
 
 /// Returns the nearest integer to `f`, rounding half away from zero.
 ///
@@ -52,6 +79,12 @@ pub extern "native" fun from_int(i)
 /// ```
 pub extern "native" fun round(f)
 
+test "round"
+    assert round(3.5) == 4.0
+    assert round(3.4) == 3.0
+    assert round(-3.5) == -4.0
+end
+
 /// Returns the absolute value of `f`.
 ///
 /// Example:
@@ -61,6 +94,12 @@ pub extern "native" fun round(f)
 /// ```
 pub extern "native" fun abs(f)
 
+test "abs"
+    assert abs(-5.5) == 5.5
+    assert abs(5.5) == 5.5
+    assert abs(0.0) == 0.0
+end
+
 /// Returns the smaller of `a` and `b`.
 ///
 /// Example:
@@ -69,6 +108,12 @@ pub extern "native" fun abs(f)
 /// ```
 pub extern "native" fun min(a, b)
 
+test "min"
+    assert min(10.5, 5.2) == 5.2
+    assert min(5.2, 10.5) == 5.2
+    assert min(3.0, 3.0) == 3.0
+end
+
 /// Returns the larger of `a` and `b`.
 ///
 /// Example:
@@ -76,3 +121,9 @@ pub extern "native" fun min(a, b)
 /// float.max(10.5, 5.2) // 10.5
 /// ```
 pub extern "native" fun max(a, b)
+
+test "max"
+    assert max(10.5, 5.2) == 10.5
+    assert max(5.2, 10.5) == 10.5
+    assert max(3.0, 3.0) == 3.0
+end

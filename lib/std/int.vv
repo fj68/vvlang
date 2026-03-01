@@ -17,6 +17,12 @@
 /// ```
 pub extern "native" fun to_string(i)
 
+test "to_string"
+    assert to_string(42) == "42"
+    assert to_string(0) == "0"
+    assert to_string(-7) == "-7"
+end
+
 /// Returns the absolute value of `n`.
 ///
 /// Example:
@@ -26,6 +32,12 @@ pub extern "native" fun to_string(i)
 /// ```
 pub extern "native" fun abs(n)
 
+test "abs"
+    assert abs(-5) == 5
+    assert abs(5) == 5
+    assert abs(0) == 0
+end
+
 /// Returns the smaller of `a` and `b`.
 ///
 /// Example:
@@ -34,6 +46,12 @@ pub extern "native" fun abs(n)
 /// ```
 pub extern "native" fun min(a, b)
 
+test "min"
+    assert min(10, 5) == 5
+    assert min(5, 10) == 5
+    assert min(3, 3) == 3
+end
+
 /// Returns the larger of `a` and `b`.
 ///
 /// Example:
@@ -41,3 +59,9 @@ pub extern "native" fun min(a, b)
 /// int.max(10, 5) // 10
 /// ```
 pub extern "native" fun max(a, b)
+
+test "max"
+    assert max(10, 5) == 10
+    assert max(5, 10) == 10
+    assert max(3, 3) == 3
+end

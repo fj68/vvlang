@@ -8,7 +8,6 @@
 /// ```
 
 
-
 /// Converts a boolean value to its string representation.
 ///
 /// Example:
@@ -17,3 +16,8 @@
 /// bool.to_string(false) // "false"
 /// ```
 pub extern "native" fun to_string(b)
+
+test "to_string"
+    assert to_string(true) == "true"
+    assert to_string(false) == "false"
+end
