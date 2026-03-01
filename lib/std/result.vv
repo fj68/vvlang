@@ -91,7 +91,7 @@ pub fun map(v, f)
 end
 
 test "map"
-    let double = fun(x) x * 2 end
+    let double = fun(x) return x * 2 end
     let r1 = map(ok(3), double)
     assert r1.type == "ok"
     assert r1.value == 6
@@ -113,7 +113,7 @@ pub fun flat_map(v, f)
 end
 
 test "flat_map"
-    let f = fun(x) ok(x + 1) end
+    let f = fun(x) return ok(x + 1) end
     let r1 = flat_map(ok(1), f)
     assert r1.type == "ok"
     assert r1.value == 2
@@ -135,10 +135,10 @@ pub fun map_error(v, f)
 end
 
 test "map_error"
-    let r1 = map_error(error("fail"), fun(e) e + "!" end)
+    let r1 = map_error(error("fail"), fun(e) return e + "!" end)
     assert r1.type == "error"
     assert r1.value == "fail!"
-    let r2 = map_error(ok(1), fun(e) e + "!" end)
+    let r2 = map_error(ok(1), fun(e) return e + "!" end)
     assert r2.type == "ok"
 end
 
@@ -156,10 +156,10 @@ pub fun flat_map_error(v, f)
 end
 
 test "flat_map_error"
-    let r1 = flat_map_error(error(1), fun(e) error(e + 1) end)
+    let r1 = flat_map_error(error(1), fun(e) return error(e + 1) end)
     assert r1.type == "error"
     assert r1.value == 2
-    let r2 = flat_map_error(ok(5), fun(e) error(e + 1) end)
+    let r2 = flat_map_error(ok(5), fun(e) return error(e + 1) end)
     assert r2.type == "ok"
 end
 

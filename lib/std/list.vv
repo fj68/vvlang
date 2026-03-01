@@ -10,6 +10,8 @@
 /// let doubled = list.map(l, fun (i, x) x * 2 end)
 /// ```
 
+import option from "std/option.vv"
+import sys from "std/sys.vv"
 
 /// Adds a value to the end of a list.
 /// Returns the modified list.
@@ -123,7 +125,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3]
-/// list.map(l, fun (i, x) x * 2 end) // [2, 4, 6]
+/// list.map(l, fun (i, x) return x * 2 end) // [2, 4, 6]
 /// ```
 pub fun map(xs, f)
   let rs = []
@@ -134,7 +136,7 @@ pub fun map(xs, f)
 end
 
 test "map"
-    let r = map([1, 2, 3], fun (i, x) x * 2 end)
+    let r = map([1, 2, 3], fun (i, x) return x * 2 end)
     assert r == [2, 4, 6]
 end
 
@@ -144,7 +146,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3, 4]
-/// list.filter(l, fun (i, x) x % 2 == 0 end) // [2, 4]
+/// list.filter(l, fun (i, x) return x % 2 == 0 end) // [2, 4]
 /// ```
 pub fun filter(xs, f)
   let rs = []
@@ -157,7 +159,7 @@ pub fun filter(xs, f)
 end
 
 test "filter"
-    let r = filter([1, 2, 3, 4], fun (i, x) x % 2 == 0 end)
+    let r = filter([1, 2, 3, 4], fun (i, x) return x % 2 == 0 end)
     assert r == [2, 4]
 end
 
@@ -190,7 +192,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3]
-/// list.fold_left(l, 0, fun (acc, i, x) acc + x end) // 6
+/// list.fold_left(l, 0, fun (acc, i, x) return acc + x end) // 6
 /// ```
 pub fun fold_left(xs, init, f)
   let rs = init
@@ -201,9 +203,9 @@ pub fun fold_left(xs, init, f)
 end
 
 test "fold_left"
-    let sum = fold_left([1, 2, 3], 0, fun (acc, i, x) acc + x end)
+    let sum = fold_left([1, 2, 3], 0, fun (acc, i, x) return acc + x end)
     assert sum == 6
-    let str = fold_left(["a", "b", "c"], "", fun (acc, i, x) acc + x end)
+    let str = fold_left(["a", "b", "c"], "", fun (acc, i, x) return acc + x end)
     assert str == "abc"
 end
 
@@ -213,7 +215,7 @@ end
 /// Example:
 /// ```vv
 /// let l = ["a", "b", "c"]
-/// list.fold_right(l, "", fun (acc, i, x) acc + x end) // "cba"
+/// list.fold_right(l, "", fun (acc, i, x) return acc + x end) // "cba"
 /// ```
 pub fun fold_right(xs, init, f)
   let rs = init
@@ -226,7 +228,7 @@ pub fun fold_right(xs, init, f)
 end
 
 test "fold_right"
-    let str = fold_right(["a", "b", "c"], "", fun (acc, i, x) acc + x end)
+    let str = fold_right(["a", "b", "c"], "", fun (acc, i, x) return acc + x end)
     assert str == "cba"
 end
 
@@ -239,14 +241,14 @@ end
 /// ```
 pub fun head(xs)
   if len(xs) == 0
-    return none
+    return option.none
   end
-  return xs[0]
+  return option.some(xs[0])
 end
 
 test "head"
-    assert head([1, 2, 3]) == 1
-    assert head([]) == none
+    assert head([1, 2, 3]) == option.some(1)
+    assert head([]) == option.none
 end
 
 /// Returns a new list containing all elements except the first one.
@@ -258,15 +260,15 @@ end
 /// ```
 pub fun tail(xs)
   if len(xs) == 0
-    return none
+    return option.none
   end
-  return xs[1:]
+  return option.some(xs[1:])
 end
 
 test "tail"
-    assert tail([1, 2, 3]) == [2, 3]
-    assert tail([1]) == []
-    assert tail([]) == none
+    assert tail([1, 2, 3]) == option.some([2, 3])
+    assert tail([1]) == option.some([])
+    assert tail([]) == option.none
 end
 
 /// Flattens a list of lists into a single continuous list.
@@ -280,7 +282,7 @@ end
 pub fun flat(xs)
   let rs = []
   each(xs, fun (_, x)
-    if type(x) == "list"
+    if sys.type(x) == "list"
       each(x, fun (_, y)
         push(rs, y)
       end)
@@ -301,14 +303,14 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2]
-/// list.flat_map(l, fun (i, x) [x, x * 2] end) // [1, 2, 2, 4]
+/// list.flat_map(l, fun (i, x) return [x, x * 2] end) // [1, 2, 2, 4]
 /// ```
 pub fun flat_map(xs, f)
-  flat(map(xs, f))
+  return flat(map(xs, f))
 end
 
 test "flat_map"
-    let r = flat_map([1, 2], fun (i, x) [x, x * 2] end)
+    let r = flat_map([1, 2], fun (i, x) return [x, x * 2] end)
     assert r == [1, 2, 2, 4]
 end
 
@@ -340,7 +342,7 @@ end
 ///
 /// Example:
 /// ```vv
-/// list.init(3, fun (i) i * 2 end) // [0, 2, 4]
+/// list.init(3, fun (i) return i * 2 end) // [0, 2, 4]
 /// ```
 pub fun init(n, f)
   let rs = []
@@ -353,8 +355,8 @@ pub fun init(n, f)
 end
 
 test "init"
-    assert init(3, fun (i) i * 2 end) == [0, 2, 4]
-    assert init(0, fun (i) i end) == []
+    assert init(3, fun (i) return i * 2 end) == [0, 2, 4]
+    assert init(0, fun (i) return i end) == []
 end
 
 /// Returns the element that produces the maximum value when `f(element)` is applied.
@@ -362,7 +364,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 5, 2]
-/// list.max(l, fun (x) x end) // 5
+/// list.max(l, fun (x) return x end) // 5
 /// ```
 pub fun max(xs, f)
   let m = xs[0]
@@ -375,8 +377,8 @@ pub fun max(xs, f)
 end
 
 test "max"
-    assert max([1, 5, 2], fun (x) x end) == 5
-    assert max([3], fun (x) x end) == 3
+    assert max([1, 5, 2], fun (x) return x end) == 5
+    assert max([3], fun (x) return x end) == 3
 end
 
 /// Returns the element that produces the minimum value when `f(element)` is applied.
@@ -384,7 +386,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 5, 2]
-/// list.min(l, fun (x) x end) // 1
+/// list.min(l, fun (x) return x end) // 1
 /// ```
 pub fun min(xs, f)
   let m = xs[0]
@@ -397,8 +399,8 @@ pub fun min(xs, f)
 end
 
 test "min"
-    assert min([1, 5, 2], fun (x) x end) == 1
-    assert min([3], fun (x) x end) == 3
+    assert min([1, 5, 2], fun (x) return x end) == 1
+    assert min([3], fun (x) return x end) == 3
 end
 
 /// Splits a list into two lists: one containing elements that satisfy the condition `f(index, element)`, and another for elements that don't.
@@ -406,7 +408,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3, 4]
-/// list.partition(l, fun (i, x) x % 2 == 0 end) // [[2, 4], [1, 3]]
+/// list.partition(l, fun (i, x) return x % 2 == 0 end) // [[2, 4], [1, 3]]
 /// ```
 pub fun partition(xs, f)
   let ys = []
@@ -422,7 +424,7 @@ pub fun partition(xs, f)
 end
 
 test "partition"
-    let r = partition([1, 2, 3, 4], fun (i, x) x % 2 == 0 end)
+    let r = partition([1, 2, 3, 4], fun (i, x) return x % 2 == 0 end)
     assert r[0] == [2, 4]
     assert r[1] == [1, 3]
 end
@@ -440,12 +442,12 @@ pub fun zip(xs, ys)
   let i = 0
   let length = max([len(xs), len(ys)], fun (it) return it end)
   while i < length
-    let x = none
+    let x = option.none
     if i < len(xs)
       x = xs[i]
     end
 
-    let y = none
+    let y = option.none
     if i < len(ys)
       y = ys[i]
     end
@@ -462,7 +464,7 @@ test "zip"
     assert r == [[1, "a"], [2, "b"]]
     // Unequal lengths
     let r2 = zip([1, 2, 3], ["x"])
-    assert r2 == [[1, "x"], [2, none], [3, none]]
+    assert r2 == [[1, "x"], [2, option.none], [3, option.none]]
 end
 
 /// Checks if all elements in the list satisfy the applied condition `f(index, element)`.
@@ -470,7 +472,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [2, 4, 6]
-/// list.every(l, fun (i, x) x % 2 == 0 end) // true
+/// list.every(l, fun (i, x) return x % 2 == 0 end) // true
 /// ```
 pub fun every(xs, f)
   let i = 0
@@ -484,9 +486,9 @@ pub fun every(xs, f)
 end
 
 test "every"
-    assert every([2, 4, 6], fun (i, x) x % 2 == 0 end) == true
-    assert every([2, 3, 6], fun (i, x) x % 2 == 0 end) == false
-    assert every([], fun (i, x) false end) == true
+    assert every([2, 4, 6], fun (i, x) return x % 2 == 0 end) == true
+    assert every([2, 3, 6], fun (i, x) return x % 2 == 0 end) == false
+    assert every([], fun (i, x) return false end) == true
 end
 
 /// Checks if at least one element in the list satisfies the applied condition `f(index, element)`.
@@ -494,7 +496,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3]
-/// list.some(l, fun (i, x) x % 2 == 0 end) // true
+/// list.some(l, fun (i, x) return x % 2 == 0 end) // true
 /// ```
 pub fun some(xs, f)
   let i = 0
@@ -508,9 +510,9 @@ pub fun some(xs, f)
 end
 
 test "some"
-    assert some([1, 2, 3], fun (i, x) x % 2 == 0 end) == true
-    assert some([1, 3, 5], fun (i, x) x % 2 == 0 end) == false
-    assert some([], fun (i, x) true end) == false
+    assert some([1, 2, 3], fun (i, x) return x % 2 == 0 end) == true
+    assert some([1, 3, 5], fun (i, x) return x % 2 == 0 end) == false
+    assert some([], fun (i, x) return true end) == false
 end
 
 /// Returns the first element in the list that satisfies the condition `f(index, element)`.
@@ -518,7 +520,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3]
-/// list.find(l, fun (i, x) x % 2 == 0 end) // 2
+/// list.find(l, fun (i, x) return x % 2 == 0 end) // 2
 /// ```
 pub fun find(xs, f)
   let i = 0
@@ -528,12 +530,12 @@ pub fun find(xs, f)
     end
     i += 1
   end
-  return none
+  return option.none
 end
 
 test "find"
-    assert find([1, 2, 3], fun (i, x) x % 2 == 0 end) == 2
-    assert find([1, 3, 5], fun (i, x) x % 2 == 0 end) == none
+    assert find([1, 2, 3], fun (i, x) return x % 2 == 0 end) == 2
+    assert find([1, 3, 5], fun (i, x) return x % 2 == 0 end) == option.none
 end
 
 /// Returns the index of the first element in the list that satisfies the condition `f(index, element)`.
@@ -542,7 +544,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3]
-/// list.find_index(l, fun (i, x) x % 2 == 0 end) // 1
+/// list.find_index(l, fun (i, x) return x % 2 == 0 end) // 1
 /// ```
 pub fun find_index(xs, f)
   let i = 0
@@ -552,12 +554,12 @@ pub fun find_index(xs, f)
     end
     i += 1
   end
-  return -1
+  return option.none
 end
 
 test "find_index"
-    assert find_index([1, 2, 3], fun (i, x) x % 2 == 0 end) == 1
-    assert find_index([1, 3, 5], fun (i, x) x % 2 == 0 end) == -1
+    assert find_index([1, 2, 3], fun (i, x) return x % 2 == 0 end) == 1
+    assert find_index([1, 3, 5], fun (i, x) return x % 2 == 0 end) == option.none
 end
 
 /// Searches for a sub-list pattern within the list and returns the start index.
@@ -600,7 +602,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3, 4]
-/// list.take_while(l, fun (i, x) x < 3 end) // [1, 2]
+/// list.take_while(l, fun (i, x) return x < 3 end) // [1, 2]
 /// ```
 pub fun take_while(xs, f)
   let rs = []
@@ -617,9 +619,9 @@ pub fun take_while(xs, f)
 end
 
 test "take_while"
-    assert take_while([1, 2, 3, 4], fun (i, x) x < 3 end) == [1, 2]
-    assert take_while([3, 4], fun (i, x) x < 3 end) == []
-    assert take_while([1, 2], fun (i, x) x < 3 end) == [1, 2]
+    assert take_while([1, 2, 3, 4], fun (i, x) return x < 3 end) == [1, 2]
+    assert take_while([3, 4], fun (i, x) return x < 3 end) == []
+    assert take_while([1, 2], fun (i, x) return x < 3 end) == [1, 2]
 end
 
 /// Drops elements from the beginning of the list as long as they satisfy the condition `f(index, element)`.
@@ -628,7 +630,7 @@ end
 /// Example:
 /// ```vv
 /// let l = [1, 2, 3, 4]
-/// list.drop_while(l, fun (i, x) x < 3 end) // [3, 4]
+/// list.drop_while(l, fun (i, x) return x < 3 end) // [3, 4]
 /// ```
 pub fun drop_while(xs, f)
   let rs = []
@@ -648,7 +650,7 @@ pub fun drop_while(xs, f)
 end
 
 test "drop_while"
-    assert drop_while([1, 2, 3, 4], fun (i, x) x < 3 end) == [3, 4]
-    assert drop_while([1, 2], fun (i, x) x < 3 end) == []
-    assert drop_while([3, 4], fun (i, x) x < 3 end) == [3, 4]
+    assert drop_while([1, 2, 3, 4], fun (i, x) return x < 3 end) == [3, 4]
+    assert drop_while([1, 2], fun (i, x) return x < 3 end) == []
+    assert drop_while([3, 4], fun (i, x) return x < 3 end) == [3, 4]
 end

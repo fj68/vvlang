@@ -212,9 +212,20 @@ func (s *State) evalAssertStmt(stmt *ast.AssertStmt) error {
 	return nil
 }
 
-func (s *State) evalTestStmt(stmt *ast.TestStmt) error {
+func (s *State) evalTestStmt(stmt *ast.TestStmt) (err error) {
 	// run them only in test mode, and skip during normal evaluation
-	if s.IsTestMode {
+	if s.IsTestMode() {
+		s.CurrentTest.Name = stmt.Name
+		s.CurrentTest.Body = stmt.Body
+
+		s.pushDeferScope()
+		defer func() {
+			deferErr := s.popDeferScope()
+			if err == nil {
+				err = deferErr
+			}
+		}()
+
 		return s.evalBody(stmt.Body)
 	}
 	return nil
@@ -288,7 +299,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 
 	modState := s.NewState(targetPath)
 	modState.ModuleCache = s.ModuleCache
-	modState.IsTestMode = s.IsTestMode
+	modState.CurrentTest = s.CurrentTest
 	modState.BuiltinModules = s.BuiltinModules
 
 	s.ModuleCache[targetPath] = nil

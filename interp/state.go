@@ -12,8 +12,13 @@ import (
 	"github.com/fj68/vvlang/stack"
 )
 
+type TestState struct {
+	Name string
+	Body []ast.Stmt
+}
+
 type State struct {
-	IsTestMode        bool
+	CurrentTest       *TestState
 	SourcePath        string
 	ModuleCache       map[string]*VModule
 	Env               *Env
@@ -36,6 +41,10 @@ func NewState(sourcePath string) *State {
 		NewState:          NewState,
 		MaxRecursionDepth: 1000,
 	}
+}
+
+func (s *State) IsTestMode() bool {
+	return s.CurrentTest != nil
 }
 
 func (s *State) EnsureSystemLibrary(name string, library fs.FS) error {
@@ -147,7 +156,7 @@ var ErrContinue = fmt.Errorf("continue")
 var ErrReturn = fmt.Errorf("return")
 
 func (s *State) evalTestModule(module *ast.Module) (err error) {
-	s.IsTestMode = true
+	s.CurrentTest = &TestState{}
 	// Register any native functions that belong to the file under test,
 	// mirroring what evalImportStmt does for imported modules.
 	s.registerNativesForPath(s.SourcePath)

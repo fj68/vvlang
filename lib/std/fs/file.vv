@@ -9,6 +9,7 @@
 /// file.write(fd, "hello")
 /// ```
 
+
 import result from "std/result.vv"
 
 /// Opens a file in read and write mode.
@@ -69,6 +70,12 @@ pub extern "native" fun read(fd, length)
 /// Returns the number of bytes written.
 pub extern "native" fun write(fd, content)
 
+/// Removes a file.
+/// 
+/// - `path`: The path to the file.
+/// 
+pub extern "native" fun remove(path)
+
 /// Creates a generalized reader stream for a file.
 /// 
 /// - `path`: The path to the file.
@@ -86,4 +93,13 @@ end
 /// Returns a record with `fd`, `write`, and `close` functions.
 pub fun writer(path, is_append)
     return result.ok({ fd = open_write(path, is_append)!, write = fun (r, content) return write(r.fd, content) end, close = fun (r) return close(r.fd) end })
+end
+
+test "reader"
+    let path = "tmp_test_file_reader_inline.txt"
+    let f = create(path)!
+    let r = reader(path)!
+    defer remove(path)
+    defer r.close(r)
+    defer close(f)
 end

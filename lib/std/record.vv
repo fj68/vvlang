@@ -10,8 +10,9 @@
 /// let keys = record.keys(r)
 /// ```
 
-
+import option from "./option.vv"
 import list from "./list.vv"
+import console from "./console.vv"
 
 /// Gets the value associated with the given key in a record.
 /// Returns `none` if the key does not exist.
@@ -28,7 +29,7 @@ test "get"
     let r = { a = 1, b = 2 }
     assert get(r, "a") == 1
     assert get(r, "b") == 2
-    assert get(r, "c") == none
+    assert get(r, "c") == option.none
 end
 
 /// Sets the value for the given key in a record, modifying it in place.
@@ -74,8 +75,8 @@ end
 /// record.keys(r) // ["a", "b"]
 /// ```
 pub fun keys(r)
-  list.map(to_list(r), fun (i, kv)
-    kv[0]
+  return list.map(to_list(r), fun (i, kv)
+    return kv[0]
   end)
 end
 
@@ -93,8 +94,8 @@ end
 /// record.values(r) // [1, 2]
 /// ```
 pub fun values(r)
-  list.map(to_list(r), fun (i, kv)
-    kv[1]
+  return list.map(to_list(r), fun (i, kv)
+    return kv[1]
   end)
 end
 
@@ -114,8 +115,8 @@ end
 /// record.has(r, "baz") // false
 /// ```
 pub fun has(r, k)
-  list.some(keys(r), fun (i, x)
-    x == k
+  return list.some(keys(r), fun (i, x)
+    return x == k
   end)
 end
 
