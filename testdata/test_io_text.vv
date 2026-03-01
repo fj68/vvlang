@@ -1,0 +1,43 @@
+import text from "std/io/text.vv"
+import utf8 from "std/encoding/utf8.vv"
+import sjis from "std/encoding/sjis.vv"
+import fs from "std/fs/file.vv"
+
+test "text reader utf8"
+    let path = "tmp_test_text_utf8.txt"
+    let f = fs.create(path)!
+    fs.write(f, [97, 226, 130, 172, 10]) // a€\n
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = text.reader(source, utf8)!
+    
+    let c1 = r.read(r)!
+    assert c1.char == 'a'
+    
+    let c2 = r.read(r)!
+    assert c2.char == '€'
+    
+    let c3 = r.read(r)!
+    assert c3.char == '\n'
+    
+    r.close(r)
+end
+
+test "text reader read_line"
+    let path = "tmp_test_line.txt"
+    let f = fs.create(path)!
+    fs.write(f, [97, 98, 10, 99, 100]) // ab\ncd
+    fs.close(f)
+
+    let source = fs.reader(path)!
+    let r = text.reader(source, utf8)!
+    
+    let l1 = r.read_line(r)!
+    assert l1 == ['a', 'b']
+    
+    let l2 = r.read_line(r)!
+    assert l2 == ['c', 'd']
+    
+    r.close(r)
+end

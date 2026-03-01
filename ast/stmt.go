@@ -98,21 +98,21 @@ func (stmt *IfStmt) Equals(other Stmt) bool {
 	return stmt.Else.Equals(o.Else)
 }
 
-type VarAssignStmt struct {
-	Name string
+type AssignmentStmt struct {
+	Left Expr
 	Body Expr
 }
 
-func (stmt *VarAssignStmt) Inspect() string {
-	return fmt.Sprintf("VarAssignStmt{\"%s\", %s}", stmt.Name, stmt.Body.Inspect())
+func (stmt *AssignmentStmt) Inspect() string {
+	return fmt.Sprintf("AssignmentStmt{%s, %s}", stmt.Left.Inspect(), stmt.Body.Inspect())
 }
 
-func (stmt *VarAssignStmt) Equals(other Stmt) bool {
-	o, ok := other.(*VarAssignStmt)
+func (stmt *AssignmentStmt) Equals(other Stmt) bool {
+	o, ok := other.(*AssignmentStmt)
 	if !ok {
 		return false
 	}
-	return stmt.Name == o.Name && stmt.Body.Equals(o.Body)
+	return stmt.Left.Equals(o.Left) && stmt.Body.Equals(o.Body)
 }
 
 type VarDeclStmt struct {
@@ -160,23 +160,6 @@ func (stmt *RecFunDeclStmt) Equals(other Stmt) bool {
 		}
 	}
 	return true
-}
-
-type AssignStmt struct {
-	Name string
-	Body Expr
-}
-
-func (stmt *AssignStmt) Inspect() string {
-	return fmt.Sprintf("AssignStmt{\"%s\", %s}", stmt.Name, stmt.Body.Inspect())
-}
-
-func (stmt *AssignStmt) Equals(other Stmt) bool {
-	o, ok := other.(*AssignStmt)
-	if !ok {
-		return false
-	}
-	return stmt.Name == o.Name && stmt.Body.Equals(o.Body)
 }
 
 type BlockStmt struct {

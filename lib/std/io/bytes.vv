@@ -1,0 +1,99 @@
+/// The `io/bytes` module provides a buffered byte reader.
+
+import list from "std/list.vv"
+import result from "std/result.vv"
+
+/// Creates a buffered reader with the specified buffer size.
+///
+/// - `source_reader`: An object with a `read(length)` method.
+/// - `size`: The size of the internal buffer.
+///
+/// Returns a result containing a reader record.
+pub fun reader(source_reader, size)
+    return result.ok({
+        source = source_reader,
+        buffer = [],
+        pos = 0,
+        size = size,
+        read = read,
+        peek = peek,
+        close = fun (r) return r.source.close(r.source) end
+    })
+end
+
+/// Reads `n` bytes from the reader.
+///
+/// - `r`: The reader record.
+/// - `n`: The number of bytes to read.
+///
+/// Returns a result containing a list of bytes.
+pub fun read(r, n)
+    let res = []
+    while len(res) < n
+        if len(r.buffer) <= r.pos
+            let fill_res = r.source.read(r.source, r.size)
+            if result.is_error(fill_res)
+                if 0 < len(res)
+                    return result.ok(res)
+                end
+                return fill_res
+            end
+            r.buffer = fill_res.value
+            r.pos = 0
+            if len(r.buffer) == 0
+                return result.ok(res)
+            end
+        end
+
+        let can_read = len(r.buffer) - r.pos
+        let to_read = n - len(res)
+        if can_read < to_read
+            to_read = can_read
+        end
+
+        let chunk = r.buffer[r.pos : r.pos + to_read]
+        list.each(chunk, fun (_, b) list.push(res, b) end)
+        r.pos += to_read
+    end
+    return result.ok(res)
+end
+
+/// Peeks `n` bytes from the reader without advancing the position.
+///
+/// - `r`: The reader record.
+/// - `n`: The number of bytes to peek.
+///
+/// Returns a result containing a list of bytes.
+pub fun peek(r, n)
+    while len(r.buffer) - r.pos < n
+        let fill_res = r.source.read(r.source, r.size)
+        if result.is_error(fill_res) or len(fill_res.value) == 0
+            break
+        end
+        // Append to current buffer
+        list.each(fill_res.value, fun (_, b) list.push(r.buffer, b) end)
+    end
+
+    let end_pos = r.pos + n
+    if len(r.buffer) < end_pos
+        end_pos = len(r.buffer)
+    end
+    return result.ok(r.buffer[r.pos : end_pos])
+end
+
+/// Reads all remaining content from the reader.
+///
+/// - `r`: The reader record.
+///
+/// Returns a result containing a list of all remaining bytes.
+pub fun read_all(r)
+    let res = []
+    while true
+        let chunk_res = read(r, r.size)
+        if result.is_error(chunk_res) or len(chunk_res.value) == 0
+            break
+        end
+        list.each(chunk_res.value, fun (_, b) list.push(res, b) end)
+    end
+    return result.ok(res)
+end

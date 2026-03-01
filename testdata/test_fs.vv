@@ -31,7 +31,7 @@ assert result.is_ok(res_r)
 let r = result.get_or(res_r, 0)
 let res_content = r.read(r, 12)
 assert result.is_ok(res_content)
-assert result.get_or(res_content, "") == "hello world!"
+assert result.get_or(res_content, []) == [104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 33]
 r.close(r)
 
 // Dir read

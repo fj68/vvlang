@@ -1,0 +1,25 @@
+import sjis from "std/encoding/sjis.vv"
+
+test "sjis encode"
+    // 'A' in SJIS is 0x41
+    assert sjis.encode('A') == [65]
+    // 'あ' in SJIS is 0x82 0xA0
+    assert sjis.encode('あ') == [130, 160]
+end
+
+test "sjis decode"
+    let d1 = sjis.decode([65])
+    assert d1.type == "ok"
+    assert d1.value.char == 'A'
+    assert d1.value.size == 1
+
+    let d2 = sjis.decode([130, 160])
+    assert d2.type == "ok"
+    assert d2.value.char == 'あ'
+    assert d2.value.size == 2
+end
+
+test "sjis decode error"
+    let d1 = sjis.decode([130]) // Truncated
+    assert d1.type == "error"
+end

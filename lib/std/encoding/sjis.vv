@@ -1,0 +1,15 @@
+/// The `encoding/sjis` module provides Shift-JIS encoding and decoding utilities.
+
+/// Encodes a character to a list of Shift-JIS bytes.
+///
+/// - `c`: The character to encode.
+///
+/// Returns a list of integers representing Shift-JIS bytes.
+pub extern "native" fun encode(c)
+
+/// Decodes a list of bytes to a character.
+///
+/// - `bytes`: A list of integers representing Shift-JIS bytes.
+///
+/// Returns a result containing a record `{ char = c, size = n }` or an error.
+pub extern "native" fun decode(bytes)

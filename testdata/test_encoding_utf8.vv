@@ -1,0 +1,32 @@
+import utf8 from "std/encoding/utf8.vv"
+
+test "utf8 encode"
+    assert utf8.encode('a') == [97]
+    assert utf8.encode('€') == [226, 130, 172]
+    assert utf8.encode('𠮷') == [240, 160, 174, 183]
+end
+
+test "utf8 decode"
+    let d1 = utf8.decode([97])
+    assert d1.type == "ok"
+    assert d1.value.char == 'a'
+    assert d1.value.size == 1
+
+    let d2 = utf8.decode([226, 130, 172])
+    assert d2.type == "ok"
+    assert d2.value.char == '€'
+    assert d2.value.size == 3
+
+    let d3 = utf8.decode([240, 160, 174, 183])
+    assert d3.type == "ok"
+    assert d3.value.char == '𠮷'
+    assert d3.value.size == 4
+end
+
+test "utf8 decode error"
+    let d1 = utf8.decode([])
+    assert d1.type == "error"
+
+    let d2 = utf8.decode([226, 130])
+    assert d2.type == "error"
+end

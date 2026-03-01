@@ -192,12 +192,10 @@ func (s *State) evalStmt(stmt ast.Stmt) error {
 		return s.evalVarDeclStmt(v)
 	case *ast.RecFunDeclStmt:
 		return s.evalRecFunDeclStmt(v)
-	case *ast.AssignStmt:
-		return s.evalAssignStmt(v)
+	case *ast.AssignmentStmt:
+		return s.evalAssignmentStmt(v)
 	case *ast.BlockStmt:
 		return s.evalBlockStmt(v)
-	case *ast.VarAssignStmt:
-		return s.evalVarAssignStmt(v)
 	case *ast.IfStmt:
 		return s.evalIfStmt(v)
 	case *ast.BreakStmt:

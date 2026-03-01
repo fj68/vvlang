@@ -1,0 +1,11 @@
+/// The `encoding/utf8` module provides UTF-8 encoding and decoding utilities.
+
+/// Encodes a character to a list of UTF-8 bytes.
+pub extern "native" fun encode(c)
+
+/// Decodes a list of bytes to a character.
+///
+/// - `bytes`: A list of integers representing UTF-8 bytes.
+///
+/// Returns a result containing a record `{ char = c, size = n }` or an error.
+pub extern "native" fun decode(bytes)

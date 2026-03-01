@@ -97,13 +97,61 @@ func (s *State) evalRecFunDeclStmt(stmt *ast.RecFunDeclStmt) error {
 	return nil
 }
 
-func (s *State) evalAssignStmt(stmt *ast.AssignStmt) error {
-	v, err := s.evalExpr(stmt.Body)
+func (s *State) evalAssignmentStmt(stmt *ast.AssignmentStmt) error {
+	val, err := s.evalExpr(stmt.Body)
 	if err != nil {
 		return err
 	}
-	s.Env.SetOuter(stmt.Name, v)
-	return nil
+
+	switch l := stmt.Left.(type) {
+	case *ast.VarRefExpr:
+		s.Env.SetOuter(l.Name, val)
+		return nil
+	case *ast.FieldAccessExpr:
+		recVal, err := s.evalExpr(l.Record)
+		if err != nil {
+			return err
+		}
+		var rec *VRecord
+		switch tv := recVal.(type) {
+		case *VRecord:
+			rec = tv
+		case *VModule:
+			rec = tv.VRecord
+		default:
+			return fmt.Errorf("expected record for field access, but got %s", recVal.Type())
+		}
+		rec.Fields[l.Field] = val
+		return nil
+	case *ast.IndexExpr:
+		listVal, err := s.evalExpr(l.Left)
+		if err != nil {
+			return err
+		}
+		list, ok := listVal.(*VList)
+		if !ok {
+			return fmt.Errorf("expected list for index access, but got %s", listVal.Type())
+		}
+		idxVal, err := s.evalExpr(l.Index)
+		if err != nil {
+			return err
+		}
+		idx, ok := idxVal.(VInt)
+		if !ok {
+			return fmt.Errorf("list index must be an int, got %s", idxVal.Type())
+		}
+		i := int(idx)
+		if i < 0 {
+			i = len(list.Elements) + i
+		}
+		if i < 0 || i >= len(list.Elements) {
+			return fmt.Errorf("list index out of range: %d", i)
+		}
+		list.Elements[i] = val
+		return nil
+	default:
+		return fmt.Errorf("invalid left-hand side in assignment")
+	}
 }
 
 func (s *State) evalBlockStmt(stmt *ast.BlockStmt) (err error) {
@@ -120,15 +168,6 @@ func (s *State) evalBlockStmt(stmt *ast.BlockStmt) (err error) {
 	}()
 
 	return s.evalBody(stmt.Body)
-}
-
-func (s *State) evalVarAssignStmt(stmt *ast.VarAssignStmt) error {
-	v, err := s.evalExpr(stmt.Body)
-	if err != nil {
-		return err
-	}
-	s.Env.SetOuter(stmt.Name, v)
-	return nil
 }
 
 func (s *State) evalWhileStmt(stmt *ast.WhileStmt) error {

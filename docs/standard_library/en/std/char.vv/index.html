@@ -43,6 +43,15 @@
             color: #2c3e50;
         }
 
+        header .logo a {
+            color: #2c3e50;
+            text-decoration: none;
+        }
+
+        header .logo a:hover {
+            text-decoration: underline;
+        }
+
         nav.langs a {
             color: #666;
             text-decoration: none;
@@ -166,7 +175,7 @@
 
 <body>
     <header>
-        <div class='logo'>vvlang docs</div>
+        <div class='logo'><a href='../../../en/index.html'>vvlang docs</a></div>
         <nav class='langs'>
             
             <a href='../../../en/index.html' class='active' >en</a>
@@ -175,7 +184,7 @@
     </header>
     <main>
         
-<p><a href='../../../index.html'>← Back to Index</a></p>
+<p><a href='../../../en/index.html'>← Back to Index</a></p>
 <h1>Module <code>std/char.vv</code></h1>
 
 
@@ -196,8 +205,6 @@ Characters are typically represented by single quotes.</p>
         <li><a href="#is_digit">is_digit</a></li>
         
         <li><a href="#is_space">is_space</a></li>
-        
-        <li><a href="#to_bytes">to_bytes</a></li>
         
     </ul>
 </div>
@@ -261,21 +268,6 @@ char.is_digit('a') // false
 <pre><code class="language-vv">char.is_space(' ')  // true
 char.is_space('\n') // true
 char.is_space('a')  // false
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='to_bytes' class='signature-header'>
-        <code>fun to_bytes(c)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Converts a character to a list of its UTF-8 byte values.</p>
-<p>Example:</p>
-<pre><code class="language-vv">char.to_bytes('a') // [97]
-char.to_bytes('€') // [226, 130, 172]
 </code></pre>
 </div>
     

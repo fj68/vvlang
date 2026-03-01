@@ -1,5 +1,7 @@
 /// The `fs/file` module provides low-level file I/O operations.
 
+import result from "std/result.vv"
+
 /// Opens a file in read and write mode.
 /// 
 /// - `path`: The path to the file.
@@ -47,16 +49,18 @@ pub extern "native" fun close(fd)
 /// - `fd`: The file descriptor to read from.
 /// - `length`: The number of bytes to read.
 /// 
-/// Returns the read content as a list of characters.
+/// Returns the read content as a list of integers (bytes).
 pub extern "native" fun read(fd, length)
 
 /// Writes bytes to a file.
 /// 
 /// - `fd`: The file descriptor to write to.
-/// - `content`: The bytes (list of characters) to write.
+/// - `content`: The bytes (list of integers or characters) to write.
 /// 
 /// Returns the number of bytes written.
 pub extern "native" fun write(fd, content)
+
+
 
 /// Creates a generalized reader stream for a file.
 /// 
@@ -64,7 +68,7 @@ pub extern "native" fun write(fd, content)
 /// 
 /// Returns a record with `fd`, `read`, and `close` functions.
 pub fun reader(path)
-    return { type = "ok", value = { fd = open_read(path)!, read = fun (r, length) return read(r.fd, length) end, close = fun (r) return close(r.fd) end } }
+    return result.ok({ fd = open_read(path)!, read = fun (r, length) return read(r.fd, length) end, close = fun (r) return close(r.fd) end })
 end
 
 /// Creates a generalized writer stream for a file.
@@ -74,5 +78,5 @@ end
 /// 
 /// Returns a record with `fd`, `write`, and `close` functions.
 pub fun writer(path, is_append)
-    return { type = "ok", value = { fd = open_write(path, is_append)!, write = fun (r, content) return write(r.fd, content) end, close = fun (r) return close(r.fd) end } }
+    return result.ok({ fd = open_write(path, is_append)!, write = fun (r, content) return write(r.fd, content) end, close = fun (r) return close(r.fd) end })
 end

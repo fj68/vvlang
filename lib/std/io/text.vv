@@ -1,0 +1,112 @@
+/// The `io/text` module provides a buffered text reader using an encoding.
+
+import bytes from "std/io/bytes.vv"
+import list from "std/list.vv"
+import result from "std/result.vv"
+
+/// Creates a buffered text reader using an encoding.
+///
+/// - `source_reader`: An object with a `read(length)` method.
+/// - `encoding_module`: An encoding module (e.g., `utf8` or `sjis`).
+///
+/// Returns a result containing a text reader record.
+pub fun reader(source_reader, encoding_module)
+    let b_reader_res = bytes.reader(source_reader, 4096)
+    let b_reader = b_reader_res.value
+    return result.ok({
+        b_reader = b_reader,
+        encoding = encoding_module,
+        read = read,
+        peek = peek,
+        read_line = read_line,
+        read_all = read_all,
+        close = fun (r) return r.b_reader.close(r.b_reader) end
+    })
+end
+
+/// Reads a single character from the reader.
+///
+/// - `r`: The text reader record.
+///
+/// Returns a result containing a record `{ char = c, size = n }`.
+pub fun read(r)
+    let peek_bytes_res = r.b_reader.peek(r.b_reader, 4)
+    let peek_bytes = peek_bytes_res.value
+    if len(peek_bytes) == 0
+        return result.error("EOF")
+    end
+
+    let dec_res = r.encoding.decode(peek_bytes)
+    if result.is_error(dec_res)
+        return dec_res
+    end
+
+    let entry = dec_res.value
+    // Advance b_reader by entry.size
+    r.b_reader.read(r.b_reader, entry.size)
+    return result.ok({ char = entry.char, size = entry.size })
+end
+
+/// Peeks a single character without advancing the position.
+///
+/// - `r`: The text reader record.
+///
+/// Returns a result containing a record `{ char = c, size = n }`.
+pub fun peek(r)
+    let peek_bytes_res = r.b_reader.peek(r.b_reader, 4)
+    let peek_bytes = peek_bytes_res.value
+    if len(peek_bytes) == 0
+        return result.error("EOF")
+    end
+
+    return r.encoding.decode(peek_bytes)
+end
+
+/// Reads a line from the reader.
+///
+/// - `r`: The text reader record.
+///
+/// Returns a result containing a list of characters (excluding line breaks).
+pub fun read_line(r)
+    let res = []
+    while true
+        let dec_res = read(r)
+        if result.is_error(dec_res)
+            if 0 < len(res)
+                return result.ok(res)
+            end
+            return dec_res
+        end
+        let c = dec_res.value.char
+        if c == '\n'
+            break
+        end
+        if c == '\r'
+            // Peek next to see if it's \n
+            let next_res = peek(r)
+            if result.is_ok(next_res) and next_res.value.char == '\n'
+                read(r) // consume \n
+            end
+            break
+        end
+        list.push(res, c)
+    end
+    return result.ok(res)
+end
+
+/// Reads all remaining content as a list of characters.
+///
+/// - `r`: The text reader record.
+///
+/// Returns a result containing a list of characters.
+pub fun read_all(r)
+    let res = []
+    while true
+        let dec_res = read(r)
+        if result.is_error(dec_res)
+            break
+        end
+        list.push(res, dec_res.value.char)
+    end
+    return result.ok(res)
+end

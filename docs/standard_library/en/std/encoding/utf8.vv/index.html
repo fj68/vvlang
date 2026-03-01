@@ -4,7 +4,7 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>std/record.vv - vvlang documentation</title>
+    <title>std/encoding/utf8.vv - vvlang documentation</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -170,26 +170,25 @@
             font-size: 0.9rem;
         }
     </style>
-    <link rel="stylesheet" href="../../../static/highlight.css">
+    <link rel="stylesheet" href="../../../../static/highlight.css">
 </head>
 
 <body>
     <header>
-        <div class='logo'><a href='../../../en/index.html'>vvlang docs</a></div>
+        <div class='logo'><a href='../../../../en/index.html'>vvlang docs</a></div>
         <nav class='langs'>
             
-            <a href='../../../en/index.html' class='active' >en</a>
+            <a href='../../../../en/index.html' class='active' >en</a>
             
         </nav>
     </header>
     <main>
         
-<p><a href='../../../en/index.html'>← Back to Index</a></p>
-<h1>Module <code>std/record.vv</code></h1>
+<p><a href='../../../../en/index.html'>← Back to Index</a></p>
+<h1>Module <code>std/encoding/utf8.vv</code></h1>
 
 
-<div class='docstring module-doc'><p>The <code>record</code> module provides utilities for working with records (key-value maps).
-Records are unordered collections of fields, where keys are typically strings or integers.</p>
+<div class='docstring module-doc'><p>The <code>encoding/utf8</code> module provides UTF-8 encoding and decoding utilities.</p>
 </div>
 
 
@@ -198,17 +197,9 @@ Records are unordered collections of fields, where keys are typically strings or
     <h2>Table of Contents</h2>
     <ul>
         
-        <li><a href="#get">get</a></li>
+        <li><a href="#encode">encode</a></li>
         
-        <li><a href="#set">set</a></li>
-        
-        <li><a href="#to_list">to_list</a></li>
-        
-        <li><a href="#keys">keys</a></li>
-        
-        <li><a href="#values">values</a></li>
-        
-        <li><a href="#has">has</a></li>
+        <li><a href="#decode">decode</a></li>
         
     </ul>
 </div>
@@ -217,102 +208,34 @@ Records are unordered collections of fields, where keys are typically strings or
 <h2>Exports</h2>
 
 <div class='export-item'>
-    <h3 id='get' class='signature-header'>
-        <code>fun get(r, k)</code>
+    <h3 id='encode' class='signature-header'>
+        <code>fun encode(c)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Gets the value associated with the given key in a record.
-Returns <code>none</code> if the key does not exist.</p>
-<p>Example:</p>
-<pre><code class="language-vv">let r = {a: 1}
-record.get(r, &quot;a&quot;) // 1
-record.get(r, &quot;b&quot;) // none
-</code></pre>
+    <div class='docstring'><p>Encodes a character to a list of UTF-8 bytes.</p>
 </div>
     
 </div>
 
 <div class='export-item'>
-    <h3 id='set' class='signature-header'>
-        <code>fun set(r, k, v)</code>
+    <h3 id='decode' class='signature-header'>
+        <code>fun decode(bytes)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Sets the value for the given key in a record, modifying it in place.
-Returns the modified record.</p>
-<p>Example:</p>
-<pre><code class="language-vv">let r = {}
-record.set(r, &quot;a&quot;, 1) // {a: 1}
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='to_list' class='signature-header'>
-        <code>fun to_list(r)</code>
-        <span class='extern-tag'>extern &#34;native&#34;</span>
-    </h3>
-    
-    <div class='docstring'><p>Converts a record to a list of key-value pairs (each pair is a list of [key, value]).</p>
-<p>Example:</p>
-<pre><code class="language-vv">let r = {a: 1, b: 2}
-record.to_list(r) // [[&quot;a&quot;, 1], [&quot;b&quot;, 2]]
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='keys' class='signature-header'>
-        <code>fun keys(r)</code>
-        
-    </h3>
-    
-    <div class='docstring'><p>Returns a list of all keys in the record.</p>
-<p>Example:</p>
-<pre><code class="language-vv">let r = {a: 1, b: 2}
-record.keys(r) // [&quot;a&quot;, &quot;b&quot;]
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='values' class='signature-header'>
-        <code>fun values(r)</code>
-        
-    </h3>
-    
-    <div class='docstring'><p>Returns a list of all values in the record.</p>
-<p>Example:</p>
-<pre><code class="language-vv">let r = {a: 1, b: 2}
-record.values(r) // [1, 2]
-</code></pre>
-</div>
-    
-</div>
-
-<div class='export-item'>
-    <h3 id='has' class='signature-header'>
-        <code>fun has(r, k)</code>
-        
-    </h3>
-    
-    <div class='docstring'><p>Checks if the record contains the specified key.</p>
-<p>Example:</p>
-<pre><code class="language-vv">let r = {foo: &quot;bar&quot;}
-record.has(r, &quot;foo&quot;) // true
-record.has(r, &quot;baz&quot;) // false
-</code></pre>
+    <div class='docstring'><p>Decodes a list of bytes to a character.</p>
+<ul>
+<li><code>bytes</code>: A list of integers representing UTF-8 bytes.</li>
+</ul>
+<p>Returns a result containing a record <code>{ char = c, size = n }</code> or an error.</p>
 </div>
     
 </div>
 
 
     </main>
-    <script type="module" src="../../../static/highlight.js"></script>
+    <script type="module" src="../../../../static/highlight.js"></script>
 </body>
 
 </html>
