@@ -1,5 +1,14 @@
 /// The `char` module provides utilities for working with characters.
 /// Characters are typically represented by single quotes.
+///
+/// Example:
+/// ```vv
+/// import char from "std/char.vv"
+///
+/// char.to_upper('a') // 'A'
+/// char.is_digit('1') // true
+/// ```
+
 
 /// Converts a character to its uppercase equivalent.
 ///

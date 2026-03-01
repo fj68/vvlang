@@ -1,4 +1,12 @@
 /// The `sys` module provides system-level capabilities and interpreter control.
+///
+/// Example:
+/// ```vv
+/// import sys from "std/sys.vv"
+///
+/// console.print(sys.type(123)) // "int"
+/// ```
+
 
 /// Prints help information about the language and available built-ins.
 ///

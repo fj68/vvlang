@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"strings"
 
 	"github.com/fj68/vvlang/ast"
 	"github.com/fj68/vvlang/mod"
@@ -85,6 +86,25 @@ func (s *State) RegisterBuiltinModules(modules map[string]map[string]Value) {
 	}
 }
 
+// registerNativesForPath populates NativeValues with any builtin module
+// whose logical path (e.g. "std/bool.vv") matches targetPath. The match is
+// tried two ways:
+//  1. Exact match against the cached path (~/.vv/.cache/std/bool.vv)
+//  2. Suffix match on the slash-normalized targetPath
+//     (covers running vv test against a local source tree).
+func (s *State) registerNativesForPath(targetPath string) {
+	normTarget := strings.ReplaceAll(targetPath, "\\", "/")
+	for stdPath, funcs := range s.BuiltinModules {
+		cachedPath := mod.GetPackagePath(stdPath)
+		normCached := strings.ReplaceAll(cachedPath, "\\", "/")
+		normStd := strings.ReplaceAll(stdPath, "\\", "/")
+		if normTarget == normCached || strings.HasSuffix(normTarget, "/"+normStd) {
+			s.RegisterNatives(funcs)
+			break
+		}
+	}
+}
+
 func (s *State) EvalTest(text []rune) error {
 	module, err := parser.Parse(text)
 	if err != nil {
@@ -128,6 +148,9 @@ var ErrReturn = fmt.Errorf("return")
 
 func (s *State) evalTestModule(module *ast.Module) (err error) {
 	s.IsTestMode = true
+	// Register any native functions that belong to the file under test,
+	// mirroring what evalImportStmt does for imported modules.
+	s.registerNativesForPath(s.SourcePath)
 	s.pushDeferScope()
 	defer func() {
 		deferErr := s.popDeferScope()

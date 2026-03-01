@@ -1,4 +1,15 @@
 /// The `result` module handles operations that can succeed with a value (`ok`) or fail with an error (`error`).
+///
+/// Example:
+/// ```vv
+/// import result from "std/result.vv"
+///
+/// let r = result.ok(42)
+/// if result.is_ok(r)
+///     console.print(r.value)
+/// end
+/// ```
+
 
 import option from "std/option.vv"
 

@@ -1,5 +1,14 @@
 /// The `option` module provides a way to represent optional values.
 /// An `option` value is either `some(value)` or `none`.
+///
+/// Example:
+/// ```vv
+/// import option from "std/option.vv"
+///
+/// let val = option.some(42)
+/// let empty = option.none
+/// ```
+
 
 /// Represents the absence of a value.
 ///

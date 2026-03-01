@@ -1,4 +1,13 @@
 /// The `int` module provides standard utilities for integer numbers.
+///
+/// Example:
+/// ```vv
+/// import int from "std/int.vv"
+///
+/// int.to_string(42) // "42"
+/// int.abs(-5)       // 5
+/// ```
+
 
 /// Converts an integer to its string representation.
 ///

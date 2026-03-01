@@ -1,4 +1,16 @@
 /// The `io/text` module provides a buffered text reader using an encoding.
+///
+/// Example:
+/// ```vv
+/// import text from "std/io/text.vv"
+/// import file from "std/fs/file.vv"
+/// import utf8 from "std/encoding/utf8.vv"
+///
+/// let f = file.reader("test.txt")!
+/// let r = text.reader(f, utf8)!
+/// let line = r.read_line(r)!
+/// ```
+
 
 import bytes from "std/io/bytes.vv"
 import list from "std/list.vv"

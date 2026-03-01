@@ -1,4 +1,15 @@
 /// The `io/bytes` module provides a buffered byte reader.
+///
+/// Example:
+/// ```vv
+/// import bytes from "std/io/bytes.vv"
+/// import file from "std/fs/file.vv"
+///
+/// let f = file.reader("test.bin")!
+/// let r = bytes.reader(f, 4096)!
+/// let content = r.read(r, 10)!
+/// ```
+
 
 import list from "std/list.vv"
 import result from "std/result.vv"

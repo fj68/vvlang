@@ -1,5 +1,15 @@
 /// The `record` module provides utilities for working with records (key-value maps).
 /// Records are unordered collections of fields, where keys are typically strings or integers.
+///
+/// Example:
+/// ```vv
+/// import record from "std/record.vv"
+///
+/// let r = { a = 1, b = 2 }
+/// record.set(r, "c", 3)
+/// let keys = record.keys(r)
+/// ```
+
 
 import list from "./list.vv"
 

@@ -83,9 +83,7 @@
             margin: 1rem 0;
         }
 
-        .module-doc {
-            font-size: 1.1rem;
-        }
+
 
         .export-item {
             margin-bottom: 2rem;
@@ -189,6 +187,13 @@
 
 
 <div class='docstring module-doc'><p>The <code>fs/dir</code> module provides low-level directory operations.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import dir from &quot;std/fs/dir.vv&quot;
+
+if dir.exists(&quot;test&quot;)
+    let files = dir.read(&quot;test&quot;)!
+end
+</code></pre>
 </div>
 
 

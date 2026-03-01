@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5. Expressions - vv Language Reference</title>
+    <title>6. Operators and Expressions - vv Language Reference</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -62,7 +62,7 @@
 
 <body>
     <p><a href="../index.html">← Back to Index</a></p>
-    <h1>5. Operators and Expressions</h1>
+    <h1>6. Operators and Expressions</h1>
 
 
     <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
@@ -80,6 +80,7 @@
                 </ul>
             </li>
             <li><a href="#prefix-infix-and-postfix-expressions">Prefix, Infix, and Postfix Expressions</a></li>
+            <li><a href="#syntactic-elements">Syntactic Elements</a></li>
         </ul>
     </div>
     <h2 id="arithmetic-operators">Arithmetic Operators</h2>
@@ -236,9 +237,17 @@
         values) operators.
     </p>
 
+    <h2 id="syntactic-elements">Syntactic Elements</h2>
+    <p>Instead of traditional built-in functions, <code>vv</code> includes specific syntactic elements parsed directly
+        as expressions. These look like functions but are built closely into the AST. Key elements include:</p>
+    <ul>
+        <li><code>len(expr)</code>: Retrieves the length of a list or string representation.</li>
+        <li><code>not(expr)</code>: Logical NOT operation on a boolean.</li>
+    </ul>
+
     <div class="nav">
-        <a href="../04_variables/index.html">← Previous: 4. Variables and Declarations</a>
-        <a href="../06_control_flow/index.html">Next: 6. Control Flow →</a>
+        <a href="../05_variables/index.html">← Previous: 5. Variables and Declarations</a>
+        <a href="../07_control_flow/index.html">Next: 7. Control Flow →</a>
     </div>
     <script type="module" src="../../static/highlight.js"></script>
 </body>

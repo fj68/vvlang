@@ -99,6 +99,11 @@ var natives = map[string]map[string]interp.Value{
 		"encode": interp.VBuiltinFun(encoding.UTF8Encode),
 		"decode": interp.VBuiltinFun(encoding.UTF8Decode),
 	},
+	"std/record.vv": {
+		"get":     interp.VBuiltinFun(std.Get),
+		"set":     interp.VBuiltinFun(std.Set),
+		"to_list": interp.VBuiltinFun(std.ToList),
+	},
 }
 
 var Std = &Lib{

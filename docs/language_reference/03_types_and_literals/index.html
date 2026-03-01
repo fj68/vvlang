@@ -73,10 +73,12 @@
             <li><a href="#characters-and-strings">Characters and Strings</a></li>
             <li><a href="#lists">Lists</a></li>
             <li style="margin-left: 1.5rem;"><a href="#indexing">Indexing</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#item-assignment">Item Assignment</a></li>
             <li style="margin-left: 1.5rem;"><a href="#slicing">Slicing</a></li>
             <li style="margin-left: 1.5rem;"><a href="#length">Length</a></li>
             <li><a href="#records">Records</a></li>
             <li style="margin-left: 1.5rem;"><a href="#field-access">Field Access</a></li>
+            <li style="margin-left: 1.5rem;"><a href="#field-assignment">Field Assignment</a></li>
             <li style="margin-left: 1.5rem;"><a href="#destructuring">Destructuring</a></li>
 
         </ul>
@@ -118,7 +120,14 @@ let empty_list = []</code></pre>
     <h3 id="indexing">Indexing</h3>
     <p>Elements in a list can be accessed using 0-based indexing. Note that indices must be of type <code>int</code>.
     </p>
-    <pre><code>let first = numbers[0] // 1</code></pre>
+    <pre><code>let numbers = [1, 2, 3, 4]
+let first = numbers[0] // 1</code></pre>
+
+    <h3 id="item-assignment">Item Assignment</h3>
+    <p>You can overwrite an element at a specific index using the assignment operator <code>=</code>.</p>
+    <pre><code>let numbers = [1, 2, 3]
+numbers[1] = 99
+// numbers is now [1, 99, 3]</code></pre>
 
     <h3 id="slicing">Slicing</h3>
     <p>A sub-list can be extracted using the slice syntax <code>list[start:end]</code>. Both start and end indices are
@@ -145,6 +154,12 @@ let from_second = numbers[1:] // [2, 3, 4]</code></pre>
     <p>Values in a record can be accessed using dot notation.</p>
     <pre><code>let person_name = person.name // "Alice"</code></pre>
 
+    <h3 id="field-assignment">Field Assignment</h3>
+    <p>A field in a record can be updated using dot notation on the left-hand side of an assignment.</p>
+    <pre><code>let person = { name = "Alice", age = 30 }
+person.age = 31
+// person.age is now 31</code></pre>
+
     <h3 id="destructuring">Destructuring</h3>
     <p>Destructuring is a convenient way to extract multiple fields from a record into local variables in a single
         declaration.
@@ -165,7 +180,7 @@ console.print(person_age)  // 30</code></pre>
 
     <div class="nav">
         <a href="../02_lexical_structure/index.html">← Previous: 2. Lexical Structure</a>
-        <a href="../04_variables/index.html">Next: 4. Variables and Declarations →</a>
+        <a href="../04_functions/index.html">Next: 4. Functions →</a>
     </div>
     <script type="module" src="../../static/highlight.js"></script>
 </body>

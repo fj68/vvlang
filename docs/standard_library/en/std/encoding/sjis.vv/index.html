@@ -83,9 +83,7 @@
             margin: 1rem 0;
         }
 
-        .module-doc {
-            font-size: 1.1rem;
-        }
+
 
         .export-item {
             margin-bottom: 2rem;
@@ -189,6 +187,13 @@
 
 
 <div class='docstring module-doc'><p>The <code>encoding/sjis</code> module provides Shift-JIS encoding and decoding utilities.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import sjis from &quot;std/encoding/sjis.vv&quot;
+
+let bytes = sjis.encode('あ')
+let res = sjis.decode(bytes)!
+console.print(res.char) // 'あ'
+</code></pre>
 </div>
 
 

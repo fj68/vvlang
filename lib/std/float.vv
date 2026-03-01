@@ -1,4 +1,13 @@
 /// The `float` module provides standard utilities for floating-point numbers.
+///
+/// Example:
+/// ```vv
+/// import float from "std/float.vv"
+///
+/// float.to_string(3.14) // "3.14"
+/// float.floor(3.9)      // 3.0
+/// ```
+
 
 /// Converts a floating-point number to its string representation.
 ///
