@@ -23,6 +23,12 @@ pub fun ok(value)
   return { type = "ok", value = value }
 end
 
+test "ok"
+    let r = ok(10)
+    assert r.type == "ok"
+    assert r.value == 10
+end
+
 /// Returns a failure result containing an error `value`.
 ///
 /// Example:
@@ -31,6 +37,12 @@ end
 /// ```
 pub fun error(value)
   return { type = "error", value = value }
+end
+
+test "error"
+    let e = error("oops")
+    assert e.type == "error"
+    assert e.value == "oops"
 end
 
 /// Checks if the result is successful (`ok`).
@@ -44,6 +56,11 @@ pub fun is_ok(v)
   return v.type == "ok"
 end
 
+test "is_ok"
+    assert is_ok(ok(1)) == true
+    assert is_ok(error(1)) == false
+end
+
 /// Checks if the result is a failure (`error`).
 ///
 /// Example:
@@ -53,6 +70,11 @@ end
 /// ```
 pub fun is_error(v)
   return v.type == "error"
+end
+
+test "is_error"
+    assert is_error(error(1)) == true
+    assert is_error(ok(1)) == false
 end
 
 /// Applies `f` to the value of an `ok` result.
@@ -68,6 +90,15 @@ pub fun map(v, f)
   return v
 end
 
+test "map"
+    let double = fun(x) x * 2 end
+    let r1 = map(ok(3), double)
+    assert r1.type == "ok"
+    assert r1.value == 6
+    let r2 = map(error("e"), double)
+    assert r2.type == "error"
+end
+
 /// Applies a function `f` that returns a result to the value of an `ok` result.
 ///
 /// Example:
@@ -79,6 +110,15 @@ pub fun flat_map(v, f)
     return f(v.value)
   end
   return v
+end
+
+test "flat_map"
+    let f = fun(x) ok(x + 1) end
+    let r1 = flat_map(ok(1), f)
+    assert r1.type == "ok"
+    assert r1.value == 2
+    let r2 = flat_map(error("e"), f)
+    assert r2.type == "error"
 end
 
 /// Applies `f` to the value of an `error` result.
@@ -94,6 +134,14 @@ pub fun map_error(v, f)
   return v
 end
 
+test "map_error"
+    let r1 = map_error(error("fail"), fun(e) e + "!" end)
+    assert r1.type == "error"
+    assert r1.value == "fail!"
+    let r2 = map_error(ok(1), fun(e) e + "!" end)
+    assert r2.type == "ok"
+end
+
 /// Applies a function `f` that returns a result to the value of an `error` result.
 ///
 /// Example:
@@ -105,6 +153,14 @@ pub fun flat_map_error(v, f)
     return f(v.value)
   end
   return v
+end
+
+test "flat_map_error"
+    let r1 = flat_map_error(error(1), fun(e) error(e + 1) end)
+    assert r1.type == "error"
+    assert r1.value == 2
+    let r2 = flat_map_error(ok(5), fun(e) error(e + 1) end)
+    assert r2.type == "ok"
 end
 
 /// Returns the `ok` value if it exists, otherwise returns `default_value`.
@@ -121,6 +177,11 @@ pub fun get_or(v, default_value)
   return default_value
 end
 
+test "get_or"
+    assert get_or(ok(1), 0) == 1
+    assert get_or(error(1), 0) == 0
+end
+
 /// Returns the `error` value if it exists, otherwise returns `default_value`.
 ///
 /// Example:
@@ -132,6 +193,11 @@ pub fun get_error_or(v, default_value)
     return v.value
   end
   return default_value
+end
+
+test "get_error_or"
+    assert get_error_or(error("fail"), "ok") == "fail"
+    assert get_error_or(ok(1), "ok") == "ok"
 end
 
 /// Converts a result into an `option`.
@@ -149,6 +215,14 @@ pub fun to_option(v)
   return option.none
 end
 
+test "to_option"
+    let o1 = to_option(ok(1))
+    assert o1.type == "some"
+    assert o1.value == 1
+    let o2 = to_option(error(1))
+    assert o2.type == "none"
+end
+
 /// Converts an `option` into a result.
 /// `some(v)` becomes `ok(v)`, `none` becomes `error(error_value)`.
 ///
@@ -162,4 +236,13 @@ pub fun from_option(v, error_value)
     return ok(v.value)
   end
   return error(error_value)
+end
+
+test "from_option"
+    let r1 = from_option(option.some(1), "fail")
+    assert r1.type == "ok"
+    assert r1.value == 1
+    let r2 = from_option(option.none, "fail")
+    assert r2.type == "error"
+    assert r2.value == "fail"
 end

@@ -24,6 +24,13 @@ import list from "./list.vv"
 /// ```
 pub extern "native" fun get(r, k)
 
+test "get"
+    let r = { a = 1, b = 2 }
+    assert get(r, "a") == 1
+    assert get(r, "b") == 2
+    assert get(r, "c") == none
+end
+
 /// Sets the value for the given key in a record, modifying it in place.
 /// Returns the modified record.
 ///
@@ -34,6 +41,14 @@ pub extern "native" fun get(r, k)
 /// ```
 pub extern "native" fun set(r, k, v)
 
+test "set"
+    let r = {}
+    set(r, "x", 42)
+    assert get(r, "x") == 42
+    set(r, "x", 99)
+    assert get(r, "x") == 99
+end
+
 /// Converts a record to a list of key-value pairs (each pair is a list of [key, value]).
 ///
 /// Example:
@@ -42,6 +57,14 @@ pub extern "native" fun set(r, k, v)
 /// record.to_list(r) // [["a", 1], ["b", 2]]
 /// ```
 pub extern "native" fun to_list(r)
+
+test "to_list"
+    let r = { a = 1 }
+    let pairs = to_list(r)
+    assert len(pairs) == 1
+    assert pairs[0][0] == "a"
+    assert pairs[0][1] == 1
+end
 
 /// Returns a list of all keys in the record.
 ///
@@ -54,6 +77,12 @@ pub fun keys(r)
   list.map(to_list(r), fun (i, kv)
     kv[0]
   end)
+end
+
+test "keys"
+    let r = { foo = 1, bar = 2 }
+    let ks = keys(r)
+    assert len(ks) == 2
 end
 
 /// Returns a list of all values in the record.
@@ -69,6 +98,13 @@ pub fun values(r)
   end)
 end
 
+test "values"
+    let r = { x = 10 }
+    let vs = values(r)
+    assert len(vs) == 1
+    assert vs[0] == 10
+end
+
 /// Checks if the record contains the specified key.
 ///
 /// Example:
@@ -81,4 +117,11 @@ pub fun has(r, k)
   list.some(keys(r), fun (i, x)
     x == k
   end)
+end
+
+test "has"
+    let r = { a = 1, b = 2 }
+    assert has(r, "a") == true
+    assert has(r, "b") == true
+    assert has(r, "c") == false
 end

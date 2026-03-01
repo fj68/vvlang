@@ -19,6 +19,13 @@
 /// ```
 pub extern 'native' fun to_upper(c)
 
+test "to_upper"
+    assert to_upper('a') == 'A'
+    assert to_upper('z') == 'Z'
+    assert to_upper('A') == 'A'
+    assert to_upper('1') == '1'
+end
+
 /// Converts a character to its lowercase equivalent.
 ///
 /// Example:
@@ -28,6 +35,13 @@ pub extern 'native' fun to_upper(c)
 /// ```
 pub extern 'native' fun to_lower(c)
 
+test "to_lower"
+    assert to_lower('A') == 'a'
+    assert to_lower('Z') == 'z'
+    assert to_lower('a') == 'a'
+    assert to_lower('!') == '!'
+end
+
 /// Checks if a character is an ASCII decimal digit ('0'-'9').
 ///
 /// Example:
@@ -36,6 +50,14 @@ pub extern 'native' fun to_lower(c)
 /// char.is_digit('a') // false
 /// ```
 pub extern 'native' fun is_digit(c)
+
+test "is_digit"
+    assert is_digit('0') == true
+    assert is_digit('9') == true
+    assert is_digit('5') == true
+    assert is_digit('a') == false
+    assert is_digit(' ') == false
+end
 
 /// Checks if a character is a whitespace character (e.g., space, tab, newline).
 ///
@@ -47,3 +69,10 @@ pub extern 'native' fun is_digit(c)
 /// ```
 pub extern 'native' fun is_space(c)
 
+test "is_space"
+    assert is_space(' ') == true
+    assert is_space('\n') == true
+    assert is_space('\t') == true
+    assert is_space('a') == false
+    assert is_space('1') == false
+end

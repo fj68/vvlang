@@ -17,6 +17,11 @@
 /// ```
 pub extern "native" let pi
 
+test "pi"
+    assert pi > 3.14159
+    assert pi < 3.14160
+end
+
 /// The base of the natural logarithm.
 ///
 /// Example:
@@ -24,6 +29,11 @@ pub extern "native" let pi
 /// math.e // 2.718281828459045
 /// ```
 pub extern "native" let e
+
+test "e"
+    assert e > 2.71828
+    assert e < 2.71829
+end
 
 /// Returns the sine of the radian argument `x`.
 ///
@@ -33,6 +43,11 @@ pub extern "native" let e
 /// ```
 pub extern "native" fun sin(x)
 
+test "sin"
+    assert sin(0.0) == 0.0
+    assert sin(pi / 2.0) == 1.0
+end
+
 /// Returns the arcsine, in radians, of `x`.
 ///
 /// Example:
@@ -40,6 +55,11 @@ pub extern "native" fun sin(x)
 /// math.asin(1.0) // 1.5707963267948966
 /// ```
 pub extern "native" fun asin(x)
+
+test "asin"
+    assert asin(0.0) == 0.0
+    assert asin(1.0) == pi / 2.0
+end
 
 /// Returns the cosine of the radian argument `x`.
 ///
@@ -49,6 +69,11 @@ pub extern "native" fun asin(x)
 /// ```
 pub extern "native" fun cos(x)
 
+test "cos"
+    assert cos(0.0) == 1.0
+    assert cos(pi) == -1.0
+end
+
 /// Returns the arccosine, in radians, of `x`.
 ///
 /// Example:
@@ -56,6 +81,11 @@ pub extern "native" fun cos(x)
 /// math.acos(-1.0) // 3.141592653589793
 /// ```
 pub extern "native" fun acos(x)
+
+test "acos"
+    assert acos(1.0) == 0.0
+    assert acos(-1.0) == pi
+end
 
 /// Returns the tangent of the radian argument `x`.
 ///
@@ -65,6 +95,10 @@ pub extern "native" fun acos(x)
 /// ```
 pub extern "native" fun tan(x)
 
+test "tan"
+    assert tan(0.0) == 0.0
+end
+
 /// Returns the arctangent, in radians, of `x`.
 ///
 /// Example:
@@ -72,6 +106,10 @@ pub extern "native" fun tan(x)
 /// math.atan(0.0) // 0.0
 /// ```
 pub extern "native" fun atan(x)
+
+test "atan"
+    assert atan(0.0) == 0.0
+end
 
 /// Returns the arc tangent of `y/x`, using the signs of the two to determine the quadrant of the return value.
 ///
@@ -81,6 +119,11 @@ pub extern "native" fun atan(x)
 /// ```
 pub extern "native" fun atan2(y, x)
 
+test "atan2"
+    assert atan2(0.0, -1.0) == pi
+    assert atan2(0.0, 1.0) == 0.0
+end
+
 /// Returns `x` strictly raised to the power of `y`.
 ///
 /// Example:
@@ -89,6 +132,11 @@ pub extern "native" fun atan2(y, x)
 /// ```
 pub extern "native" fun pow(x, y)
 
+test "pow"
+    assert pow(2.0, 3.0) == 8.0
+    assert pow(4.0, 0.5) == 2.0
+end
+
 /// Returns the square root of `x`.
 ///
 /// Example:
@@ -96,3 +144,9 @@ pub extern "native" fun pow(x, y)
 /// math.sqrt(16.0) // 4.0
 /// ```
 pub extern "native" fun sqrt(x)
+
+test "sqrt"
+    assert sqrt(16.0) == 4.0
+    assert sqrt(0.0) == 0.0
+    assert sqrt(1.0) == 1.0
+end

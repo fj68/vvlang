@@ -28,6 +28,12 @@ pub fun some(value)
   return { type = "some", value = value }
 end
 
+test "some"
+    let v = some(42)
+    assert v.type == "some"
+    assert v.value == 42
+end
+
 /// Checks if an `option` contains a value.
 ///
 /// Example:
@@ -39,6 +45,11 @@ pub fun is_some(v)
    return v.type == "some"
 end
 
+test "is_some"
+    assert is_some(some(1)) == true
+    assert is_some(none) == false
+end
+
 /// Checks if an `option` is empty (`none`).
 ///
 /// Example:
@@ -48,6 +59,11 @@ end
 /// ```
 pub fun is_none(v)
    return v.type == "none"
+end
+
+test "is_none"
+    assert is_none(none) == true
+    assert is_none(some(1)) == false
 end
 
 /// Returns the wrapped value if it exists, otherwise returns the provided `default_value`.
@@ -64,6 +80,12 @@ pub fun get_or(v, default_value)
   return default_value
 end
 
+test "get_or"
+    assert get_or(some(1), 0) == 1
+    assert get_or(none, 0) == 0
+    assert get_or(none, "default") == "default"
+end
+
 /// Applies a function to the wrapped value if it exists, returning a new `option`.
 ///
 /// Example:
@@ -76,6 +98,15 @@ pub fun map(v, f)
     return some(f(v.value))
   end
   return v
+end
+
+test "map"
+    let double = fun(x) x * 2 end
+    let r1 = map(some(3), double)
+    assert r1.type == "some"
+    assert r1.value == 6
+    let r2 = map(none, double)
+    assert r2.type == "none"
 end
 
 /// Applies a function that returns an `option` to the wrapped value.
@@ -92,6 +123,15 @@ pub fun flat_map(v, f)
   return v
 end
 
+test "flat_map"
+    let f = fun(x) some(x + 1) end
+    let r1 = flat_map(some(1), f)
+    assert r1.type == "some"
+    assert r1.value == 2
+    let r2 = flat_map(none, f)
+    assert r2.type == "none"
+end
+
 /// Applies a function if the `option` is `none`. Useful for chaining fallbacks.
 ///
 /// Example:
@@ -103,4 +143,14 @@ pub fun flat_map_none(v, f)
     return v
   end
   return f(v.value)
+end
+
+test "flat_map_none"
+    let fallback = fun() some(99) end
+    let r1 = flat_map_none(none, fallback)
+    assert r1.type == "some"
+    assert r1.value == 99
+    let r2 = flat_map_none(some(1), fallback)
+    assert r2.type == "some"
+    assert r2.value == 1
 end
