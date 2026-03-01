@@ -189,6 +189,13 @@
 
 
 <div class='docstring module-doc'><p>The <code>random</code> module provides functions for generating random numbers and making random choices.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import random from &quot;std/random.vv&quot;
+
+random.seed(42)
+let n = random.int(1, 100)
+let x = random.choice([&quot;a&quot;, &quot;b&quot;, &quot;c&quot;])
+</code></pre>
 </div>
 
 

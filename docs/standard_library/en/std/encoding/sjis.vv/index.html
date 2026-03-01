@@ -189,6 +189,13 @@
 
 
 <div class='docstring module-doc'><p>The <code>encoding/sjis</code> module provides Shift-JIS encoding and decoding utilities.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import sjis from &quot;std/encoding/sjis.vv&quot;
+
+let bytes = sjis.encode('あ')
+let res = sjis.decode(bytes)
+console.print(res.value.char) // 'あ'
+</code></pre>
 </div>
 
 

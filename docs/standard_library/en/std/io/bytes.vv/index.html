@@ -189,6 +189,14 @@
 
 
 <div class='docstring module-doc'><p>The <code>io/bytes</code> module provides a buffered byte reader.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import bytes from &quot;std/io/bytes.vv&quot;
+import file from &quot;std/fs/file.vv&quot;
+
+let f = file.reader(&quot;test.bin&quot;)!
+let r = bytes.reader(f, 4096)!
+let content = r.read(r, 10)!
+</code></pre>
 </div>
 
 

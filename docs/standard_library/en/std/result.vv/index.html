@@ -189,6 +189,14 @@
 
 
 <div class='docstring module-doc'><p>The <code>result</code> module handles operations that can succeed with a value (<code>ok</code>) or fail with an error (<code>error</code>).</p>
+<p>Example:</p>
+<pre><code class="language-vv">import result from &quot;std/result.vv&quot;
+
+let r = result.ok(42)
+if result.is_ok(r)
+    console.print(r.value)
+end
+</code></pre>
 </div>
 
 

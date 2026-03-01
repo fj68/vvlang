@@ -189,6 +189,13 @@
 
 
 <div class='docstring module-doc'><p>The <code>encoding/utf8</code> module provides UTF-8 encoding and decoding utilities.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import utf8 from &quot;std/encoding/utf8.vv&quot;
+
+let bytes = utf8.encode('A')
+let res = utf8.decode(bytes)
+console.print(res.value.char) // 'A'
+</code></pre>
 </div>
 
 

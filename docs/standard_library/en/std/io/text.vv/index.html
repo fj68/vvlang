@@ -189,6 +189,15 @@
 
 
 <div class='docstring module-doc'><p>The <code>io/text</code> module provides a buffered text reader using an encoding.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import text from &quot;std/io/text.vv&quot;
+import file from &quot;std/fs/file.vv&quot;
+import utf8 from &quot;std/encoding/utf8.vv&quot;
+
+let f = file.reader(&quot;test.txt&quot;)!
+let r = text.reader(f, utf8)!
+let line = r.read_line(r)!
+</code></pre>
 </div>
 
 
