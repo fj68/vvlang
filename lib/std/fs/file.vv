@@ -5,8 +5,8 @@
 /// import file from "std/fs/file.vv"
 ///
 /// let fd = file.create("test.txt")!
+/// defer file.close(fd)
 /// file.write(fd, "hello")
-/// file.close(fd)
 /// ```
 
 
