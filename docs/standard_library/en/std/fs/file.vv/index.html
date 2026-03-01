@@ -191,8 +191,8 @@
 <pre><code class="language-vv">import file from &quot;std/fs/file.vv&quot;
 
 let fd = file.create(&quot;test.txt&quot;)!
+defer file.close(fd)
 file.write(fd, &quot;hello&quot;)
-file.close(fd)
 </code></pre>
 </div>
 

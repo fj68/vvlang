@@ -3,9 +3,14 @@
 /// Example:
 /// ```vv
 /// import dir from "std/fs/dir.vv"
+/// import list from "std/list.vv"
+/// import console from "std/console.vv"
 ///
 /// if dir.exists("test")
 ///     let files = dir.read("test")!
+///     list.each(files, fun(file)
+///         console.print(file)
+///     end)
 /// end
 /// ```
 

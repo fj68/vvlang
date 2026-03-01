@@ -189,9 +189,14 @@
 <div class='docstring module-doc'><p>The <code>fs/dir</code> module provides low-level directory operations.</p>
 <p>Example:</p>
 <pre><code class="language-vv">import dir from &quot;std/fs/dir.vv&quot;
+import list from &quot;std/list.vv&quot;
+import console from &quot;std/console.vv&quot;
 
 if dir.exists(&quot;test&quot;)
     let files = dir.read(&quot;test&quot;)!
+    list.each(files, fun(file)
+        console.print(file)
+    end)
 end
 </code></pre>
 </div>
