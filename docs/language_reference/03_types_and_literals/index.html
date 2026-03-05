@@ -12,17 +12,18 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
+            color: var(--text-color);
+            background-color: var(--bg-color);
         }
 
         h1,
         h2,
         h3 {
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         a {
-            color: #3498db;
+            color: var(--link-color);
             text-decoration: none;
         }
 
@@ -31,28 +32,31 @@
         }
 
         code {
-            background-color: #f8f9fa;
+            background-color: var(--code-bg);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: monospace;
+            border: 1px solid var(--border-color);
         }
 
         pre {
-            background-color: #f8f9fa;
+            background-color: var(--pre-bg);
             padding: 1rem;
             border-radius: 5px;
             overflow-x: auto;
+            border: 1px solid var(--border-color);
         }
 
         pre code {
             background-color: transparent;
             padding: 0;
+            border: none;
         }
 
         .nav {
             margin-top: 2rem;
             padding-top: 1rem;
-            border-top: 1px solid #eee;
+            border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
         }
@@ -61,12 +65,12 @@
 </head>
 
 <body>
-    <p><a href="../index.html">← Back to Index</a></p>
+    <p><a href='../index.html'>&larr; Back to the index</a></p>
     <h1>3. Types and Literals</h1>
 
 
-    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
-        <h2 style="margin-top: 0;">In this chapter</h2>
+    <div class="toc">
+        <h2>In this chapter</h2>
         <ul>
             <li><a href="#booleans">Booleans</a></li>
             <li><a href="#numbers">Numbers</a></li>

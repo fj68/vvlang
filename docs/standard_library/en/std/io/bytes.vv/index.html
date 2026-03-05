@@ -12,17 +12,18 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
+            color: var(--text-color);
+            background-color: var(--bg-color);
         }
 
         h1,
         h2,
         h3 {
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         a {
-            color: #3498db;
+            color: var(--link-color);
             text-decoration: none;
         }
 
@@ -40,11 +41,11 @@
         header .logo {
             font-weight: bold;
             font-size: 1.2rem;
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         header .logo a {
-            color: #2c3e50;
+            color: var(--heading-color);
             text-decoration: none;
         }
 
@@ -53,14 +54,14 @@
         }
 
         nav.langs a {
-            color: #666;
+            color: var(--muted-text);
             text-decoration: none;
             margin-left: 1rem;
             font-size: 0.9rem;
         }
 
         nav.langs a.active {
-            color: #2c3e50;
+            color: var(--heading-color);
             font-weight: bold;
             text-decoration: underline;
         }
@@ -70,11 +71,11 @@
         }
 
         h1 {
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         h2 {
-            color: #2c3e50;
+            color: var(--heading-color);
             margin-top: 2rem;
         }
 
@@ -82,8 +83,6 @@
             padding: 1rem;
             margin: 1rem 0;
         }
-
-
 
         .export-item {
             margin-bottom: 2rem;
@@ -93,17 +92,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid #3498db;
+            border-left: 4px solid var(--link-color);
             padding-left: 1rem;
             margin-bottom: 0.5rem;
         }
 
         .extern-tag {
             font-size: 0.8rem;
-            color: #666;
+            color: var(--extern-tag-color);
             font-weight: normal;
             font-family: monospace;
-            background: #eee;
+            background: var(--extern-tag-bg);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
         }
@@ -113,20 +112,20 @@
         }
 
         pre {
-            background: #ffffff;
-            color: #333;
+            background: var(--pre-bg);
+            color: var(--text-color);
             padding: 1rem;
             border-radius: 4px;
             overflow-x: auto;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
         }
 
         code {
             font-family: monospace;
-            background-color: #ffffff;
+            background-color: var(--code-bg);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
         }
 
         h3 code {
@@ -141,30 +140,9 @@
             background-color: transparent;
         }
 
-        .toc {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 2rem 0;
-            border: 1px solid #eee;
-        }
-
-        .toc h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: #2c3e50;
-        }
-
-        .toc ul {
-            list-style: none;
-            padding-left: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.5rem;
-        }
-
-        .toc li a {
-            font-family: monospace;
+        .summary {
+            color: var(--muted-text);
+            font-style: italic;
             font-size: 0.9rem;
         }
     </style>
@@ -182,7 +160,7 @@
     </header>
     <main>
         
-<p><a href='../../../../en/index.html'>← Back to Index</a></p>
+<p><a href='../../../../en/index.html'>&larr; Back to the index</a></p>
 <h1>Module <code>std/io/bytes.vv</code></h1>
 
 
@@ -191,9 +169,9 @@
 <pre><code class="language-vv">import bytes from &quot;std/io/bytes.vv&quot;
 import file from &quot;std/fs/file.vv&quot;
 
-let f = file.reader(&quot;test.bin&quot;)!
-let r = bytes.reader(f, 4096)!
-let content = bytes.read(r, 10)!
+let f = try file.reader(&quot;test.bin&quot;)
+let r = try bytes.reader(f, 4096)
+let content = try bytes.read(r, 10)
 </code></pre>
 </div>
 

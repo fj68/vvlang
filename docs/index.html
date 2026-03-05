@@ -12,12 +12,13 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
+            color: var(--text-color);
+            background-color: var(--bg-color);
         }
 
         h1,
         h2 {
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         .card-container {
@@ -28,28 +29,29 @@
         }
 
         .card {
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1.5rem;
             text-decoration: none;
             color: inherit;
             transition: transform 0.2s, box-shadow 0.2s;
+            background-color: var(--bg-color);
         }
 
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-color: #3498db;
+            border-color: var(--link-color);
         }
 
         .card h3 {
             margin-top: 0;
-            color: #3498db;
+            color: var(--link-color);
         }
 
         .card p {
             margin-bottom: 0;
-            color: #666;
+            color: var(--muted-text);
         }
     </style>
     <link rel="stylesheet" href="static/highlight.css">

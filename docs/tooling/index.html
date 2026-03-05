@@ -12,17 +12,18 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
+            color: var(--text-color);
+            background-color: var(--bg-color);
         }
 
         h1,
         h2,
         h3 {
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         a {
-            color: #3498db;
+            color: var(--link-color);
             text-decoration: none;
         }
 
@@ -40,18 +41,18 @@
         header .logo {
             font-weight: bold;
             font-size: 1.2rem;
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         nav.langs a {
-            color: #666;
+            color: var(--muted-text);
             text-decoration: none;
             margin-left: 1rem;
             font-size: 0.9rem;
         }
 
         nav.langs a.active {
-            color: #2c3e50;
+            color: var(--heading-color);
             font-weight: bold;
             text-decoration: underline;
         }
@@ -60,17 +61,8 @@
             padding: 0;
         }
 
-        .category h2 {
-            background: #f8f9fa;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 1.2rem;
-            color: #2c3e50;
-            margin-top: 2rem;
-        }
-
         .summary {
-            color: #666;
+            color: var(--muted-text);
             font-style: italic;
             font-size: 0.9rem;
         }
@@ -86,10 +78,11 @@
         }
 
         code {
-            background-color: #f8f9fa;
+            background-color: var(--code-bg);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: monospace;
+            border: 1px solid var(--border-color);
         }
     </style>
     <link rel="stylesheet" href="../static/highlight.css">
@@ -97,19 +90,19 @@
 
 <body>
     <header>
-        <div class='logo'>vvlang docs</div>
+        <div class='logo'><a href='../index.html'>vvlang docs</a></div>
         <nav class='langs'>
             <a href='#' class='active'>en</a>
             <a href='#'>ja</a>
         </nav>
     </header>
     <main>
-        <p><a href="../index.html">← Back to Index</a></p>
+        <p><a href='../index.html'>&larr; Back to the index</a></p>
         <h1>vv Tooling & CLI</h1>
         <p>The <code>vv</code> command line tool provides several subcommands for development, testing, and package
             management.</p>
 
-        <div class='category'>
+        <div class="category page-index">
             <h2>Commands</h2>
             <ul>
                 <li>

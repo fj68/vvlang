@@ -12,17 +12,18 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
+            color: var(--text-color);
+            background-color: var(--bg-color);
         }
 
         h1,
         h2,
         h3 {
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         a {
-            color: #3498db;
+            color: var(--link-color);
             text-decoration: none;
         }
 
@@ -40,18 +41,18 @@
         header .logo {
             font-weight: bold;
             font-size: 1.2rem;
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         nav.langs a {
-            color: #666;
+            color: var(--muted-text);
             text-decoration: none;
             margin-left: 1rem;
             font-size: 0.9rem;
         }
 
         nav.langs a.active {
-            color: #2c3e50;
+            color: var(--heading-color);
             font-weight: bold;
             text-decoration: underline;
         }
@@ -61,19 +62,19 @@
         }
 
         code {
-            background-color: #ffffff;
-            border: 1px solid #eee;
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: monospace;
         }
 
         pre {
-            background-color: #ffffff;
+            background-color: var(--pre-bg);
             padding: 1rem;
             border-radius: 5px;
             overflow-x: auto;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
         }
 
         pre code {
@@ -82,33 +83,9 @@
             border: none;
         }
 
-        h1 {
-            border-left: 4px solid #3498db;
-            padding-left: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .command-header {
-            margin-bottom: 2rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        th,
-        td {
-            padding: 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
         th {
-            background: #f8f9fa;
-            color: #2c3e50;
+            background: var(--toc-bg);
+            color: var(--heading-color);
             font-weight: bold;
         }
     </style>
@@ -117,14 +94,14 @@
 
 <body>
     <header>
-        <div class='logo'>vvlang docs</div>
+        <div class='logo'><a href='../../index.html'>vvlang docs</a></div>
         <nav class='langs'>
             <a href='#' class='active'>en</a>
             <a href='#'>ja</a>
         </nav>
     </header>
     <main>
-        <p><a href="../index.html">← Back to Tooling</a></p>
+        <p><a href='../index.html'>&larr; Back to the index</a></p>
         <div class="command-header">
             <h1>vv doc</h1>
             <p>Generates HTML documentation from <code>.vv</code> source files. It extracts docstrings

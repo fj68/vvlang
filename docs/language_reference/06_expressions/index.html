@@ -12,17 +12,18 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
-            color: #333;
+            color: var(--text-color);
+            background-color: var(--bg-color);
         }
 
         h1,
         h2,
         h3 {
-            color: #2c3e50;
+            color: var(--heading-color);
         }
 
         a {
-            color: #3498db;
+            color: var(--link-color);
             text-decoration: none;
         }
 
@@ -31,28 +32,31 @@
         }
 
         code {
-            background-color: #f8f9fa;
+            background-color: var(--code-bg);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: monospace;
+            border: 1px solid var(--border-color);
         }
 
         pre {
-            background-color: #f8f9fa;
+            background-color: var(--pre-bg);
             padding: 1rem;
             border-radius: 5px;
             overflow-x: auto;
+            border: 1px solid var(--border-color);
         }
 
         pre code {
             background-color: transparent;
             padding: 0;
+            border: none;
         }
 
         .nav {
             margin-top: 2rem;
             padding-top: 1rem;
-            border-top: 1px solid #eee;
+            border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
         }
@@ -61,12 +65,12 @@
 </head>
 
 <body>
-    <p><a href="../index.html">← Back to Index</a></p>
+    <p><a href='../index.html'>&larr; Back to the index</a></p>
     <h1>6. Operators and Expressions</h1>
 
 
-    <div class="page-index" style="background: #f9f9f9; padding: 1rem; margin-bottom: 2rem; border-radius: 5px;">
-        <h2 style="margin-top: 0;">In this chapter</h2>
+    <div class="toc">
+        <h2>In this chapter</h2>
         <ul>
             <li><a href="#arithmetic-operators">Arithmetic Operators</a></li>
             <li><a href="#comparison-operators">Comparison Operators</a></li>
@@ -87,34 +91,36 @@
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
         <thead>
             <tr>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Operator
+                </th>
+                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Description
+                </th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>+</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Addition</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>+</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Addition</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Subtraction</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>-</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Subtraction</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>*</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Multiplication</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>*</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Multiplication</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>/</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Division</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>/</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Division</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>/:</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Integer Division</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>/:</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Integer Division</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>%</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Modulo</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>%</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Modulo</td>
             </tr>
         </tbody>
     </table>
@@ -130,16 +136,16 @@
         </thead>
         <tbody>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>==</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Equal</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>==</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Equal</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>&lt;</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Less Than</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>&lt;</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Less Than</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>&lt;=</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Less Than or Equal</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>&lt;=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Less Than or Equal</td>
             </tr>
         </tbody>
     </table>
@@ -155,16 +161,16 @@
         </thead>
         <tbody>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>not()</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Logical NOT (Function)</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>not()</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Logical NOT (Function)</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>and</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Logical AND (Reserved)</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>and</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Logical AND (Reserved)</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>or</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Logical OR (Reserved)</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>or</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Logical OR (Reserved)</td>
             </tr>
         </tbody>
     </table>
@@ -180,16 +186,16 @@
         </thead>
         <tbody>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>=</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Assignment</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Assignment</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>+=</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Add and Assign</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>+=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Add and Assign</td>
             </tr>
             <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-=</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Subtract and Assign</td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>-=</code></td>
+                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Subtract and Assign</td>
             </tr>
         </tbody>
     </table>
@@ -205,12 +211,14 @@
             </tr>
         </thead>
         <tr>
-            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-</code></td>
-            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Negation - Inverts the sign of a number</td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>-</code></td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Negation - Inverts the sign of a
+                number</td>
         </tr>
         <tr>
-            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>try</code></td>
-            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Try - Unwraps <code>ok</code> result or
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);"><code>try</code></td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Try - Unwraps <code>ok</code>
+                result or
                 propagates <code>error</code>
             </td>
         </tr>
