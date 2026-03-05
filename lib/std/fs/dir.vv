@@ -7,7 +7,7 @@
 /// import console from "std/console.vv"
 ///
 /// if dir.exists("test")
-///     let files = dir.read("test")!
+///     let files = try dir.read("test")
 ///     list.each(files, fun(i, file)
 ///         console.print(file)
 ///     end)

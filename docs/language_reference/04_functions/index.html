@@ -180,13 +180,13 @@ end
 
 f() // OK: return value is silently discarded</code></pre>
 
-    <p>You can also use the <code>!</code> operator on a function call as a statement. This will propagate any
+    <p>You can also use the <code>try</code> keyword on a function call in a statement. This will propagate any
         <code>error</code> result to the caller, while silently discarding the <code>ok</code> value:
     </p>
     <pre><code>import file from "std/fs/file.vv"
 
-let fd = file.create("out.txt")!
-file.write(fd, "hello")! // propagates write error; ok value (bytes written) is discarded</code></pre>
+let fd = try file.create("out.txt")
+try file.write(fd, "hello") // propagates write error; ok value (bytes written) is discarded</code></pre>
 
     <div class="nav">
         <a href="../03_types_and_literals/index.html">← Previous: 3. Types and Literals</a>

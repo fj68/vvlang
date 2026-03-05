@@ -76,10 +76,9 @@
                 <a href="#other-operators">Other Operators</a>
                 <ul>
                     <li><a href="#prefix-operators">Prefix Operators</a></li>
-                    <li><a href="#postfix-operators">Postfix Operators</a></li>
                 </ul>
             </li>
-            <li><a href="#prefix-infix-and-postfix-expressions">Prefix, Infix, and Postfix Expressions</a></li>
+            <li><a href="#prefix-and-infix-expressions">Prefix and Infix Expressions</a></li>
             <li><a href="#syntactic-elements">Syntactic Elements</a></li>
         </ul>
     </div>
@@ -205,36 +204,23 @@
                 <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Negation - Inverts the sign of a number</td>
-            </tr>
+        <tr>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>-</code></td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Negation - Inverts the sign of a number</td>
+        </tr>
+        <tr>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>try</code></td>
+            <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Try - Unwraps <code>ok</code> result or
+                propagates <code>error</code>
+            </td>
+        </tr>
         </tbody>
     </table>
 
-    <h3 id="postfix-operators">Postfix Operators</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
-        <thead>
-            <tr>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Operator</th>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 2px solid #ddd;">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;"><code>!</code></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">Unwrap - Extracts value from
-                    <code>ok</code> result or panics on <code>err</code>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 
-    <h2 id="prefix-infix-and-postfix-expressions">Prefix, Infix, and Postfix Expressions</h2>
-    <p>Expressions can be combined using prefix (e.g., <code>not(true)</code>, <code>-5</code>), infix (e.g.,
-        <code>1 + 2</code>, <code>a == b</code>), and postfix (e.g., <code>result!</code> for unwrapping <code>ok</code>
-        values) operators.
+    <h2 id="prefix-and-infix-expressions">Prefix and Infix Expressions</h2>
+    <p>Expressions can be combined using prefix (e.g., <code>not(true)</code>, <code>-5</code>, <code>try result</code>)
+        and infix (e.g., <code>1 + 2</code>, <code>a == b</code>) operators.
     </p>
 
     <h2 id="syntactic-elements">Syntactic Elements</h2>

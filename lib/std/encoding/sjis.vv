@@ -5,7 +5,7 @@
 /// import sjis from "std/encoding/sjis.vv"
 ///
 /// let bytes = sjis.encode('あ')
-/// let res = sjis.decode(bytes)!
+/// let res = try sjis.decode(bytes)
 /// console.print(res.char) // 'あ'
 /// ```
 

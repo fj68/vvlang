@@ -48,7 +48,6 @@ var precedences = map[lexer.TokenType]Precedence{
 	lexer.TLParen:     PCall,
 	lexer.TLBrace:     PIndex,
 	lexer.TDot:        PCall,
-	lexer.TExclam:     PCall,
 }
 
 func precedenceOf(ty lexer.TokenType) Precedence {
@@ -100,6 +99,7 @@ func (p *Parser) registerPrefixParsers() {
 		lexer.TLen:          p.parseBuiltinCallExpr,
 		lexer.TInterpolated: p.parseInterpolatedStringLiteralExpr,
 		lexer.TLParen:       p.parseGroupedExpr,
+		lexer.TTry:          p.parsePrefixExpr,
 	}
 }
 
@@ -119,7 +119,6 @@ func (p *Parser) registerInfixParsers() {
 		lexer.TPercent:    p.parseInfixExpr,
 		lexer.TAnd:        p.parseInfixExpr,
 		lexer.TOr:         p.parseInfixExpr,
-		lexer.TExclam:     p.parsePostfixExpr,
 	}
 }
 

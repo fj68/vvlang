@@ -4,9 +4,9 @@
 /// ```vv
 /// import file from "std/fs/file.vv"
 ///
-/// let fd = file.create("test.txt")!
+/// let fd = try file.create("test.txt")
 /// defer file.close(fd)
-/// file.write(fd, "hello")!
+/// try file.write(fd, "hello")
 /// ```
 
 
@@ -82,7 +82,7 @@ pub extern "native" fun remove(path)
 /// 
 /// Returns a record with `fd`, `read`, and `close` functions.
 pub fun reader(path)
-    return result.ok({ fd = open_read(path)!, read = fun (r, length) return read(r.fd, length) end, close = fun (r) return close(r.fd) end })
+    return result.ok({ fd = try open_read(path), read = fun (r, length) return read(r.fd, length) end, close = fun (r) return close(r.fd) end })
 end
 
 /// Creates a generalized writer stream for a file.
@@ -92,13 +92,13 @@ end
 /// 
 /// Returns a record with `fd`, `write`, and `close` functions.
 pub fun writer(path, is_append)
-    return result.ok({ fd = open_write(path, is_append)!, write = fun (r, content) return write(r.fd, content) end, close = fun (r) return close(r.fd) end })
+    return result.ok({ fd = try open_write(path, is_append), write = fun (r, content) return write(r.fd, content) end, close = fun (r) return close(r.fd) end })
 end
 
 test "reader"
     let path = "tmp_test_file_reader_inline.txt"
-    let f = create(path)!
-    let r = reader(path)!
+    let f = try create(path)
+    let r = try reader(path)
     defer remove(path)
     defer r.close(r)
     defer close(f)

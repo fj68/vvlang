@@ -391,6 +391,10 @@ func (s *State) evalOrExpr(left Value, right Value) (Value, error) {
 }
 
 func (s *State) evalPrefixExpr(expr *ast.PrefixExpr) (Value, error) {
+	if expr.Op == "try" {
+		return s.evalTryExpr(expr.Right)
+	}
+
 	right, err := s.evalExpr(expr.Right)
 	if err != nil {
 		return nil, err
@@ -532,17 +536,8 @@ func (s *State) evalFieldAccessExpr(expr *ast.FieldAccessExpr) (Value, error) {
 	return value, nil
 }
 
-func (s *State) evalPostfixExpr(expr *ast.PostfixExpr) (Value, error) {
-	switch expr.Op {
-	case "!":
-		return s.evalTryExpr(expr)
-	default:
-		return nil, fmt.Errorf("unknown postfix operator: %s", expr.Op)
-	}
-}
-
-func (s *State) evalTryExpr(expr *ast.PostfixExpr) (Value, error) {
-	val, err := s.evalExpr(expr.Left)
+func (s *State) evalTryExpr(expr ast.Expr) (Value, error) {
+	val, err := s.evalExpr(expr)
 	if err != nil {
 		return nil, err
 	}

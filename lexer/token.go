@@ -48,6 +48,7 @@ const (
 	TNot
 	TLen
 	TAlso
+	TTry
 
 	// symbols
 	TLessEq
@@ -71,7 +72,6 @@ const (
 	TIncr
 	TDecr
 	TPercent
-	TExclam
 )
 
 func (ty TokenType) String() string {
@@ -150,6 +150,8 @@ func (ty TokenType) String() string {
 		return "Len"
 	case TAlso:
 		return "Also"
+	case TTry:
+		return "Try"
 
 	// symbols
 	case TLessEq:
@@ -194,8 +196,6 @@ func (ty TokenType) String() string {
 		return "Decr"
 	case TPercent:
 		return "Percent"
-	case TExclam:
-		return "Exclam"
 	}
 	return "Unknown"
 }
@@ -236,7 +236,6 @@ var Symbols = map[rune]TokenType{
 	'.': TDot,
 	':': TColon,
 	'%': TPercent,
-	'!': TExclam,
 }
 
 var Symbols2 = map[string]TokenType{
@@ -276,6 +275,7 @@ var Keywords = map[string]TokenType{
 	"not":      TNot,
 	"len":      TLen,
 	"also":     TAlso,
+	"try":      TTry,
 }
 
 var Comments = map[string]string{

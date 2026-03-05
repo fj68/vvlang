@@ -304,7 +304,6 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 
 	modState := s.NewState(targetPath)
 	modState.ModuleCache = s.ModuleCache
-	modState.CurrentTest = s.CurrentTest
 	modState.BuiltinModules = s.BuiltinModules
 
 	s.ModuleCache[targetPath] = nil

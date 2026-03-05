@@ -559,7 +559,7 @@ func (p *Parser) isExprStart() bool {
 	switch p.curToken.Type {
 	case lexer.TIdent, lexer.TInt, lexer.TFloat, lexer.TLiteral, lexer.TInterpolated,
 		lexer.TTrue, lexer.TFalse, lexer.TLParen, lexer.TLBrace,
-		lexer.TLBracket, lexer.TFun, lexer.THyphen, lexer.TExclam, lexer.TNot:
+		lexer.TLBracket, lexer.TFun, lexer.THyphen, lexer.TTry, lexer.TNot:
 		return true
 	}
 	return false

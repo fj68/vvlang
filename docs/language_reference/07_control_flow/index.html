@@ -73,7 +73,7 @@
             <li><a href="#blocks-begin-end">Blocks (<code>begin...end</code>)</a></li>
             <li><a href="#loops-while">Loops (<code>while</code>)</a></li>
             <li><a href="#loop-control-break-continue">Loop Control (<code>break</code>, <code>continue</code>)</a></li>
-            <li><a href="#error-handling-and-early-returns">Error Handling and Early Returns (<code>!</code>)</a></li>
+            <li><a href="#error-handling-and-early-returns">Error Handling and Early Returns (<code>try</code>)</a></li>
             <li><a href="#deferred-execution-defer">Deferred Execution (<code>defer</code>)</a></li>
         </ul>
     </div>
@@ -132,14 +132,14 @@ while i &lt; 10
     i = i + 1
 end</code></pre>
 
-    <h2 id="error-handling-and-early-returns">Error Handling and Early Returns (<code>!</code>)</h2>
-    <p><code>vv</code> utilizes the <code>std/result.vv</code> module and a postfix <code>!</code> operator for error
-        handling. The <code>!</code> operator, also known as the try operator, evaluates an expression returning a
+    <h2 id="error-handling-and-early-returns">Error Handling and Early Returns (<code>try</code>)</h2>
+    <p><code>vv</code> utilizes the <code>std/result.vv</code> module and a prefix <code>try</code> keyword for error
+        handling. The <code>try</code> keyword evaluates an expression returning a
         result record with a <code>type</code> field.</p>
     <ul>
-        <li>If the result is <code>{ type = "ok", value = ... }</code>, the <code>!</code> operator unwraps the result
+        <li>If the result is <code>{ type = "ok", value = ... }</code>, the <code>try</code> keyword unwraps the result
             and evaluates to the inner <code>value</code>.</li>
-        <li>If the result is <code>{ type = "error", value = ... }</code>, the <code>!</code> operator automatically
+        <li>If the result is <code>{ type = "error", value = ... }</code>, the <code>try</code> keyword automatically
             triggers an early return from the current enclosing function, propagating the error record upward to the
             caller.</li>
     </ul>
@@ -156,13 +156,13 @@ end
 fun calculate()
     // If divide fails, calculate() immediately returns the error.
     // If divide succeeds, val gets the unwrapped result.
-    let val = divide(10, 2)!
+    let val = try divide(10, 2)
     console.print(val) // Prints: 5
     return result.ok(val)
 end</code></pre>
 
-    <h3>Unhandled Errors (<code>!</code> at Top-Level)</h3>
-    <p>If an error is propagated via <code>!</code> and reaches the top-level of a module (outside of any function),
+    <h3>Unhandled Errors (<code>try</code> at Top-Level)</h3>
+    <p>If an error is propagated via <code>try</code> and reaches the top-level of a module (outside of any function),
         the interpreter will stop execution and print the error content to the standard output.</p>
     <pre><code>import result from "std/result.vv"
 
@@ -171,15 +171,15 @@ fun f()
 end
 
 fun g()
-    // The ! operator here triggers an early return from g() 
+    // The try keyword here triggers an early return from g() 
     // and propagates the error from f() up to g's caller.
-    let val = f()!
+    let val = try f()
     return result.ok(val)
 end
 
-// g()! at the top level will cause the program to exit
+// try g() at the top level will cause the program to exit
 // and print: "unhandled error: something went wrong"
-g()!</code></pre>
+try g()</code></pre>
 
     <h2 id="deferred-execution-defer">Deferred Execution (<code>defer</code>)</h2>
     <p>The <code>defer</code> statement schedules a statement to be executed just before the current scope (block,
@@ -187,12 +187,12 @@ g()!</code></pre>
     <p>This is extremely useful for ensuring that resources are cleaned up properly, regardless of whether the scope
         exits normally or via a <code>return</code> statement.</p>
     <p>The execution order of multiple <code>defer</code> statements is "last defer, first executed".</p>
-    <p>Because <code>defer</code> supports statements, you can use <code>!</code> to propagate errors from cleanup
+    <p>Because <code>defer</code> supports statements, you can use <code>try</code> to propagate errors from cleanup
         code, or just call functions directly to ignore their return values:
     </p>
     <pre><code>import file from "std/fs/file.vv"
 
-let f = file.create("temp.txt")!
+let f = try file.create("temp.txt")
 // close() return value is silently discarded since we're cleaning up
 defer file.close(f)</code></pre>
     <pre><code>import console from "std/console.vv"

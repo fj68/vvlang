@@ -5,9 +5,9 @@
 /// import bytes from "std/io/bytes.vv"
 /// import file from "std/fs/file.vv"
 ///
-/// let f = file.reader("test.bin")!
-/// let r = bytes.reader(f, 4096)!
-/// let content = bytes.read(r, 10)!
+/// let f = try file.reader("test.bin")
+/// let r = try bytes.reader(f, 4096)
+/// let content = try bytes.read(r, 10)
 /// ```
 
 
@@ -120,56 +120,56 @@ end
 
 test "reader / read"
     let path = "tmp_test_bytes_read_inline.txt"
-    let f = file.create(path)!
+    let f = try file.create(path)
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [97, 98, 99, 100, 101])! // abcde
+    try file.write(f, [97, 98, 99, 100, 101]) // abcde
 
-    let source = file.reader(path)!
-    let r = reader(source, 2)!
+    let source = try file.reader(path)
+    let r = try reader(source, 2)
     defer close(r)
 
-    let b1 = r.read(r, 2)!
+    let b1 = try r.read(r, 2)
     assert b1 == [97, 98]
 
-    let b2 = r.read(r, 2)!
+    let b2 = try r.read(r, 2)
     assert b2 == [99, 100]
 
-    let b3 = r.read(r, 2)!
+    let b3 = try r.read(r, 2)
     assert b3 == [101]
 end
 
 test "peek"
     let path = "tmp_test_bytes_peek_inline.txt"
-    let f = file.create(path)!
+    let f = try file.create(path)
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [97, 98, 99])!
+    try file.write(f, [97, 98, 99])
 
-    let source = file.reader(path)!
-    let r = reader(source, 2)!
+    let source = try file.reader(path)
+    let r = try reader(source, 2)
     defer close(r)
 
-    let p1 = r.peek(r, 2)!
+    let p1 = try r.peek(r, 2)
     assert p1 == [97, 98]
 
-    let b1 = r.read(r, 1)!
+    let b1 = try r.read(r, 1)
     assert b1 == [97]
 
-    let p2 = r.peek(r, 2)!
+    let p2 = try r.peek(r, 2)
     assert p2 == [98, 99]
 end
 
 test "read_all"
     let path = "tmp_test_bytes_all_inline.txt"
-    let f = file.create(path)!
+    let f = try file.create(path)
     defer file.remove(path)
     defer file.close(f)
-    file.write(f, [10, 20, 30, 40])!
+    try file.write(f, [10, 20, 30, 40])
 
-    let source = file.reader(path)!
-    let r = reader(source, 2)!
+    let source = try file.reader(path)
+    let r = try reader(source, 2)
     defer close(r)
-    let all = read_all(r)!
+    let all = try read_all(r)
     assert all == [10, 20, 30, 40]
 end
