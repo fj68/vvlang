@@ -65,37 +65,82 @@ func FindProjectRoot(startPath string) (string, error) {
 	return "", os.ErrNotExist
 }
 
-func ResolveModulePath(sourcePath, path string) (target string, err error) {
-	if strings.HasPrefix(path, "./") || strings.HasPrefix(path, "../") {
+type ModuleResolver interface {
+	Resolve(sourcePath, importPath string) (string, error)
+}
+
+type RelativeResolver struct{}
+
+func (r RelativeResolver) Resolve(sourcePath, importPath string) (string, error) {
+	if strings.HasPrefix(importPath, "./") || strings.HasPrefix(importPath, "../") {
 		dir := filepath.Dir(sourcePath)
-		target, err = filepath.Abs(filepath.Join(dir, path))
+		target, err := filepath.Abs(filepath.Join(dir, importPath))
 		if err != nil {
 			return "", err
 		}
 		_, err = os.Stat(target)
 		return target, err
 	}
+	return "", os.ErrNotExist
+}
+
+type VendorResolver struct{}
+
+func (r VendorResolver) Resolve(sourcePath, importPath string) (string, error) {
+	if strings.HasPrefix(importPath, "./") || strings.HasPrefix(importPath, "../") {
+		return "", os.ErrNotExist
+	}
+
+	sourceDir := filepath.Dir(sourcePath)
 
 	// 1. Check VendorDir in the current directory/source directory
-	sourceDir := filepath.Dir(sourcePath)
-	target = filepath.Join(sourceDir, VendorDir, path)
-	if _, err = os.Stat(target); err == nil {
+	target := filepath.Join(sourceDir, VendorDir, importPath)
+	if _, err := os.Stat(target); err == nil {
 		return target, nil
 	}
 
 	// 2. Search upwards for ProjectModFile and its VendorDir
 	if root, rErr := FindProjectRoot(sourceDir); rErr == nil {
-		target = filepath.Join(root, VendorDir, path)
-		if _, err = os.Stat(target); err == nil {
+		target = filepath.Join(root, VendorDir, importPath)
+		if _, err := os.Stat(target); err == nil {
 			return target, nil
 		}
 	}
 
-	// 3. Fallback to $VVPATH/.cache
-	target, err = filepath.Abs(GetPackagePath(path))
+	return "", os.ErrNotExist
+}
+
+type CacheResolver struct{}
+
+func (r CacheResolver) Resolve(sourcePath, importPath string) (string, error) {
+	if strings.HasPrefix(importPath, "./") || strings.HasPrefix(importPath, "../") {
+		return "", os.ErrNotExist
+	}
+
+	target, err := filepath.Abs(GetPackagePath(importPath))
 	if err != nil {
 		return "", err
 	}
 	_, err = os.Stat(target)
 	return target, err
+}
+
+func ResolveModulePath(sourcePath, path string) (target string, err error) {
+	resolvers := []ModuleResolver{
+		RelativeResolver{},
+		VendorResolver{},
+		CacheResolver{},
+	}
+
+	for _, r := range resolvers {
+		target, err = r.Resolve(sourcePath, path)
+		if err == nil {
+			return target, nil
+		}
+		if !os.IsNotExist(err) {
+			return "", err
+		}
+	}
+
+	return "", os.ErrNotExist
 }
