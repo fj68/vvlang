@@ -6,6 +6,7 @@ import (
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/lib"
+	"github.com/fj68/vvlang/mod"
 )
 
 func Run() {
@@ -35,7 +36,8 @@ func run(path string) error {
 	if err != nil {
 		return err
 	}
-	s := interp.NewState(path)
+	cfg := mod.DefaultConfig()
+	s := interp.NewState(cfg, path)
 
 	s.RegisterBuiltinModules(lib.Std.Natives)
 

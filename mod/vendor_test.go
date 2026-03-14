@@ -9,12 +9,13 @@ import (
 
 func TestFindProjectRoot(t *testing.T) {
 	tmpDir := t.TempDir()
+	cfg := DefaultConfig()
 
 	projectRoot := filepath.Join(tmpDir, "myproject")
 	if err := os.MkdirAll(projectRoot, 0755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(projectRoot, ProjectModFile), []byte("{}"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(projectRoot, cfg.ModFile), []byte("{}"), 0644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -51,7 +52,7 @@ func TestFindProjectRoot(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := FindProjectRoot(tt.startPath)
+			got, err := cfg.FindProjectRoot(tt.startPath)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("FindProjectRoot() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -66,9 +67,10 @@ func TestFindProjectRoot(t *testing.T) {
 func TestVendor(t *testing.T) {
 	vvpath := t.TempDir()
 	t.Setenv("VVPATH", vvpath)
+	cfg := DefaultConfig()
 
 	// 1. Setup cache
-	repoPath := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "repo@v1.0.0")
+	repoPath := filepath.Join(vvpath, cfg.CacheDir, "github.com", "user", "repo@v1.0.0")
 	if err := os.MkdirAll(repoPath, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -88,22 +90,22 @@ func TestVendor(t *testing.T) {
 	defer os.Chdir(oldCwd)
 
 	// 3. Run Vendor
-	if err := Vendor("github.com/user/repo@v1.0.0"); err != nil {
+	if err := cfg.Vendor("github.com/user/repo@v1.0.0"); err != nil {
 		t.Fatalf("Vendor() error = %v", err)
 	}
 
 	// 4. Verify results
-	destDir := filepath.Join(projectRoot, VendorDir, "github.com", "user", "repo")
+	destDir := filepath.Join(projectRoot, cfg.VendorDir, "github.com", "user", "repo")
 	if _, err := os.Stat(filepath.Join(destDir, "lib.vv")); err != nil {
 		t.Errorf("vendored file not found: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(projectRoot, ProjectModFile)); err != nil {
-		t.Errorf("%s not found: %v", ProjectModFile, err)
+	if _, err := os.Stat(filepath.Join(projectRoot, cfg.ModFile)); err != nil {
+		t.Errorf("%s not found: %v", cfg.ModFile, err)
 	}
 
 	// 5. Test resolution prioritizing vendored
-	resolved, err := ResolveModulePath(filepath.Join(projectRoot, "main.vv"), "github.com/user/repo/lib.vv")
+	resolved, err := cfg.ResolveModulePath(filepath.Join(projectRoot, "main.vv"), "github.com/user/repo/lib.vv")
 	if err != nil {
 		t.Fatalf("ResolveModulePath() error = %v", err)
 	}
@@ -116,11 +118,12 @@ func TestVendor(t *testing.T) {
 func TestCollectDependenciesCascading(t *testing.T) {
 	vvpath := t.TempDir()
 	t.Setenv("VVPATH", vvpath)
+	cfg := DefaultConfig()
 
 	// Setup cached modules
 	// ModA -> ModB
-	modAPath := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "modA")
-	modBPath := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "modB")
+	modAPath := filepath.Join(vvpath, cfg.CacheDir, "github.com", "user", "modA")
+	modBPath := filepath.Join(vvpath, cfg.CacheDir, "github.com", "user", "modB")
 	os.MkdirAll(modAPath, 0755)
 	os.MkdirAll(modBPath, 0755)
 
@@ -131,7 +134,7 @@ func TestCollectDependenciesCascading(t *testing.T) {
 	projectRoot := t.TempDir()
 	os.WriteFile(filepath.Join(projectRoot, "main.vv"), []byte(`import a from "github.com/user/modA/a.vv"`), 0644)
 
-	deps, err := CollectDependencies(projectRoot)
+	deps, err := cfg.CollectDependencies(projectRoot)
 	if err != nil {
 		t.Fatalf("CollectDependencies() error = %v", err)
 	}

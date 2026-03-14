@@ -13,7 +13,8 @@ func Vendor() {
 		path = os.Args[2]
 	}
 
-	if err := mod.Vendor(path); err != nil {
+	cfg := mod.DefaultConfig()
+	if err := cfg.Vendor(path); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

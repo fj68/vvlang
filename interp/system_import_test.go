@@ -22,7 +22,7 @@ func TestSystemImport(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		s := NewState(mainFile)
+		s := NewState(mod.DefaultConfig(), mainFile)
 		err = s.Eval([]rune("import l from './lib.vv' assert l.x == 42"))
 		if err != nil {
 			t.Fatalf("Relative import failed: %v", err)
@@ -45,7 +45,7 @@ func TestSystemImport(t *testing.T) {
 			},
 		}
 
-		s := NewState("main.vv")
+		s := NewState(mod.DefaultConfig(), "main.vv")
 		s.EnsureSystemLibrary("std", mapFs)
 
 		err := s.Eval([]rune("import m from 'std/math.vv' assert m.add(1, 2) == 3"))
@@ -58,8 +58,10 @@ func TestSystemImport(t *testing.T) {
 	t.Run("ChecksumMismatchRestoration", func(t *testing.T) {
 		// prepare cache dir
 		tmpDir := t.TempDir()
-		t.Setenv("VVPATH", filepath.Join(tmpDir, ".vv"))
-		mathFile := filepath.Join(mod.GetCachePath(), "std/math.vv")
+		cfg := mod.DefaultConfig()
+		cfg.VVPath = filepath.Join(tmpDir, ".vv")
+		t.Setenv("VVPATH", cfg.VVPath)
+		mathFile := filepath.Join(cfg.GetCachePath(), "std/math.vv")
 		if err := os.MkdirAll(filepath.Dir(mathFile), 0755); err != nil {
 			t.Fatal(err)
 		}
@@ -74,14 +76,14 @@ func TestSystemImport(t *testing.T) {
 			},
 		}
 
-		s := NewState("main.vv")
+		s := NewState(cfg, "main.vv")
 		s.EnsureSystemLibrary("std", mapFs)
 
-		path, err := mod.ResolveModulePath("./", "std/math.vv")
+		path, err := cfg.ResolveModulePath("./", "std/math.vv")
 		if err != nil {
 			t.Fatal(err)
 		}
-		expected, err := filepath.Abs(mod.GetPackagePath("std/math.vv"))
+		expected, err := filepath.Abs(cfg.GetPackagePath("std/math.vv"))
 		if err != nil {
 			t.Fatal(err)
 		}

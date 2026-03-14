@@ -2,10 +2,11 @@ package interp
 
 import (
 	"testing"
+	"github.com/fj68/vvlang/mod"
 )
 
 func TestExternNativeExported(t *testing.T) {
-	s := NewState("test.vv")
+	s := NewState(mod.DefaultConfig(), "test.vv")
 	s.RegisterNative("f", VBuiltinFun(func(s *State, args []Value) (Value, error) {
 		return VInt(42), nil
 	}))

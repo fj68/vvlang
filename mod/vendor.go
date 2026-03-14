@@ -13,19 +13,19 @@ import (
 
 // Vendor copies a module from the global cache to the local .vv-modules directory.
 // If path is empty, it vendors all project dependencies recursively.
-func Vendor(path string) error {
+func (c *Config) Vendor(path string) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
-	projectRoot, err := FindProjectRoot(cwd)
+	projectRoot, err := c.FindProjectRoot(cwd)
 	if err != nil {
 		projectRoot = cwd
 	}
 
 	if path == "" {
 		fmt.Println("Collecting dependencies...")
-		deps, err := CollectDependencies(projectRoot)
+		deps, err := c.CollectDependencies(projectRoot)
 		if err != nil {
 			return err
 		}
@@ -34,7 +34,7 @@ func Vendor(path string) error {
 			return nil
 		}
 		for _, dep := range deps {
-			if err := Vendor(dep); err != nil {
+			if err := c.Vendor(dep); err != nil {
 				return err
 			}
 		}
@@ -52,7 +52,7 @@ func Vendor(path string) error {
 		repoDirName += "@" + rm.Version
 	}
 	cacheBase := filepath.Join(rm.Domain, rm.User, repoDirName)
-	sourceDir := GetPackagePath(cacheBase)
+	sourceDir := c.GetPackagePath(cacheBase)
 	if _, err := os.Stat(sourceDir); os.IsNotExist(err) {
 		return fmt.Errorf("module '%s' not found in cache. Run 'vv get %s' first", path, path)
 	}
@@ -61,7 +61,7 @@ func Vendor(path string) error {
 
 	// Destination path: strip version suffix so imports work
 	destBase := filepath.Join(rm.Domain, rm.User, rm.Repo)
-	destDir := filepath.Join(projectRoot, VendorDir, destBase)
+	destDir := filepath.Join(projectRoot, c.VendorDir, destBase)
 
 	// 3. Copy files from cache to .vv-modules
 	fmt.Printf("Vendoring %s to %s...\n", path, destDir)
@@ -70,7 +70,7 @@ func Vendor(path string) error {
 	}
 
 	// 4. Update vv.mod with checksums
-	return updateVVMod(projectRoot)
+	return c.updateVVMod(projectRoot)
 }
 
 func copyDir(src, dst string) error {
@@ -109,9 +109,9 @@ func copyFile(src, dst string) error {
 	return err
 }
 
-func updateVVMod(projectRoot string) error {
-	vvmodPath := filepath.Join(projectRoot, ProjectModFile)
-	vendorDir := filepath.Join(projectRoot, VendorDir)
+func (c *Config) updateVVMod(projectRoot string) error {
+	vvmodPath := filepath.Join(projectRoot, c.ModFile)
+	vendorDir := filepath.Join(projectRoot, c.VendorDir)
 
 	vf := &VersionFile{
 		Files: make(map[string]string),
@@ -137,7 +137,7 @@ func updateVVMod(projectRoot string) error {
 			}
 			// Prefix with VendorDir for the key in vv.mod?
 			// Or just store it as is. Let's match GlobalSumFile style.
-			vf.Files[filepath.ToSlash(filepath.Join(VendorDir, rel))] = sum
+			vf.Files[filepath.ToSlash(filepath.Join(c.VendorDir, rel))] = sum
 			return nil
 		})
 		if err != nil {
@@ -152,7 +152,7 @@ func updateVVMod(projectRoot string) error {
 	return os.WriteFile(vvmodPath, data, 0644)
 }
 
-func CollectDependencies(projectRoot string) ([]string, error) {
+func (c *Config) CollectDependencies(projectRoot string) ([]string, error) {
 	foundModules := make(map[string]bool)
 	visitedFiles := make(map[string]bool)
 
@@ -167,7 +167,7 @@ func CollectDependencies(projectRoot string) ([]string, error) {
 		}
 		visitedFiles[path] = true
 
-		if strings.Contains(path, VendorDir) {
+		if strings.Contains(path, c.VendorDir) {
 			return nil
 		}
 
@@ -185,7 +185,7 @@ func CollectDependencies(projectRoot string) ([]string, error) {
 		for _, imp := range imports {
 			if strings.HasPrefix(imp.Path, "./") || strings.HasPrefix(imp.Path, "../") {
 				// Relative import: scan the imported file
-				target, err := ResolveModulePath(path, imp.Path)
+				target, err := c.ResolveModulePath(path, imp.Path)
 				if err == nil {
 					if err := scan(target); err != nil {
 						return err
@@ -202,7 +202,7 @@ func CollectDependencies(projectRoot string) ([]string, error) {
 				if !foundModules[modName] {
 					foundModules[modName] = true
 					// Also scan the files in the cached module for cascading dependencies
-					cachedPath, err := ResolveModulePath(path, imp.Path)
+					cachedPath, err := c.ResolveModulePath(path, imp.Path)
 					if err == nil {
 						// For remote modules, we walk the cached directory
 						err = filepath.Walk(cachedPath, func(subPath string, info os.FileInfo, err error) error {
@@ -229,7 +229,7 @@ func CollectDependencies(projectRoot string) ([]string, error) {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() && strings.HasSuffix(path, ".vv") && !strings.Contains(path, VendorDir) {
+		if !info.IsDir() && strings.HasSuffix(path, ".vv") && !strings.Contains(path, c.VendorDir) {
 			return scan(path)
 		}
 		return nil

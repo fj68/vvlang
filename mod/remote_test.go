@@ -106,6 +106,7 @@ func (m *MockGitClient) Checkout(repoPath, version string) error {
 func TestGet(t *testing.T) {
 	vvpath := t.TempDir()
 	t.Setenv("VVPATH", vvpath)
+	cfg := DefaultConfig()
 
 	originalGitClient := gitClient
 	defer func() { gitClient = originalGitClient }()
@@ -124,33 +125,34 @@ func TestGet(t *testing.T) {
 	gitClient = mock
 
 	path := "github.com/user/repo/test.vv"
-	if err := Get(path); err != nil {
+	if err := cfg.Get(path); err != nil {
 		t.Fatalf("Get() error = %v", err)
 	}
 
 	// Check if the file is cached
-	cachedFile := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "repo", "test.vv")
+	cachedFile := filepath.Join(vvpath, cfg.CacheDir, "github.com", "user", "repo", "test.vv")
 	if _, err := os.Stat(cachedFile); err != nil {
 		t.Errorf("file not cached: %v", err)
 	}
 
 	// Check GlobalSumFile
-	vf, err := OpenVersionFile()
+	vf, err := cfg.OpenVersionFile()
 	if err != nil {
 		t.Fatalf("OpenVersionFile() error = %v", err)
 	}
 	relPath := filepath.Join("github.com", "user", "repo", "test.vv")
 	if _, ok := vf.Files[filepath.ToSlash(relPath)]; !ok {
-		t.Errorf("file not found in %s: %s", GlobalSumFile, relPath)
+		t.Errorf("file not found in %s: %s", cfg.SumFile, relPath)
 	}
 }
 
 func TestClean(t *testing.T) {
 	vvpath := t.TempDir()
 	t.Setenv("VVPATH", vvpath)
+	cfg := DefaultConfig()
 
 	// Create a dummy cached file
-	repoDir := filepath.Join(vvpath, RemoteCacheDir, "github.com", "user", "repo")
+	repoDir := filepath.Join(vvpath, cfg.CacheDir, "github.com", "user", "repo")
 	if err := os.MkdirAll(repoDir, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -160,18 +162,18 @@ func TestClean(t *testing.T) {
 	}
 
 	// Add to GlobalSumFile
-	vf, err := OpenVersionFile()
+	vf, err := cfg.OpenVersionFile()
 	if err != nil {
 		t.Fatal(err)
 	}
-	relPath := strings.TrimPrefix(cachedFile, GetCachePath()+string(filepath.Separator))
+	relPath := strings.TrimPrefix(cachedFile, cfg.GetCachePath()+string(filepath.Separator))
 	vf.Files[filepath.ToSlash(relPath)] = "checksum"
-	if err := vf.Write(); err != nil {
+	if err := vf.Write(cfg); err != nil {
 		t.Fatal(err)
 	}
 
 	path := "github.com/user/repo/test.vv"
-	if err := Clean(path); err != nil {
+	if err := cfg.Clean(path); err != nil {
 		t.Fatalf("Clean() error = %v", err)
 	}
 
@@ -181,11 +183,11 @@ func TestClean(t *testing.T) {
 	}
 
 	// Check GlobalSumFile
-	vf, err = OpenVersionFile()
+	vf, err = cfg.OpenVersionFile()
 	if err != nil {
 		t.Fatalf("OpenVersionFile() error = %v", err)
 	}
 	if _, ok := vf.Files[filepath.ToSlash(relPath)]; ok {
-		t.Errorf("file not removed from %s: %s", GlobalSumFile, relPath)
+		t.Errorf("file not removed from %s: %s", cfg.SumFile, relPath)
 	}
 }

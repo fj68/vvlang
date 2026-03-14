@@ -7,6 +7,7 @@ import (
 
 	"github.com/fj68/vvlang/interp"
 	"github.com/fj68/vvlang/lib"
+	"github.com/fj68/vvlang/mod"
 )
 
 func Test() {
@@ -76,7 +77,8 @@ func testFile(path string) (error, string) {
 		return err, ""
 	}
 
-	s := interp.NewState(path)
+	cfg := mod.DefaultConfig()
+	s := interp.NewState(cfg, path)
 	s.RegisterBuiltinModules(lib.Std.Natives)
 	if err := s.EnsureSystemLibrary(lib.Std.Name, lib.Std.FS); err != nil {
 		return err, ""

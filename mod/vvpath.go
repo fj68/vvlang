@@ -6,44 +6,30 @@ import (
 	"strings"
 )
 
-const (
-	VendorDir      = ".vv-modules"
-	ProjectModFile = "vv.mod"
-	GlobalSumFile  = "vv.sum"
-	RemoteCacheDir = ".cache"
-)
-
-// EnsureGlobalModuleCache ensures that the $VVPATH/.cache directory exists.
-func EnsureGlobalModuleCache() error {
-	cacheDir := GetCachePath()
+// EnsureGlobalModuleCache ensures that the module cache directory exists.
+func (c *Config) EnsureGlobalModuleCache() error {
+	cacheDir := c.GetCachePath()
 	return os.MkdirAll(cacheDir, 0755)
 }
 
-func GetVVPath() string {
-	if p := os.Getenv("VVPATH"); p != "" {
-		return p
-	}
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return ".vv" // fallback to current dir's .vv if home is unknown
-	}
-	return filepath.Join(home, ".vv")
+func (c *Config) GetVVPath() string {
+	return c.VVPath
 }
 
-func GetCachePath() string {
-	return filepath.Join(GetVVPath(), RemoteCacheDir)
+func (c *Config) GetCachePath() string {
+	return filepath.Join(c.GetVVPath(), c.CacheDir)
 }
 
-func GetPackagePath(name string) string {
-	return filepath.Join(GetCachePath(), name)
+func (c *Config) GetPackagePath(name string) string {
+	return filepath.Join(c.GetCachePath(), name)
 }
 
-func GetVersionPath() string {
-	return filepath.Join(GetVVPath(), GlobalSumFile)
+func (c *Config) GetVersionPath() string {
+	return filepath.Join(c.GetVVPath(), c.SumFile)
 }
 
-// FindProjectRoot looks for a ProjectModFile in the current directory or its parents.
-func FindProjectRoot(startPath string) (string, error) {
+// FindProjectRoot looks for a ModFile in the current directory or its parents.
+func (c *Config) FindProjectRoot(startPath string) (string, error) {
 	curr, err := filepath.Abs(startPath)
 	if err != nil {
 		return "", err
@@ -53,7 +39,7 @@ func FindProjectRoot(startPath string) (string, error) {
 	}
 
 	for {
-		if _, err := os.Stat(filepath.Join(curr, ProjectModFile)); err == nil {
+		if _, err := os.Stat(filepath.Join(curr, c.ModFile)); err == nil {
 			return curr, nil
 		}
 		parent := filepath.Dir(curr)
@@ -84,7 +70,9 @@ func (r RelativeResolver) Resolve(sourcePath, importPath string) (string, error)
 	return "", os.ErrNotExist
 }
 
-type VendorResolver struct{}
+type VendorResolver struct {
+	cfg *Config
+}
 
 func (r VendorResolver) Resolve(sourcePath, importPath string) (string, error) {
 	if strings.HasPrefix(importPath, "./") || strings.HasPrefix(importPath, "../") {
@@ -94,14 +82,14 @@ func (r VendorResolver) Resolve(sourcePath, importPath string) (string, error) {
 	sourceDir := filepath.Dir(sourcePath)
 
 	// 1. Check VendorDir in the current directory/source directory
-	target := filepath.Join(sourceDir, VendorDir, importPath)
+	target := filepath.Join(sourceDir, r.cfg.VendorDir, importPath)
 	if _, err := os.Stat(target); err == nil {
 		return target, nil
 	}
 
-	// 2. Search upwards for ProjectModFile and its VendorDir
-	if root, rErr := FindProjectRoot(sourceDir); rErr == nil {
-		target = filepath.Join(root, VendorDir, importPath)
+	// 2. Search upwards for ModFile and its VendorDir
+	if root, rErr := r.cfg.FindProjectRoot(sourceDir); rErr == nil {
+		target = filepath.Join(root, r.cfg.VendorDir, importPath)
 		if _, err := os.Stat(target); err == nil {
 			return target, nil
 		}
@@ -110,14 +98,16 @@ func (r VendorResolver) Resolve(sourcePath, importPath string) (string, error) {
 	return "", os.ErrNotExist
 }
 
-type CacheResolver struct{}
+type CacheResolver struct {
+	cfg *Config
+}
 
 func (r CacheResolver) Resolve(sourcePath, importPath string) (string, error) {
 	if strings.HasPrefix(importPath, "./") || strings.HasPrefix(importPath, "../") {
 		return "", os.ErrNotExist
 	}
 
-	target, err := filepath.Abs(GetPackagePath(importPath))
+	target, err := filepath.Abs(r.cfg.GetPackagePath(importPath))
 	if err != nil {
 		return "", err
 	}
@@ -125,11 +115,11 @@ func (r CacheResolver) Resolve(sourcePath, importPath string) (string, error) {
 	return target, err
 }
 
-func ResolveModulePath(sourcePath, path string) (target string, err error) {
+func (c *Config) ResolveModulePath(sourcePath, path string) (target string, err error) {
 	resolvers := []ModuleResolver{
 		RelativeResolver{},
-		VendorResolver{},
-		CacheResolver{},
+		VendorResolver{cfg: c},
+		CacheResolver{cfg: c},
 	}
 
 	for _, r := range resolvers {

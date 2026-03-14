@@ -13,7 +13,8 @@ func Clean() {
 		return
 	}
 	path := os.Args[2]
-	if err := mod.Clean(path); err != nil {
+	cfg := mod.DefaultConfig()
+	if err := cfg.Clean(path); err != nil {
 		fmt.Println(err)
 	}
 }

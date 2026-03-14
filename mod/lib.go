@@ -8,12 +8,12 @@ import (
 )
 
 // WriteToCache ensures the cache folder exists and writes a file to it, concluding with the version file.
-func WriteToCache(path string, data []byte, vf *VersionFile) error {
-	if err := EnsureGlobalModuleCache(); err != nil {
+func (c *Config) WriteToCache(path string, data []byte, vf *VersionFile) error {
+	if err := c.EnsureGlobalModuleCache(); err != nil {
 		return err
 	}
 
-	fullPath := GetPackagePath(path)
+	fullPath := c.GetPackagePath(path)
 	if err := os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func WriteToCache(path string, data []byte, vf *VersionFile) error {
 }
 
 // ExtractLibrary walks the FS and extracts all files to the destination directory.
-func ExtractLibrary(library fs.FS, vf *VersionFile) error {
+func (c *Config) ExtractLibrary(library fs.FS, vf *VersionFile) error {
 	return fs.WalkDir(library, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -51,6 +51,6 @@ func ExtractLibrary(library fs.FS, vf *VersionFile) error {
 			return err
 		}
 
-		return WriteToCache(path, dataBytes, vf)
+		return c.WriteToCache(path, dataBytes, vf)
 	})
 }

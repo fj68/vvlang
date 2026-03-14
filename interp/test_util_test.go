@@ -3,6 +3,7 @@ package interp
 import (
 	"strings"
 	"testing"
+	"github.com/fj68/vvlang/mod"
 )
 
 type TestCase struct {
@@ -18,7 +19,7 @@ type TestCase struct {
 
 func RunTest(t *testing.T, tc TestCase) {
 	t.Run(tc.Name, func(t *testing.T) {
-		s := NewState("test.vv")
+		s := NewState(mod.DefaultConfig(), "test.vv")
 		if tc.Globals != nil {
 			s.RegisterNatives(tc.Globals)
 		}

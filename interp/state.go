@@ -26,12 +26,13 @@ type State struct {
 	Defers            [][]ast.Stmt
 	NativeValues      map[string]Value
 	BuiltinModules    map[string]map[string]Value
-	NewState          func(sourcePath string) *State
+	NewState          func(cfg *mod.Config, sourcePath string) *State
 	MaxRecursionDepth int
 	StackDepth        int
+	Config            *mod.Config
 }
 
-func NewState(sourcePath string) *State {
+func NewState(cfg *mod.Config, sourcePath string) *State {
 	return &State{
 		SourcePath:        sourcePath,
 		ModuleCache:       make(map[string]*VModule),
@@ -40,6 +41,7 @@ func NewState(sourcePath string) *State {
 		BuiltinModules:    make(map[string]map[string]Value),
 		NewState:          NewState,
 		MaxRecursionDepth: 1000,
+		Config:            cfg,
 	}
 }
 
@@ -53,7 +55,7 @@ func (s *State) EnsureSystemLibrary(name string, library fs.FS) error {
 		return err
 	}
 
-	cachedPath := mod.GetPackagePath(name)
+	cachedPath := s.Config.GetPackagePath(name)
 
 	cachedFs := os.DirFS(cachedPath)
 
@@ -62,16 +64,16 @@ func (s *State) EnsureSystemLibrary(name string, library fs.FS) error {
 		return nil
 	}
 
-	vf, err := mod.OpenVersionFile()
+	vf, err := s.Config.OpenVersionFile()
 	if err != nil {
 		return err
 	}
 
-	return mod.ExtractLibrary(library, vf)
+	return s.Config.ExtractLibrary(library, vf)
 }
 
-func Eval(sourcePath string, text []rune) error {
-	s := NewState(sourcePath)
+func Eval(cfg *mod.Config, sourcePath string, text []rune) error {
+	s := NewState(cfg, sourcePath)
 	return s.Eval(text)
 }
 
@@ -104,7 +106,7 @@ func (s *State) RegisterBuiltinModules(modules map[string]map[string]Value) {
 func (s *State) registerNativesForPath(targetPath string) {
 	normTarget := strings.ReplaceAll(targetPath, "\\", "/")
 	for stdPath, funcs := range s.BuiltinModules {
-		cachedPath := mod.GetPackagePath(stdPath)
+		cachedPath := s.Config.GetPackagePath(stdPath)
 		normCached := strings.ReplaceAll(cachedPath, "\\", "/")
 		normStd := strings.ReplaceAll(stdPath, "\\", "/")
 		if normTarget == normCached || strings.HasSuffix(normTarget, "/"+normStd) {

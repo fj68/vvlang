@@ -14,11 +14,11 @@ type VersionFile struct {
 	Files map[string]string `json:"files"`
 }
 
-func OpenVersionFile() (*VersionFile, error) {
-	if err := EnsureGlobalModuleCache(); err != nil {
+func (c *Config) OpenVersionFile() (*VersionFile, error) {
+	if err := c.EnsureGlobalModuleCache(); err != nil {
 		return nil, err
 	}
-	path := GetVersionPath()
+	path := c.GetVersionPath()
 	if _, err := os.Stat(path); err != nil {
 		return &VersionFile{
 			Files: make(map[string]string),
@@ -37,15 +37,15 @@ func OpenVersionFile() (*VersionFile, error) {
 	return versionFile, nil
 }
 
-func (vf *VersionFile) Write() error {
+func (vf *VersionFile) Write(c *Config) error {
 	data, err := json.MarshalIndent(vf, "", "  ")
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(filepath.Dir(GetVersionPath()), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(c.GetVersionPath()), 0755); err != nil {
 		return err
 	}
-	file, err := os.OpenFile(GetVersionPath(), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(c.GetVersionPath(), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
