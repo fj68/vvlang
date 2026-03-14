@@ -86,7 +86,7 @@ func ParseRemotePath(path string) (*RemoteModule, error) {
 }
 
 // Get downloads the remote module to the cache.
-func Get(path string) error {
+func (c *Config) Get(path string) error {
 	rm, err := ParseRemotePath(path)
 	if err != nil {
 		return err
@@ -98,16 +98,15 @@ func Get(path string) error {
 		repoDirName += "@" + rm.Version
 	}
 
-	// The base path for the repository in the cache
 	cacheBase := filepath.Join(rm.Domain, rm.User, repoDirName)
-	fullCacheDir := GetPackagePath(cacheBase)
+	fullCacheDir := c.GetPackagePath(cacheBase)
 
 	// Check if already exists
 	if _, err := os.Stat(fullCacheDir); err == nil {
 		return nil // Already cached
 	}
 
-	if err := EnsureGlobalModuleCache(); err != nil {
+	if err := c.EnsureGlobalModuleCache(); err != nil {
 		return err
 	}
 
@@ -129,7 +128,7 @@ func Get(path string) error {
 	}
 
 	// Update GlobalSumFile with checksums for the downloaded files
-	vf, err := OpenVersionFile()
+	vf, err := c.OpenVersionFile()
 	if err != nil {
 		return err
 	}
@@ -151,7 +150,7 @@ func Get(path string) error {
 			return err
 		}
 
-		rel, err := filepath.Rel(GetCachePath(), path)
+		rel, err := filepath.Rel(c.GetCachePath(), path)
 		if err != nil {
 			return err
 		}
@@ -162,10 +161,10 @@ func Get(path string) error {
 		return err
 	}
 
-	return vf.Write()
+	return vf.Write(c)
 }
 
-func Clean(path string) error {
+func (c *Config) Clean(path string) error {
 	rm, err := ParseRemotePath(path)
 	if err != nil {
 		return err
@@ -177,7 +176,7 @@ func Clean(path string) error {
 	}
 
 	cacheBase := filepath.Join(rm.Domain, rm.User, repoDirName)
-	fullCacheDir := GetPackagePath(cacheBase)
+	fullCacheDir := c.GetPackagePath(cacheBase)
 
 	if _, err := os.Stat(fullCacheDir); os.IsNotExist(err) {
 		return nil // Not cached, nothing to do
@@ -189,12 +188,12 @@ func Clean(path string) error {
 		return err
 	}
 
-	vf, err := OpenVersionFile()
+	vf, err := c.OpenVersionFile()
 	if err != nil {
 		return err
 	}
 
-	rel, err := filepath.Rel(GetCachePath(), fullCacheDir)
+	rel, err := filepath.Rel(c.GetCachePath(), fullCacheDir)
 	if err != nil {
 		return err
 	}
@@ -206,5 +205,5 @@ func Clean(path string) error {
 		}
 	}
 
-	return vf.Write()
+	return vf.Write(c)
 }

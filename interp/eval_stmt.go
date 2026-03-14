@@ -260,14 +260,14 @@ func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
 }
 
 func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
-	targetPath, err := mod.ResolveModulePath(s.SourcePath, stmt.Path)
+	targetPath, err := s.Config.ResolveModulePath(s.SourcePath, stmt.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			if _, err := mod.ParseRemotePath(stmt.Path); err == nil {
-				if getErr := mod.Get(stmt.Path); getErr != nil {
+				if getErr := s.Config.Get(stmt.Path); getErr != nil {
 					return fmt.Errorf("module '%s' not found locally and download failed: %v", stmt.Path, getErr)
 				}
-				targetPath, err = mod.ResolveModulePath(s.SourcePath, stmt.Path)
+				targetPath, err = s.Config.ResolveModulePath(s.SourcePath, stmt.Path)
 				if err != nil {
 					return fmt.Errorf("could not resolve module '%s' after download: %v", stmt.Path, err)
 				}
@@ -303,7 +303,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 		return err
 	}
 
-	modState := s.NewState(targetPath)
+	modState := s.NewState(s.Config, targetPath)
 	modState.ModuleCache = s.ModuleCache
 	modState.BuiltinModules = s.BuiltinModules
 
@@ -373,7 +373,7 @@ func (s *State) checkCycles(targetPath string, visited map[string]bool) error {
 	}
 
 	for _, imp := range imports {
-		subPath, err := mod.ResolveModulePath(targetPath, imp.Path)
+		subPath, err := s.Config.ResolveModulePath(targetPath, imp.Path)
 		if err != nil {
 			if _, remoteErr := mod.ParseRemotePath(imp.Path); remoteErr == nil {
 				continue

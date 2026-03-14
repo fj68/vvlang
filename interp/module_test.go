@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"github.com/fj68/vvlang/mod"
 )
 
 func TestModuleImport(t *testing.T) {
@@ -30,7 +31,7 @@ let result = math.square(math.pi)
 		t.Fatal(err)
 	}
 
-	s := NewState(mainPath)
+	s := NewState(mod.DefaultConfig(), mainPath)
 	if err := s.Eval([]rune(mainCode)); err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +73,7 @@ let result = math.secret
 		t.Fatal(err)
 	}
 
-	s := NewState(mainPath)
+	s := NewState(mod.DefaultConfig(), mainPath)
 	err := s.Eval([]rune(mainCode))
 	if err == nil {
 		t.Fatal("expected error accessing non-exported symbol, but got nil")
@@ -109,7 +110,7 @@ let result = math.circle_area(2)
 		t.Fatal(err)
 	}
 
-	s := NewState(mainPath)
+	s := NewState(mod.DefaultConfig(), mainPath)
 	if err := s.Eval([]rune(mainCode)); err != nil {
 		t.Fatal(err)
 	}
@@ -147,7 +148,7 @@ pub let val = 2`
 		t.Fatal(err)
 	}
 
-	s := NewState(aPath)
+	s := NewState(mod.DefaultConfig(), aPath)
 	err := s.Eval([]rune(aCode))
 	if err == nil {
 		t.Fatal("expected error for cyclic dependency, but got nil")

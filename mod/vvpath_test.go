@@ -9,6 +9,7 @@ import (
 func TestResolveModulePath(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("VVPATH", tmpDir)
+	cfg := DefaultConfig()
 
 	// Create a dummy local file
 	localFile := filepath.Join(tmpDir, "local.vv")
@@ -34,14 +35,14 @@ func TestResolveModulePath(t *testing.T) {
 			name:       "remote path (not cached)",
 			sourcePath: filepath.Join(tmpDir, "main.vv"),
 			importPath: "github.com/user/repo/lib.vv",
-			wantSuffix: filepath.Join(RemoteCacheDir, "github.com", "user", "repo", "lib.vv"),
+			wantSuffix: filepath.Join(cfg.CacheDir, "github.com", "user", "repo", "lib.vv"),
 			expectErr:  true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ResolveModulePath(tt.sourcePath, tt.importPath)
+			got, err := cfg.ResolveModulePath(tt.sourcePath, tt.importPath)
 			if (err != nil) != tt.expectErr {
 				t.Errorf("ResolveModulePath() error = %v, expectErr %v", err, tt.expectErr)
 			}
@@ -77,14 +78,15 @@ func TestRelativeResolver(t *testing.T) {
 
 func TestVendorResolver(t *testing.T) {
 	tmpDir := t.TempDir()
-	vendorDir := filepath.Join(tmpDir, VendorDir)
+	cfg := DefaultConfig()
+	vendorDir := filepath.Join(tmpDir, cfg.VendorDir)
 	os.MkdirAll(vendorDir, 0755)
 
 	targetFile := filepath.Join(vendorDir, "pkg", "lib.vv")
 	os.MkdirAll(filepath.Dir(targetFile), 0755)
 	os.WriteFile(targetFile, []byte(""), 0644)
 
-	resolver := VendorResolver{}
+	resolver := VendorResolver{cfg: cfg}
 	sourcePath := filepath.Join(tmpDir, "main.vv")
 
 	got, err := resolver.Resolve(sourcePath, "pkg/lib.vv")
@@ -99,13 +101,14 @@ func TestVendorResolver(t *testing.T) {
 func TestCacheResolver(t *testing.T) {
 	tmpDir := t.TempDir()
 	t.Setenv("VVPATH", tmpDir)
+	cfg := DefaultConfig()
 
-	cachePkgDir := filepath.Join(tmpDir, RemoteCacheDir, "github.com", "user", "repo")
+	cachePkgDir := filepath.Join(tmpDir, cfg.CacheDir, "github.com", "user", "repo")
 	os.MkdirAll(cachePkgDir, 0755)
 	targetFile := filepath.Join(cachePkgDir, "lib.vv")
 	os.WriteFile(targetFile, []byte(""), 0644)
 
-	resolver := CacheResolver{}
+	resolver := CacheResolver{cfg: cfg}
 	sourcePath := filepath.Join(tmpDir, "main.vv")
 
 	got, err := resolver.Resolve(sourcePath, "github.com/user/repo/lib.vv")
