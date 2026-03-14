@@ -7,9 +7,9 @@ import (
 )
 
 type Expr interface {
+	Node
 	StartPos() *Pos
 	EndPos() *Pos
-	Inspect() string
 	Equals(other Expr) bool
 }
 

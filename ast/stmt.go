@@ -6,7 +6,7 @@ import (
 )
 
 type Stmt interface {
-	Inspect() string
+	Node
 	Equals(other Stmt) bool
 }
 
@@ -118,8 +118,16 @@ func (stmt *AssignmentStmt) Equals(other Stmt) bool {
 type VarDeclStmt struct {
 	Name      string
 	Body      Expr
-	Exported  bool
-	Docstring map[string]string
+	Exported    bool
+	annotations []Annotation
+}
+
+func (stmt *VarDeclStmt) AddAnnotation(annotation Annotation) {
+	stmt.annotations = append(stmt.annotations, annotation)
+}
+
+func (stmt *VarDeclStmt) GetAnnotations() []Annotation {
+	return stmt.annotations
 }
 
 func (stmt *VarDeclStmt) Inspect() string {
@@ -271,9 +279,17 @@ type ExternStmt struct {
 	Type      string // e.g. "native"
 	Kind      string // "fun" or "let"
 	Name      string
-	Args      []string
-	Exported  bool
-	Docstring map[string]string
+	Args        []string
+	Exported    bool
+	annotations []Annotation
+}
+
+func (stmt *ExternStmt) AddAnnotation(annotation Annotation) {
+	stmt.annotations = append(stmt.annotations, annotation)
+}
+
+func (stmt *ExternStmt) GetAnnotations() []Annotation {
+	return stmt.annotations
 }
 
 func (stmt *ExternStmt) Inspect() string {
@@ -306,9 +322,17 @@ func (stmt *ImportStmt) Equals(other Stmt) bool {
 }
 
 type Module struct {
-	Statements []Stmt
-	Exports    map[string]Stmt
-	Docstring  map[string]string
+	Statements  []Stmt
+	Exports     map[string]Stmt
+	annotations []Annotation
+}
+
+func (m *Module) AddAnnotation(annotation Annotation) {
+	m.annotations = append(m.annotations, annotation)
+}
+
+func (m *Module) GetAnnotations() []Annotation {
+	return m.annotations
 }
 
 func (m *Module) Inspect() string {

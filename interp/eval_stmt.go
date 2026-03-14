@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/fj68/vvlang/ast"
+	"github.com/fj68/vvlang/docstring"
 	"github.com/fj68/vvlang/mod"
 	"github.com/fj68/vvlang/parser"
 )
@@ -330,14 +331,16 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 
 	fieldDocstrings := make(map[string]map[string]string)
 	for _, stmt := range module.Statements {
-		if vd, ok := stmt.(*ast.VarDeclStmt); ok && vd.Exported && vd.Docstring != nil {
-			fieldDocstrings[vd.Name] = vd.Docstring
+		if vd, ok := stmt.(*ast.VarDeclStmt); ok && vd.Exported {
+			if doc := docstring.GetDocstring(vd); doc != nil {
+				fieldDocstrings[vd.Name] = doc
+			}
 		}
 	}
 
 	modRecord := &VModule{
 		VRecord:         &VRecord{Fields: fields},
-		Docstring:       module.Docstring,
+		Docstring:       docstring.GetDocstring(module),
 		FieldDocstrings: fieldDocstrings,
 	}
 

@@ -36,13 +36,16 @@ func (p *Parser) parseToplevelStmt() ([]ast.Stmt, error) {
 		switch s := stmt.(type) {
 		case *ast.VarDeclStmt:
 			s.Exported = isPub
-			s.Docstring = docstring
 		case *ast.ExternStmt:
 			s.Exported = isPub
-			s.Docstring = docstring
 		default:
 			if isPub {
 				return nil, fmt.Errorf("only let, fun, and extern declarations can be exported")
+			}
+		}
+		if docstring != nil {
+			if annotated, ok := stmt.(ast.AnnotatedNode); ok {
+				annotated.AddAnnotation(docstring)
 			}
 		}
 	}
