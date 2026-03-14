@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/fj68/vvlang/ast"
+	"github.com/fj68/vvlang/docstring"
 	"github.com/fj68/vvlang/parser"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -213,21 +214,21 @@ func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName 
 	}
 
 	for _, mod := range modules {
-		if mod.Docstring != nil {
-			for lang := range mod.Docstring {
+		if doc := docstring.GetDocstring(mod); doc != nil {
+			for lang := range doc {
 				langs[lang] = true
 			}
 		}
 		for _, stmt := range mod.Statements {
 			if decl, ok := stmt.(*ast.VarDeclStmt); ok {
-				if decl.Docstring != nil {
-					for lang := range decl.Docstring {
+				if doc := docstring.GetDocstring(decl); doc != nil {
+					for lang := range doc {
 						langs[lang] = true
 					}
 				}
 			} else if ext, ok := stmt.(*ast.ExternStmt); ok {
-				if ext.Docstring != nil {
-					for lang := range ext.Docstring {
+				if doc := docstring.GetDocstring(ext); doc != nil {
+					for lang := range doc {
 						langs[lang] = true
 					}
 				}
@@ -260,7 +261,7 @@ func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName 
 
 			data := modulePageData{
 				ModName:     modPath,
-				Docstring:   template.HTML(formatDoc(getDocstring(mod.Docstring, lang))),
+				Docstring:   template.HTML(formatDoc(getDocstring(docstring.GetDocstring(mod), lang))),
 				AllLangs:    sortedLangs,
 				CurrentLang: lang,
 				RootRel:     rootRel,
@@ -279,7 +280,7 @@ func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName 
 					} else {
 						exp.Signature = fmt.Sprintf("let %s", s.Name)
 					}
-					exp.Doc = template.HTML(formatDoc(getDocstring(s.Docstring, lang)))
+					exp.Doc = template.HTML(formatDoc(getDocstring(docstring.GetDocstring(s), lang)))
 					data.Exports = append(data.Exports, exp)
 				case *ast.ExternStmt:
 					if !s.Exported {
@@ -293,7 +294,7 @@ func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName 
 						exp.Signature = fmt.Sprintf("let %s", s.Name)
 					}
 					exp.ExternTag = fmt.Sprintf("extern %q", s.Type)
-					exp.Doc = template.HTML(formatDoc(getDocstring(s.Docstring, lang)))
+					exp.Doc = template.HTML(formatDoc(getDocstring(docstring.GetDocstring(s), lang)))
 					data.Exports = append(data.Exports, exp)
 				case *ast.RecFunDeclStmt:
 					for _, fun := range s.Funs {
@@ -307,7 +308,7 @@ func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName 
 						} else {
 							exp.Signature = fmt.Sprintf("let %s", fun.Name)
 						}
-						exp.Doc = template.HTML(formatDoc(getDocstring(fun.Docstring, lang)))
+						exp.Doc = template.HTML(formatDoc(getDocstring(docstring.GetDocstring(fun), lang)))
 						data.Exports = append(data.Exports, exp)
 					}
 				}
@@ -342,7 +343,7 @@ func generateDocs(modules map[string]*ast.Module, outputDir string, rootDirName 
 			}
 
 			summary := ""
-			modDoc := getDocstring(mod.Docstring, lang)
+			modDoc := getDocstring(docstring.GetDocstring(mod), lang)
 			if modDoc != "" {
 				lines := strings.Split(modDoc, "\n")
 				if len(lines) > 0 {

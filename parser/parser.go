@@ -2,9 +2,9 @@ package parser
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/fj68/vvlang/ast"
+	"github.com/fj68/vvlang/docstring"
 	"github.com/fj68/vvlang/lexer"
 )
 
@@ -189,38 +189,39 @@ func (p *Parser) expectNext(ty lexer.TokenType) error {
 	return nil
 }
 
-func (p *Parser) parseDocstring() map[string]string {
-	docs := make(map[string]string)
-	lang := "en"
+func (p *Parser) parseDocstring() *docstring.DocstringAnnotation {
+	var docsTokens []*lexer.Token
 	lastLine := -1
+	var startPos *ast.Pos
+	if p.curToken.Type == lexer.TDocstring {
+		pos := p.curToken.Pos
+		startPos = &pos
+	}
 	for p.curToken.Type == lexer.TDocstring {
 		if lastLine != -1 && p.curToken.Pos.Line > lastLine+1 {
 			break
 		}
 		lastLine = p.curToken.Pos.Line
-
-		line := p.curToken.Text
-		if len(line) >= 6 && line[:6] == "@lang " {
-			lang = strings.TrimSpace(line[6:])
-			// Consume the @lang token and move on
-			if err := p.readToken(); err != nil {
-				break
-			}
-			continue
-		}
-		docs[lang] += line + "\n"
+		docsTokens = append(docsTokens, p.curToken)
 		if err := p.readToken(); err != nil {
 			break
 		}
 	}
-	// Trim trailing newlines from each lang entry
-	for k, v := range docs {
-		docs[k] = strings.TrimRight(v, "\n")
-	}
-	if len(docs) == 0 {
+
+	if len(docsTokens) == 0 {
 		return nil
 	}
-	return docs
+
+	dp := &docstring.Parser{}
+	docs, _ := dp.Parse(docsTokens)
+	if docs == nil {
+		return nil
+	}
+
+	return &docstring.DocstringAnnotation{
+		Languages: docs,
+		Position:  startPos,
+	}
 }
 
 func (p *Parser) parseProgram() (*ast.Module, error) {
@@ -242,7 +243,9 @@ func (p *Parser) parseProgram() (*ast.Module, error) {
 	module := &ast.Module{
 		Statements: header,
 		Exports:    make(map[string]ast.Stmt),
-		Docstring:  moduleDocstring,
+	}
+	if moduleDocstring != nil {
+		module.AddAnnotation(moduleDocstring)
 	}
 
 	seenOtherStmt := false
