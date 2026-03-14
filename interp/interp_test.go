@@ -13,7 +13,7 @@ func TestExternNativeExported(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Eval() error = %v", err)
 	}
-	val, err := s.Env.Get("f")
+	val, err := s.ScopeManager.Resolve("f")
 	if err != nil {
 		t.Fatalf("Env.Get(\"f\") error = %v", err)
 	}

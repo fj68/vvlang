@@ -32,22 +32,22 @@ func TestEvalExpr(t *testing.T) {
 		},
 		{
 			Name:        "record field access",
-			Input:       "r = { name = 'value', key = 8 }\nlet result = r.name",
+			Input:       "let r = { name = 'value', key = 8 }\nlet result = r.name",
 			ExpectedEnv: map[string]Value{"result": StringToValue("value")},
 		},
 		{
 			Name:        "record field access number",
-			Input:       "r = { name = 'value', key = 8 }\nlet result = r.key",
+			Input:       "let r = { name = 'value', key = 8 }\nlet result = r.key",
 			ExpectedEnv: map[string]Value{"result": VInt(8)},
 		},
 		{
 			Name: "nested records with chained field access",
 			Input: `
-admins = { alice = { name = 'Alice', age = 30 } }
+let admins = { alice = { name = 'Alice', age = 30 } }
 fun get_alice(r)
   return r.alice
 end
-alice_name = get_alice(admins).name
+let alice_name = get_alice(admins).name
 let result = alice_name
 `,
 			ExpectedEnv: map[string]Value{"result": StringToValue("Alice")},

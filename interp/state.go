@@ -21,7 +21,7 @@ type State struct {
 	CurrentTest       *TestState
 	SourcePath        string
 	ModuleCache       map[string]*VModule
-	Env               *Env
+	ScopeManager      ScopeManager
 	RetVals           stack.Stack[Value]
 	Defers            [][]ast.Stmt
 	NativeValues      map[string]Value
@@ -35,7 +35,7 @@ func NewState(sourcePath string) *State {
 	return &State{
 		SourcePath:        sourcePath,
 		ModuleCache:       make(map[string]*VModule),
-		Env:               NewEnv(nil),
+		ScopeManager:      NewEnvManager(nil),
 		NativeValues:      make(map[string]Value),
 		BuiltinModules:    make(map[string]map[string]Value),
 		NewState:          NewState,

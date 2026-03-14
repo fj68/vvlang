@@ -8,22 +8,22 @@ func TestEvalStmt(t *testing.T) {
 	tests := []TestCase{
 		{
 			Name:        "state basic eval",
-			Input:       "fun add(a, b) return a + b end x = 1 let result = add(x, 0.5)",
+			Input:       "fun add(a, b) return a + b end let x = 1 let result = add(x, 0.5)",
 			ExpectedEnv: map[string]Value{"result": VFloat(1.5)},
 		},
 		{
 			Name:        "while loop increments",
-			Input:       "i = 0 while i < 3 i = i + 1 end let result = i",
+			Input:       "let i = 0 while i < 3 i = i + 1 end let result = i",
 			ExpectedEnv: map[string]Value{"result": VInt(3)},
 		},
 		{
 			Name:        "while break",
-			Input:       "i = 0 while true if i == 2 break end i = i + 1 end let result = i",
+			Input:       "let i = 0 while true if i == 2 break end i = i + 1 end let result = i",
 			ExpectedEnv: map[string]Value{"result": VInt(2)},
 		},
 		{
 			Name:        "while continue",
-			Input:       "i = 0 j = 0 while i < 5 i = i + 1 if i == 2 continue end j = j + 1 end let result = j",
+			Input:       "let i = 0 let j = 0 while i < 5 i = i + 1 if i == 2 continue end j = j + 1 end let result = j",
 			ExpectedEnv: map[string]Value{"result": VInt(4)},
 		},
 		{

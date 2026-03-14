@@ -12,10 +12,7 @@ import (
 func Help(s *interp.State, args []interp.Value) (interp.Value, error) {
 	if len(args) == 0 {
 		// Print all top-level env names
-		names := make([]string, 0)
-		for k := range s.Env.Values {
-			names = append(names, k)
-		}
+		names := s.ScopeManager.Current().Names()
 		sort.Strings(names)
 		fmt.Println(strings.Join(names, "\n"))
 		return nil, nil

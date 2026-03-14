@@ -35,7 +35,7 @@ let result = math.square(math.pi)
 		t.Fatal(err)
 	}
 
-	res, err := s.Env.Get("result")
+	res, err := s.ScopeManager.Resolve("result")
 	if err != nil {
 		t.Fatalf("expected result: %v", err)
 	}
@@ -114,7 +114,7 @@ let result = math.circle_area(2)
 		t.Fatal(err)
 	}
 
-	res, err := s.Env.Get("result")
+	res, err := s.ScopeManager.Resolve("result")
 	if err != nil {
 		t.Fatalf("expected result: %v", err)
 	}

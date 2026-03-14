@@ -72,16 +72,15 @@ func (s *State) evalVarDeclStmt(stmt *ast.VarDeclStmt) error {
 		return err
 	}
 	if stmt.Name != "_" {
-		s.Env.Set(stmt.Name, v)
+		s.ScopeManager.Declare(stmt.Name, v)
 	}
 	return nil
 }
 
 func (s *State) evalRecFunDeclStmt(stmt *ast.RecFunDeclStmt) error {
-	recEnv := NewEnv(s.Env)
-	oldEnv := s.Env
-	s.Env = recEnv
-	defer func() { s.Env = oldEnv }()
+	currentScope := s.ScopeManager.Current()
+	s.ScopeManager.EnterScopeWithParent(currentScope)
+	defer s.ScopeManager.ExitScope()
 
 	var funs []Value
 	for _, decl := range stmt.Funs {
@@ -90,11 +89,11 @@ func (s *State) evalRecFunDeclStmt(stmt *ast.RecFunDeclStmt) error {
 			return err
 		}
 		funs = append(funs, v)
-		recEnv.Set(decl.Name, v)
+		s.ScopeManager.Declare(decl.Name, v)
 	}
 
 	for i, decl := range stmt.Funs {
-		oldEnv.Set(decl.Name, funs[i])
+		currentScope.Declare(decl.Name, funs[i])
 	}
 	return nil
 }
@@ -110,7 +109,9 @@ func (s *State) evalAssignmentStmt(stmt *ast.AssignmentStmt) error {
 		if l.Name == "_" {
 			return nil
 		}
-		s.Env.SetOuter(l.Name, val)
+		if err := s.ScopeManager.Assign(l.Name, val); err != nil {
+			return err
+		}
 		return nil
 	case *ast.FieldAccessExpr:
 		recVal, err := s.evalExpr(l.Record)
@@ -160,9 +161,8 @@ func (s *State) evalAssignmentStmt(stmt *ast.AssignmentStmt) error {
 }
 
 func (s *State) evalBlockStmt(stmt *ast.BlockStmt) (err error) {
-	oldEnv := s.Env
-	s.Env = NewEnv(s.Env)
-	defer func() { s.Env = oldEnv }()
+	s.ScopeManager.EnterScopeWithParent(s.ScopeManager.Current())
+	defer s.ScopeManager.ExitScope()
 
 	s.pushDeferScope()
 	defer func() {
@@ -254,7 +254,7 @@ func (s *State) evalExternStmt(stmt *ast.ExternStmt) error {
 		return fmt.Errorf("extern native: %s not registered", stmt.Name)
 	}
 
-	s.Env.Set(stmt.Name, val)
+	s.ScopeManager.Declare(stmt.Name, val)
 	return nil
 }
 
@@ -282,7 +282,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 		if modVal == nil {
 			return fmt.Errorf("cyclic dependency detected: %s", targetPath)
 		}
-		s.Env.Set(stmt.Alias, modVal)
+		s.ScopeManager.Declare(stmt.Alias, modVal)
 		return nil
 	}
 
@@ -321,7 +321,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 
 	fields := make(map[string]Value)
 	for name := range module.Exports {
-		val, err := modState.Env.Get(name)
+		val, err := modState.ScopeManager.Resolve(name)
 		if err != nil {
 			return err
 		}
@@ -342,7 +342,7 @@ func (s *State) evalImportStmt(stmt *ast.ImportStmt) error {
 	}
 
 	s.ModuleCache[targetPath] = modRecord
-	s.Env.Set(stmt.Alias, modRecord)
+	s.ScopeManager.Declare(stmt.Alias, modRecord)
 
 	return nil
 }

@@ -60,7 +60,7 @@ func RunTest(t *testing.T, tc TestCase) {
 
 		// Check local variables map[string]Value
 		for varName, expectedVal := range tc.ExpectedEnv {
-			val, err := s.Env.Get(varName)
+			val, err := s.ScopeManager.Resolve(varName)
 			if err != nil {
 				t.Errorf("expected variable %q not found: %v", varName, err)
 				continue
@@ -76,7 +76,7 @@ func RunTest(t *testing.T, tc TestCase) {
 
 		// Check variables that should be out of scope or undefined
 		for _, varName := range tc.UndefinedEnv {
-			val, err := s.Env.Get(varName)
+			val, err := s.ScopeManager.Resolve(varName)
 			if err == nil {
 				t.Errorf("variable %q should be undefined, but got %v", varName, val)
 			}

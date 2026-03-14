@@ -53,7 +53,8 @@ func (s *State) evalLenExpr(expr *ast.BuiltinCallExpr) (Value, error) {
 }
 
 func (s *State) evalFunLiteralExpr(expr *ast.FunLiteralExpr) (Value, error) {
-	return &VUserFun{s.Env, expr.Args, expr.Body}, nil
+	closure := s.ScopeManager.Current().CreateClosure(expr.Args, expr.Body)
+	return &VUserFun{Closure: closure}, nil
 }
 
 func (s *State) evalRecordLiteralExpr(expr *ast.RecordLiteralExpr) (Value, error) {
@@ -111,14 +112,13 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
 	defer func() { s.StackDepth-- }()
 
 	for {
-		if len(f.Args) != len(args) {
+		if len(f.Closure.Args()) != len(args) {
 			return nil, fmt.Errorf("not enough or too much arguments")
 		}
 
 		retVal, tc, err := func() (val Value, tc *VTailCall, err error) {
-			oldEnv := s.Env
-			s.Env = NewEnv(f.CapturedEnv)
-			defer func() { s.Env = oldEnv }()
+			s.ScopeManager.EnterScopeWithParent(f.Closure.CapturedScope())
+			defer s.ScopeManager.ExitScope()
 
 			s.pushDeferScope()
 			defer func() {
@@ -129,10 +129,10 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
 			}()
 
 			for i, arg := range args {
-				s.Env.Values[f.Args[i]] = arg
+				s.ScopeManager.Declare(f.Closure.Args()[i], arg)
 			}
 
-			if err = s.evalBody(f.Body); err != nil && err != ErrReturn {
+			if err = s.evalBody(f.Closure.Body()); err != nil && err != ErrReturn {
 				return nil, nil, err
 			}
 
@@ -158,15 +158,14 @@ func (s *State) callUserFun(f *VUserFun, args []Value) (Value, error) {
 }
 
 func (s *State) callBuiltinFun(f VBuiltinFun, args []Value) (Value, error) {
-	oldEnv := s.Env
-	s.Env = NewEnv(s.Env)
-	defer func() { s.Env = oldEnv }()
+	s.ScopeManager.EnterScopeWithParent(s.ScopeManager.Current())
+	defer s.ScopeManager.ExitScope()
 
 	return f(s, args)
 }
 
 func (s *State) evalVarRefExpr(expr *ast.VarRefExpr) (Value, error) {
-	value, err := s.Env.Get(expr.Name)
+	value, err := s.ScopeManager.Resolve(expr.Name)
 	if err != nil {
 		return nil, err
 	}
