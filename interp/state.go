@@ -3,6 +3,7 @@ package interp
 import (
 	"fmt"
 	"io/fs"
+	"maps"
 	"os"
 	"strings"
 
@@ -73,9 +74,7 @@ func (b *StateBuilder) WithModule(name string, module map[string]Value) *StateBu
 }
 
 func (b *StateBuilder) WithBuiltinModules(modules map[string]map[string]Value) *StateBuilder {
-	for name, module := range modules {
-		b.state.BuiltinModules[name] = module
-	}
+	maps.Copy(b.state.BuiltinModules, modules)
 	return b
 }
 
@@ -115,7 +114,6 @@ func Eval(cfg *mod.Config, sourcePath string, text []rune) error {
 	return s.Eval(text)
 }
 
-
 // registerNativesForPath populates NativeValues with any builtin module
 // whose logical path (e.g. "std/bool.vv") matches targetPath. The match is
 // tried two ways:
@@ -129,9 +127,7 @@ func (s *State) registerNativesForPath(targetPath string) {
 		normCached := strings.ReplaceAll(cachedPath, "\\", "/")
 		normStd := strings.ReplaceAll(stdPath, "\\", "/")
 		if normTarget == normCached || strings.HasSuffix(normTarget, "/"+normStd) {
-			for name, value := range funcs {
-				s.NativeValues[name] = value
-			}
+			maps.Copy(s.NativeValues, funcs)
 			break
 		}
 	}
