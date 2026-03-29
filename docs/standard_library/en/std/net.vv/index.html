@@ -246,15 +246,51 @@ let r = try text.reader(try net.reader(client), utf8)
 
 <div class='export-item'>
     <h3 id='accept' class='signature-header'>
-        <code>fun accept(listener)</code>
+        <code>fun accept(listener, handler)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>Accepts an incoming connection from a listener.</p>
+    <div class='docstring'><p>Accepts incoming connections from a listener continuously in the background.
+For each new connection, <code>handler</code> is called with the connection object.</p>
 <ul>
-<li><code>listener</code>: The listener object.</li>
+<li><code>listener</code>: The listener object returned by <code>listen</code>.</li>
+<li><code>handler</code>: A function that receives each connection <code>fun(conn)</code>.</li>
 </ul>
-<p>Returns the accepted connection wrapped in a result.</p>
+<p>Returns None immediately. Connections continue to be accepted in the
+background while the rest of your program keeps running.</p>
+<h2 id="warning-do-not-modify-outer-variables-inside-a-handler">Warning: Do Not Modify Outer Variables Inside a Handler</h2>
+<p>Each handler call runs independently and at the same time as your
+main program. If a handler modifies a variable declared outside of it,
+the result is <strong>unpredictable</strong> — the value may be corrupted or the
+program may behave incorrectly.</p>
+<p><strong>Do not do this:</strong></p>
+<pre><code class="language-vv">let counter = 0
+fun handler(conn)
+    counter = counter + 1  // unsafe: may corrupt the value
+end
+</code></pre>
+<p>Instead, use <code>channel</code> to send results back to the main program, or
+use <code>sync.mutex</code> to safely protect a shared variable:</p>
+<p><strong>Safe pattern 1 — channel (recommended):</strong></p>
+<pre><code class="language-vv">import channel from &quot;std/channel.vv&quot;
+let ch = channel.make()
+fun handler(conn)
+    // ... handle conn ...
+    channel.send(ch, &quot;done&quot;)
+end
+accept(listener, handler)
+let result = try channel.recv(ch, 5000)
+</code></pre>
+<p><strong>Safe pattern 2 — mutex:</strong></p>
+<pre><code class="language-vv">import sync from &quot;std/sync.vv&quot;
+let mu = sync.mutex()
+let counter = 0
+fun handler(conn)
+    sync.lock(mu)
+    counter = counter + 1
+    sync.unlock(mu)
+end
+</code></pre>
 </div>
     
 </div>

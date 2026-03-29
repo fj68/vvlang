@@ -1,0 +1,53 @@
+/// A simple TCP echo server demonstrating `net.accept` with `channel`.
+///
+/// The server listens on 127.0.0.1:8080. `net.accept` returns immediately
+/// and spawns a background goroutine that dispatches each incoming
+/// connection to the handler. A `channel` is used to pass the echoed
+/// bytes back to the main task so the program can wait for completion
+/// before exiting.
+///
+/// Run with:
+///   vv run examples/echo_server.vv
+
+import net from "std/net.vv"
+import channel from "std/channel.vv"
+import console from "std/console.vv"
+
+import sys from "std/sys.vv"
+
+let addr = "127.0.0.1:8080"
+
+/// `done` carries the bytes echoed by each handler back to the main task.
+let done = channel.make()
+
+/// Connection handler: read up to 1024 bytes, echo them back, then
+/// signal the main task with the echoed data via `done`.
+fun handler(conn)
+    defer net.close(conn)
+    let data = try net.read(conn, 1024)
+    try net.write(conn, data)
+    channel.send(done, data)
+end
+
+/// Start listening. `net.accept` returns immediately — the accept
+/// loop and per-connection handlers run in the background.
+let listener = try net.listen("tcp", addr)
+defer net.close(listener)
+
+net.accept(listener, handler)
+console.print("Server started on " + addr)
+
+/// Connect as a client. The OS queues the TCP connection until the
+/// background goroutine inside `net.accept` calls `ln.Accept()`.
+let client = try net.dial("tcp", addr)
+defer net.close(client)
+
+/// Send a message as a list of ASCII bytes.
+let msg = "hello via channel"
+try net.write(client, msg)
+console.print("Client sent:    " + msg)
+
+/// Block until the handler echoes the data back through `done`.
+/// Use a 5-second timeout to avoid hanging indefinitely.
+let echoed = try channel.recv(done, 5000)
+console.print("Server echoed:  " + sys.str(echoed))

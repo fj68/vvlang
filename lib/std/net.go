@@ -3,6 +3,7 @@ package std
 import (
 	"fmt"
 	"io"
+	"maps"
 	"net"
 	"time"
 
@@ -50,8 +51,8 @@ func NetListen(s *interp.State, args []interp.Value) (interp.Value, error) {
 }
 
 func NetAccept(s *interp.State, args []interp.Value) (interp.Value, error) {
-	if len(args) != 1 {
-		return nil, fmt.Errorf("accept expects 1 argument")
+	if len(args) != 2 {
+		return nil, fmt.Errorf("accept expects 2 arguments")
 	}
 	lnVal, ok := args[0].(*interp.VUserData)
 	if !ok {
@@ -62,11 +63,26 @@ func NetAccept(s *interp.State, args []interp.Value) (interp.Value, error) {
 		return nil, fmt.Errorf("invalid listener object")
 	}
 
-	conn, err := ln.Accept()
-	if err != nil {
-		return interp.ErrorValue(interp.StringToValue(err.Error())), nil
-	}
-	return interp.OkValue(&interp.VUserData{Value: conn}), nil
+	handler := args[1]
+
+	go func() {
+		for {
+			conn, err := ln.Accept()
+			if err != nil {
+				return
+			}
+			go func(c net.Conn) {
+				childState := s.NewState(s.Config, s.SourcePath)
+				maps.Copy(childState.NativeValues, s.NativeValues)
+				maps.Copy(childState.BuiltinModules, s.BuiltinModules)
+				maps.Copy(childState.ModuleCache, s.ModuleCache)
+
+				_, _ = childState.Call(handler, []interp.Value{&interp.VUserData{Value: c}})
+			}(conn)
+		}
+	}()
+
+	return interp.NoneValue, nil
 }
 
 func NetRead(s *interp.State, args []interp.Value) (interp.Value, error) {

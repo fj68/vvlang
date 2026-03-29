@@ -30,6 +30,7 @@
 /// ```
 
 import result from "std/result.vv"
+import channel from "std/channel.vv"
 
 /// @lang en
 /// Connects to a network address.
@@ -64,18 +65,107 @@ pub extern "native" fun dial(network, address)
 pub extern "native" fun listen(network, address)
 
 /// @lang en
-/// Accepts an incoming connection from a listener.
+/// Accepts incoming connections from a listener continuously in the background.
+/// For each new connection, `handler` is called with the connection object.
 ///
-/// - `listener`: The listener object.
+/// - `listener`: The listener object returned by `listen`.
+/// - `handler`: A function that receives each connection `fun(conn)`.
 ///
-/// Returns the accepted connection wrapped in a result.
+/// Returns None immediately. Connections continue to be accepted in the
+/// background while the rest of your program keeps running.
+///
+/// ## Warning: Do Not Modify Outer Variables Inside a Handler
+///
+/// Each handler call runs independently and at the same time as your
+/// main program. If a handler modifies a variable declared outside of it,
+/// the result is **unpredictable** — the value may be corrupted or the
+/// program may behave incorrectly.
+///
+/// **Do not do this:**
+/// ```vv
+/// let counter = 0
+/// fun handler(conn)
+///     counter = counter + 1  // unsafe: may corrupt the value
+/// end
+/// ```
+///
+/// Instead, use `channel` to send results back to the main program, or
+/// use `sync.mutex` to safely protect a shared variable:
+///
+/// **Safe pattern 1 — channel (recommended):**
+/// ```vv
+/// import channel from "std/channel.vv"
+/// let ch = channel.make()
+/// fun handler(conn)
+///     // ... handle conn ...
+///     channel.send(ch, "done")
+/// end
+/// accept(listener, handler)
+/// let result = try channel.recv(ch, 5000)
+/// ```
+///
+/// **Safe pattern 2 — mutex:**
+/// ```vv
+/// import sync from "std/sync.vv"
+/// let mu = sync.mutex()
+/// let counter = 0
+/// fun handler(conn)
+///     sync.lock(mu)
+///     counter = counter + 1
+///     sync.unlock(mu)
+/// end
+/// ```
 /// @lang ja
-/// リスナーからの着信接続を受け入れます。
+/// リスナーへの着信接続をバックグラウンドで継続的に受け付けます。
+/// 新しい接続が来るたびに、その接続オブジェクトを引数として `handler` が呼び出されます。
 ///
-/// - `listener`: リスナーオブジェクト。
+/// - `listener`: `listen` が返すリスナーオブジェクト。
+/// - `handler`: 各接続を受け取る関数 `fun(conn)`。
 ///
-/// 結果 (result) でラップされた受け入れた接続オブジェクトを返します。
-pub extern "native" fun accept(listener)
+/// すぐに None を返します。プログラムの残りの処理が続く間も、
+/// バックグラウンドで接続の受付が続きます。
+///
+/// ## 警告: ハンドラの中で外側の変数を変更しないでください
+///
+/// 各ハンドラの呼び出しは、メインプログラムと同時に独立して実行されます。
+/// ハンドラが外側で宣言された変数を変更すると、結果は**予測不能**になります —
+/// 値が壊れたり、プログラムが正しく動作しなくなる場合があります。
+///
+/// **以下のコードは危険です:**
+/// ```vv
+/// let counter = 0
+/// fun handler(conn)
+///     counter = counter + 1  // 危険: 値が壊れる可能性があります
+/// end
+/// ```
+///
+/// 代わりに、`channel` を使って結果をメインプログラムに送り返すか、
+/// `sync.mutex` を使って共有変数を安全に保護してください:
+///
+/// **安全なパターン 1 — channel (推奨):**
+/// ```vv
+/// import channel from "std/channel.vv"
+/// let ch = channel.make()
+/// fun handler(conn)
+///     // ... conn を処理 ...
+///     channel.send(ch, "done")
+/// end
+/// accept(listener, handler)
+/// let result = try channel.recv(ch, 5000)
+/// ```
+///
+/// **安全なパターン 2 — mutex:**
+/// ```vv
+/// import sync from "std/sync.vv"
+/// let mu = sync.mutex()
+/// let counter = 0
+/// fun handler(conn)
+///     sync.lock(mu)
+///     counter = counter + 1
+///     sync.unlock(mu)
+/// end
+/// ```
+pub extern "native" fun accept(listener, handler)
 
 /// @lang en
 /// Reads bytes from a connection.
@@ -182,7 +272,13 @@ test "client server tcp"
     let client = try dial("tcp", "127.0.0.1:18080")
     defer close(client)
 
-    let server = try accept(listener)
+    let ch = channel.make()
+    fun handler(conn)
+        channel.send(ch, conn)
+    end
+    accept(listener, handler)
+
+    let server = try channel.recv(ch, 1000)
     defer close(server)
 
     let n = try write(client, "hello")

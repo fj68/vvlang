@@ -69,26 +69,26 @@ func (s *State) evalRecordLiteralExpr(expr *ast.RecordLiteralExpr) (Value, error
 	return &VRecord{Fields: m}, nil
 }
 
+func (s *State) Call(f Value, args []Value) (Value, error) {
+	if uf, ok := f.(*VUserFun); ok {
+		return s.callUserFun(uf, args)
+	}
+	if bf, ok := f.(VBuiltinFun); ok {
+		return s.callBuiltinFun(bf, args)
+	}
+	return nil, fmt.Errorf("unable to call %s", f.Type())
+}
+
 func (s *State) evalFunCallExpr(expr *ast.FunCallExpr) (Value, error) {
 	f, err := s.evalExpr(expr.Fun)
 	if err != nil {
 		return nil, err
 	}
-	if f, ok := f.(*VUserFun); ok {
-		args, err := s.evalArgs(expr.Args)
-		if err != nil {
-			return nil, err
-		}
-		return s.callUserFun(f, args)
+	args, err := s.evalArgs(expr.Args)
+	if err != nil {
+		return nil, err
 	}
-	if f, ok := f.(VBuiltinFun); ok {
-		args, err := s.evalArgs(expr.Args)
-		if err != nil {
-			return nil, err
-		}
-		return s.callBuiltinFun(f, args)
-	}
-	return nil, fmt.Errorf("unable to call %s", f.Type())
+	return s.Call(f, args)
 }
 
 func (s *State) evalArgs(exprs []ast.Expr) ([]Value, error) {

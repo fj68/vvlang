@@ -246,15 +246,50 @@ let r = try text.reader(try net.reader(client), utf8)
 
 <div class='export-item'>
     <h3 id='accept' class='signature-header'>
-        <code>fun accept(listener)</code>
+        <code>fun accept(listener, handler)</code>
         <span class='extern-tag'>extern &#34;native&#34;</span>
     </h3>
     
-    <div class='docstring'><p>リスナーからの着信接続を受け入れます。</p>
+    <div class='docstring'><p>リスナーへの着信接続をバックグラウンドで継続的に受け付けます。
+新しい接続が来るたびに、その接続オブジェクトを引数として <code>handler</code> が呼び出されます。</p>
 <ul>
-<li><code>listener</code>: リスナーオブジェクト。</li>
+<li><code>listener</code>: <code>listen</code> が返すリスナーオブジェクト。</li>
+<li><code>handler</code>: 各接続を受け取る関数 <code>fun(conn)</code>。</li>
 </ul>
-<p>結果 (result) でラップされた受け入れた接続オブジェクトを返します。</p>
+<p>すぐに None を返します。プログラムの残りの処理が続く間も、
+バックグラウンドで接続の受付が続きます。</p>
+<h2 id="-">警告: ハンドラの中で外側の変数を変更しないでください</h2>
+<p>各ハンドラの呼び出しは、メインプログラムと同時に独立して実行されます。
+ハンドラが外側で宣言された変数を変更すると、結果は<strong>予測不能</strong>になります —
+値が壊れたり、プログラムが正しく動作しなくなる場合があります。</p>
+<p><strong>以下のコードは危険です:</strong></p>
+<pre><code class="language-vv">let counter = 0
+fun handler(conn)
+    counter = counter + 1  // 危険: 値が壊れる可能性があります
+end
+</code></pre>
+<p>代わりに、<code>channel</code> を使って結果をメインプログラムに送り返すか、
+<code>sync.mutex</code> を使って共有変数を安全に保護してください:</p>
+<p><strong>安全なパターン 1 — channel (推奨):</strong></p>
+<pre><code class="language-vv">import channel from &quot;std/channel.vv&quot;
+let ch = channel.make()
+fun handler(conn)
+    // ... conn を処理 ...
+    channel.send(ch, &quot;done&quot;)
+end
+accept(listener, handler)
+let result = try channel.recv(ch, 5000)
+</code></pre>
+<p><strong>安全なパターン 2 — mutex:</strong></p>
+<pre><code class="language-vv">import sync from &quot;std/sync.vv&quot;
+let mu = sync.mutex()
+let counter = 0
+fun handler(conn)
+    sync.lock(mu)
+    counter = counter + 1
+    sync.unlock(mu)
+end
+</code></pre>
 </div>
     
 </div>
