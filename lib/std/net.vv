@@ -1,0 +1,193 @@
+/// @lang en
+/// The `net` module provides system-level network connection capabilities.
+///
+/// Example:
+/// ```vv
+/// import net from "std/net.vv"
+/// import console from "std/console.vv"
+/// import text from "std/io/text.vv"
+/// import utf8 from "std/encoding/utf8.vv"
+///
+/// let client = try net.dial("tcp", "127.0.0.1:8080")
+/// defer net.close(client)
+/// let r = try text.reader(try net.reader(client), utf8)
+/// // ...
+/// ```
+/// @lang ja
+/// `net` モジュールは、システムレベルのネットワーク接続機能を提供します。
+///
+/// 例:
+/// ```vv
+/// import net from "std/net.vv"
+/// import console from "std/console.vv"
+/// import text from "std/io/text.vv"
+/// import utf8 from "std/encoding/utf8.vv"
+///
+/// let client = try net.dial("tcp", "127.0.0.1:8080")
+/// defer net.close(client)
+/// let r = try text.reader(try net.reader(client), utf8)
+/// // ...
+/// ```
+
+import result from "std/result.vv"
+
+/// @lang en
+/// Connects to a network address.
+///
+/// - `network`: The network protocol (e.g., "tcp", "unix").
+/// - `address`: The address to connect to.
+///
+/// Returns the connection object wrapped in a result.
+/// @lang ja
+/// ネットワークアドレスに接続します。
+///
+/// - `network`: ネットワークプロトコル (例: "tcp", "unix")。
+/// - `address`: 接続先のアドレス。
+///
+/// 結果 (result) でラップされた接続オブジェクトを返します。
+pub extern "native" fun dial(network, address)
+
+/// @lang en
+/// Starts listening on a network address.
+///
+/// - `network`: The network protocol (e.g., "tcp", "unix").
+/// - `address`: The address to listen on.
+///
+/// Returns the listener object wrapped in a result.
+/// @lang ja
+/// ネットワークアドレスでのリッスンを開始します。
+///
+/// - `network`: ネットワークプロトコル (例: "tcp", "unix")。
+/// - `address`: リッスンするアドレス。
+///
+/// 結果 (result) でラップされたリスナーオブジェクトを返します。
+pub extern "native" fun listen(network, address)
+
+/// @lang en
+/// Accepts an incoming connection from a listener.
+///
+/// - `listener`: The listener object.
+///
+/// Returns the accepted connection wrapped in a result.
+/// @lang ja
+/// リスナーからの着信接続を受け入れます。
+///
+/// - `listener`: リスナーオブジェクト。
+///
+/// 結果 (result) でラップされた受け入れた接続オブジェクトを返します。
+pub extern "native" fun accept(listener)
+
+/// @lang en
+/// Reads bytes from a connection.
+///
+/// - `conn`: The connection object.
+/// - `n`: The number of bytes to read.
+///
+/// Returns a result containing a list of bytes.
+/// @lang ja
+/// 接続からバイトを読み取ります。
+///
+/// - `conn`: 接続オブジェクト。
+/// - `n`: 読み取るバイト数。
+///
+/// バイトのリストを含む結果 (result) を返します。
+pub extern "native" fun read(conn, n)
+
+/// @lang en
+/// Writes bytes to a connection.
+///
+/// - `conn`: The connection object.
+/// - `bytes`: The bytes (list of integers or characters) to write.
+///
+/// Returns a result containing the number of written bytes.
+/// @lang ja
+/// 接続にバイトを書き込みます。
+///
+/// - `conn`: 接続オブジェクト。
+/// - `bytes`: 書き込むバイト (整数または文字のリスト)。
+///
+/// 書き込まれたバイト数を含む結果 (result) を返します。
+pub extern "native" fun write(conn, bytes)
+
+/// @lang en
+/// Closes a connection or listener.
+///
+/// - `conn`: The connection or listener object to close.
+/// @lang ja
+/// 接続またはリスナーを閉じます。
+///
+/// - `conn`: 閉じる接続またはリスナーオブジェクト。
+pub extern "native" fun close(conn)
+
+/// @lang en
+/// Sets the read timeout for a connection.
+///
+/// - `conn`: The connection object.
+/// - `timeout_ms`: The timeout in milliseconds (0 disables the timeout).
+/// @lang ja
+/// 接続の読み取りタイムアウトを設定します。
+///
+/// - `conn`: 接続オブジェクト。
+/// - `timeout_ms`: ミリ秒単位のタイムアウト (0 にするとタイムアウトが無効になります)。
+pub extern "native" fun set_read_timeout(conn, timeout_ms)
+
+/// @lang en
+/// Sets the write timeout for a connection.
+///
+/// - `conn`: The connection object.
+/// - `timeout_ms`: The timeout in milliseconds (0 disables the timeout).
+/// @lang ja
+/// 接続の書き込みタイムアウトを設定します。
+///
+/// - `conn`: 接続オブジェクト。
+/// - `timeout_ms`: ミリ秒単位のタイムアウト (0 にするとタイムアウトが無効になります)。
+pub extern "native" fun set_write_timeout(conn, timeout_ms)
+
+/// @lang en
+/// Creates a generalized reader stream for a connection.
+///
+/// - `conn`: The connection object.
+///
+/// Returns a record with `conn`, `read`, and `close` functions.
+/// @lang ja
+/// 接続用の汎用リーダーストリームを作成します。
+///
+/// - `conn`: 接続オブジェクト。
+///
+/// `conn`、`read`、および `close` 関数を持つレコードを返します。
+pub fun reader(conn)
+    return result.ok({ conn = conn, read = fun (r, length) return read(r.conn, length) end, close = fun (r) return close(r.conn) end })
+end
+
+/// @lang en
+/// Creates a generalized writer stream for a connection.
+///
+/// - `conn`: The connection object.
+///
+/// Returns a record with `conn`, `write`, and `close` functions.
+/// @lang ja
+/// 接続用の汎用ライターストリームを作成します。
+///
+/// - `conn`: 接続オブジェクト。
+///
+/// `conn`、`write`、および `close` 関数を持つレコードを返します。
+pub fun writer(conn)
+    return result.ok({ conn = conn, write = fun (r, content) return write(r.conn, content) end, close = fun (r) return close(r.conn) end })
+end
+
+test "client server tcp"
+    let listener = try listen("tcp", "127.0.0.1:18080")
+    defer close(listener)
+
+    let client = try dial("tcp", "127.0.0.1:18080")
+    defer close(client)
+
+    let server = try accept(listener)
+    defer close(server)
+
+    let n = try write(client, "hello")
+    assert n == 5
+
+    let r = try read(server, 5)
+    assert r == [104, 101, 108, 108, 111]
+end

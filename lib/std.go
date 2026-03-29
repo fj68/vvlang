@@ -105,6 +105,16 @@ var natives = map[string]map[string]interp.Value{
 		"set":     interp.VBuiltinFun(std.Set),
 		"to_list": interp.VBuiltinFun(std.ToList),
 	},
+	"std/net.vv": {
+		"dial":              interp.VBuiltinFun(std.NetDial),
+		"listen":            interp.VBuiltinFun(std.NetListen),
+		"accept":            interp.VBuiltinFun(std.NetAccept),
+		"read":              interp.VBuiltinFun(std.NetRead),
+		"write":             interp.VBuiltinFun(std.NetWrite),
+		"close":             interp.VBuiltinFun(std.NetClose),
+		"set_read_timeout":  interp.VBuiltinFun(std.NetSetReadTimeout),
+		"set_write_timeout": interp.VBuiltinFun(std.NetSetWriteTimeout),
+	},
 }
 
 var Std = &Lib{
