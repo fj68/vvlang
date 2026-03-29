@@ -1,0 +1,14 @@
+import console from "std/console.vv"
+import sync from "std/sync.vv"
+import channel from "std/channel.vv"
+
+console.print("Testing sync...")
+let m = sync.mutex()
+sync.lock(m)
+sync.unlock(m)
+console.print("Sync OK")
+
+console.print("Testing channel timeout...")
+let ch = channel.make()
+let res = channel.select([ch], 100)
+console.print("Channel timeout OK")

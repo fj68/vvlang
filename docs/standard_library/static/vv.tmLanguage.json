@@ -55,7 +55,7 @@
             "patterns": [
                 {
                     "name": "keyword.control.vv",
-                    "match": "\\b(if|else|while|return|break|continue|begin|end|test|assert|defer|try)\\b"
+                    "match": "\\b(if|else|while|return|break|continue|begin|end|test|assert|defer)\\b"
                 },
                 {
                     "name": "keyword.declaration.vv",

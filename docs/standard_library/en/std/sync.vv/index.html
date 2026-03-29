@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>std/sync.vv - vvlang documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--heading-color);
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--heading-color);
+        }
+
+        header .logo a {
+            color: var(--heading-color);
+            text-decoration: none;
+        }
+
+        header .logo a:hover {
+            text-decoration: underline;
+        }
+
+        nav.langs a {
+            color: var(--muted-text);
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: var(--heading-color);
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 0;
+        }
+
+        h1 {
+            color: var(--heading-color);
+        }
+
+        h2 {
+            color: var(--heading-color);
+            margin-top: 2rem;
+        }
+
+        .docstring {
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-item {
+            margin-bottom: 2rem;
+        }
+
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--link-color);
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .extern-tag {
+            font-size: 0.8rem;
+            color: var(--extern-tag-color);
+            font-weight: normal;
+            font-family: monospace;
+            background: var(--extern-tag-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            background: var(--pre-bg);
+            color: var(--text-color);
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        code {
+            font-family: monospace;
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+
+        h3 code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        pre code {
+            padding: 0;
+            border: none;
+            background-color: transparent;
+        }
+
+        .summary {
+            color: var(--muted-text);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../static/highlight.css">
+</head>
+
+<body>
+    <header>
+        <div class='logo'><a href='../../../en/index.html'>vvlang docs</a></div>
+        <nav class='langs'>
+            
+            <a href='../../../en/index.html' class='active' >en</a>
+            
+            <a href='../../../ja/index.html' >ja</a>
+            
+        </nav>
+    </header>
+    <main>
+        
+<p><a href='../../../en/index.html'>&larr; Back to the index</a></p>
+<h1>Module <code>std/sync.vv</code></h1>
+
+
+<div class='docstring module-doc'><p>The <code>sync</code> module provides basic synchronization primitives such as mutual exclusion locks.</p>
+<p>Example:</p>
+<pre><code class="language-vv">import sync from &quot;std/sync.vv&quot;
+let m = sync.mutex()
+sync.lock(m)
+defer sync.unlock(m)
+</code></pre>
+</div>
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#mutex">mutex</a></li>
+        
+        <li><a href="#lock">lock</a></li>
+        
+        <li><a href="#unlock">unlock</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='mutex' class='signature-header'>
+        <code>fun mutex()</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Creates a new mutex.</p>
+<p>Example:</p>
+<pre><code class="language-vv">let m = sync.mutex()
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='lock' class='signature-header'>
+        <code>fun lock(m)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Locks the mutex <code>m</code>. If the lock is already in use, the calling task blocks until the mutex is available.</p>
+<p>Example:</p>
+<pre><code class="language-vv">sync.lock(m)
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='unlock' class='signature-header'>
+        <code>fun unlock(m)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>Unlocks the mutex <code>m</code>.</p>
+<p>Example:</p>
+<pre><code class="language-vv">sync.unlock(m)
+</code></pre>
+</div>
+    
+</div>
+
+
+    </main>
+    <script type="module" src="../../../static/highlight.js"></script>
+</body>
+
+</html>
