@@ -231,23 +231,27 @@ import (
     "fmt"
     "github.com/fj68/vvlang/interp"
     "github.com/fj68/vvlang/lib"
+    "github.com/fj68/vvlang/mod"
 )
 
 func main() {
-    // 1. Create a new state
-    s := interp.NewState("main.vv")
+    cfg := mod.DefaultConfig()
 
-    // 2. Register standard library
-    s.RegisterBuiltinModules(lib.Std.Natives)
+    // 1. Create a new state via builder
+    s := interp.NewStateBuilder(cfg, "main.vv").
+        // 2. Register standard library
+        WithBuiltinModules(lib.Std.Natives).
+        // 3. Register your own native function
+        WithNative("hello", interp.VBuiltinFun(func(s *interp.State, args []interp.Value) (interp.Value, error) {
+            fmt.Println("Hello from Go!")
+            return interp.NoneValue, nil
+        })).
+        // 4. Build the state
+        Build()
+
     s.EnsureSystemLibrary(lib.Std.Name, lib.Std.FS)
 
-    // 3. Register your own native function
-    s.RegisterNative("hello", interp.VBuiltinFun(func(s *interp.State, args []interp.Value) (interp.Value, error) {
-        fmt.Println("Hello from Go!")
-        return interp.NoneValue, nil
-    }))
-
-    // 4. Evaluate code
+    // 5. Evaluate code
     code := `
         import console from 'std/console.vv'
         extern "native" fun hello()

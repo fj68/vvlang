@@ -45,6 +45,44 @@ func NewState(cfg *mod.Config, sourcePath string) *State {
 	}
 }
 
+type StateBuilder struct {
+	state *State
+}
+
+func NewStateBuilder(cfg *mod.Config, sourcePath string) *StateBuilder {
+	return &StateBuilder{
+		state: NewState(cfg, sourcePath),
+	}
+}
+
+func (b *StateBuilder) WithNative(name string, value Value) *StateBuilder {
+	b.state.NativeValues[name] = value
+	return b
+}
+
+func (b *StateBuilder) WithNatives(values map[string]Value) *StateBuilder {
+	for name, value := range values {
+		b.state.NativeValues[name] = value
+	}
+	return b
+}
+
+func (b *StateBuilder) WithModule(name string, module map[string]Value) *StateBuilder {
+	b.state.BuiltinModules[name] = module
+	return b
+}
+
+func (b *StateBuilder) WithBuiltinModules(modules map[string]map[string]Value) *StateBuilder {
+	for name, module := range modules {
+		b.state.BuiltinModules[name] = module
+	}
+	return b
+}
+
+func (b *StateBuilder) Build() *State {
+	return b.state
+}
+
 func (s *State) IsTestMode() bool {
 	return s.CurrentTest != nil
 }
@@ -77,25 +115,6 @@ func Eval(cfg *mod.Config, sourcePath string, text []rune) error {
 	return s.Eval(text)
 }
 
-func (s *State) RegisterNative(name string, value Value) {
-	s.NativeValues[name] = value
-}
-
-func (s *State) RegisterNatives(values map[string]Value) {
-	for name, value := range values {
-		s.RegisterNative(name, value)
-	}
-}
-
-func (s *State) RegisterBuiltinModule(name string, module map[string]Value) {
-	s.BuiltinModules[name] = module
-}
-
-func (s *State) RegisterBuiltinModules(modules map[string]map[string]Value) {
-	for name, module := range modules {
-		s.RegisterBuiltinModule(name, module)
-	}
-}
 
 // registerNativesForPath populates NativeValues with any builtin module
 // whose logical path (e.g. "std/bool.vv") matches targetPath. The match is
@@ -110,7 +129,9 @@ func (s *State) registerNativesForPath(targetPath string) {
 		normCached := strings.ReplaceAll(cachedPath, "\\", "/")
 		normStd := strings.ReplaceAll(stdPath, "\\", "/")
 		if normTarget == normCached || strings.HasSuffix(normTarget, "/"+normStd) {
-			s.RegisterNatives(funcs)
+			for name, value := range funcs {
+				s.NativeValues[name] = value
+			}
 			break
 		}
 	}

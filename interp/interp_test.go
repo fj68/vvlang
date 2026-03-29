@@ -6,10 +6,11 @@ import (
 )
 
 func TestExternNativeExported(t *testing.T) {
-	s := NewState(mod.DefaultConfig(), "test.vv")
-	s.RegisterNative("f", VBuiltinFun(func(s *State, args []Value) (Value, error) {
-		return VInt(42), nil
-	}))
+	s := NewStateBuilder(mod.DefaultConfig(), "test.vv").
+		WithNative("f", VBuiltinFun(func(s *State, args []Value) (Value, error) {
+			return VInt(42), nil
+		})).
+		Build()
 	err := s.Eval([]rune("pub extern 'native' fun f()"))
 	if err != nil {
 		t.Fatalf("Eval() error = %v", err)
