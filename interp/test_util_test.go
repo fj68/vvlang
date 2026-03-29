@@ -19,10 +19,11 @@ type TestCase struct {
 
 func RunTest(t *testing.T, tc TestCase) {
 	t.Run(tc.Name, func(t *testing.T) {
-		s := NewState(mod.DefaultConfig(), "test.vv")
+		builder := NewStateBuilder(mod.DefaultConfig(), "test.vv")
 		if tc.Globals != nil {
-			s.RegisterNatives(tc.Globals)
+			builder.WithNatives(tc.Globals)
 		}
+		s := builder.Build()
 
 		var err error
 		if tc.EvalTest {

@@ -78,8 +78,9 @@ func testFile(path string) (error, string) {
 	}
 
 	cfg := mod.DefaultConfig()
-	s := interp.NewState(cfg, path)
-	s.RegisterBuiltinModules(lib.Std.Natives)
+	s := interp.NewStateBuilder(cfg, path).
+		WithBuiltinModules(lib.Std.Natives).
+		Build()
 	if err := s.EnsureSystemLibrary(lib.Std.Name, lib.Std.FS); err != nil {
 		return err, ""
 	}

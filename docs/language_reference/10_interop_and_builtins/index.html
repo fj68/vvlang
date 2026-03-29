@@ -91,39 +91,46 @@ extern "native" let system_name</code></pre>
         <code>vv</code> code is evaluated. There are two patterns:
     </p>
 
-    <h4>1. Registering individual natives (<code>RegisterNative</code>)</h4>
-    <p>Call <code>s.RegisterNative(name, value)</code> (or <code>s.RegisterNatives(map)</code> for a batch) directly
-        on a <code>*interp.State</code>. Any <code>interp.Value</code> can be registered &mdash; most commonly
+    <h4>1. Registering individual natives (<code>WithNative</code>)</h4>
+    <p>Call <code>builder.WithNative(name, value)</code> (or <code>builder.WithNatives(map)</code> for a batch) 
+        during builder initialization with an <code>*interp.StateBuilder</code>. Any <code>interp.Value</code> can be registered &mdash; most commonly
         a <code>interp.VBuiltinFun</code> wrapping a Go function.</p>
     <p>Go side:</p>
-    <pre><code>s := interp.NewState(sourcePath)
-s.RegisterNative("system_clock", interp.VBuiltinFun(SystemClock))
-s.RegisterNative("system_name",  interp.VList{...}) // any Value
+    <pre><code>s := interp.NewStateBuilder(cfg, sourcePath).
+    WithNative("system_clock", interp.VBuiltinFun(SystemClock)).
+    WithNative("system_name",  interp.VList{...}). // any Value
+    Build()
 
 // Or register several at once:
-s.RegisterNatives(map[string]interp.Value{
-    "system_clock": interp.VBuiltinFun(SystemClock),
-    "system_name":  interp.StringToValue("linux"),
-})</code></pre>
+s := interp.NewStateBuilder(cfg, sourcePath).
+    WithNatives(map[string]interp.Value{
+        "system_clock": interp.VBuiltinFun(SystemClock),
+        "system_name":  interp.StringToValue("linux"),
+    }).
+    Build()</code></pre>
     <p>vv side:</p>
     <pre><code>extern "native" fun system_clock()
 extern "native" let system_name
 let t  = system_clock()
 let os = system_name</code></pre>
 
-    <h4>2. Registering a builtin module (<code>RegisterBuiltinModule</code>)</h4>
+    <h4>2. Registering a builtin module (<code>WithModule</code>)</h4>
     <p>For standard-library style modules, register a whole map of natives keyed by the module's logical
         path. The interpreter will automatically load them when that module is imported or tested.</p>
     <p>Go side:</p>
-    <pre><code>s.RegisterBuiltinModule("std/console.vv", map[string]interp.Value{
-    "print": interp.VBuiltinFun(Print),
-})
+    <pre><code>s := interp.NewStateBuilder(cfg, sourcePath).
+    WithModule("std/console.vv", map[string]interp.Value{
+        "print": interp.VBuiltinFun(Print),
+    }).
+    Build()
 
 // Or register several modules at once:
-s.RegisterBuiltinModules(map[string]map[string]interp.Value{
-    "std/console.vv": {"print": interp.VBuiltinFun(Print)},
-    "std/math.vv":    {"pi": interp.VFloat(3.14159)},
-})</code></pre>
+s := interp.NewStateBuilder(cfg, sourcePath).
+    WithBuiltinModules(map[string]map[string]interp.Value{
+        "std/console.vv": {"print": interp.VBuiltinFun(Print)},
+        "std/math.vv":    {"pi": interp.VFloat(3.14159)},
+    }).
+    Build()</code></pre>
     <p>vv side (std/console.vv):</p>
     <pre><code>pub extern "native" fun print(value)</code></pre>
 
