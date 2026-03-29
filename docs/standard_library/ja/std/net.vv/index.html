@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>std/net.vv - vvlang documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--heading-color);
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--heading-color);
+        }
+
+        header .logo a {
+            color: var(--heading-color);
+            text-decoration: none;
+        }
+
+        header .logo a:hover {
+            text-decoration: underline;
+        }
+
+        nav.langs a {
+            color: var(--muted-text);
+            text-decoration: none;
+            margin-left: 1rem;
+            font-size: 0.9rem;
+        }
+
+        nav.langs a.active {
+            color: var(--heading-color);
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 0;
+        }
+
+        h1 {
+            color: var(--heading-color);
+        }
+
+        h2 {
+            color: var(--heading-color);
+            margin-top: 2rem;
+        }
+
+        .docstring {
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-item {
+            margin-bottom: 2rem;
+        }
+
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--link-color);
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .extern-tag {
+            font-size: 0.8rem;
+            color: var(--extern-tag-color);
+            font-weight: normal;
+            font-family: monospace;
+            background: var(--extern-tag-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        pre {
+            background: var(--pre-bg);
+            color: var(--text-color);
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        code {
+            font-family: monospace;
+            background-color: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+
+        h3 code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        pre code {
+            padding: 0;
+            border: none;
+            background-color: transparent;
+        }
+
+        .summary {
+            color: var(--muted-text);
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+    </style>
+    <link rel="stylesheet" href="../../../static/highlight.css">
+</head>
+
+<body>
+    <header>
+        <div class='logo'><a href='../../../ja/index.html'>vvlang docs</a></div>
+        <nav class='langs'>
+            
+            <a href='../../../en/index.html' >en</a>
+            
+            <a href='../../../ja/index.html' class='active' >ja</a>
+            
+        </nav>
+    </header>
+    <main>
+        
+<p><a href='../../../ja/index.html'>&larr; Back to the index</a></p>
+<h1>Module <code>std/net.vv</code></h1>
+
+
+<div class='docstring module-doc'><p><code>net</code> モジュールは、システムレベルのネットワーク接続機能を提供します。</p>
+<p>例:</p>
+<pre><code class="language-vv">import net from &quot;std/net.vv&quot;
+import console from &quot;std/console.vv&quot;
+import text from &quot;std/io/text.vv&quot;
+import utf8 from &quot;std/encoding/utf8.vv&quot;
+
+let client = try net.dial(&quot;tcp&quot;, &quot;127.0.0.1:8080&quot;)
+defer net.close(client)
+let r = try text.reader(try net.reader(client), utf8)
+// ...
+</code></pre>
+</div>
+
+
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        
+        <li><a href="#dial">dial</a></li>
+        
+        <li><a href="#listen">listen</a></li>
+        
+        <li><a href="#accept">accept</a></li>
+        
+        <li><a href="#read">read</a></li>
+        
+        <li><a href="#write">write</a></li>
+        
+        <li><a href="#close">close</a></li>
+        
+        <li><a href="#set_read_timeout">set_read_timeout</a></li>
+        
+        <li><a href="#set_write_timeout">set_write_timeout</a></li>
+        
+        <li><a href="#reader">reader</a></li>
+        
+        <li><a href="#writer">writer</a></li>
+        
+    </ul>
+</div>
+
+
+<h2>Exports</h2>
+
+<div class='export-item'>
+    <h3 id='dial' class='signature-header'>
+        <code>fun dial(network, address)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>ネットワークアドレスに接続します。</p>
+<ul>
+<li><code>network</code>: ネットワークプロトコル (例: &quot;tcp&quot;, &quot;unix&quot;)。</li>
+<li><code>address</code>: 接続先のアドレス。</li>
+</ul>
+<p>結果 (result) でラップされた接続オブジェクトを返します。</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='listen' class='signature-header'>
+        <code>fun listen(network, address)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>ネットワークアドレスでのリッスンを開始します。</p>
+<ul>
+<li><code>network</code>: ネットワークプロトコル (例: &quot;tcp&quot;, &quot;unix&quot;)。</li>
+<li><code>address</code>: リッスンするアドレス。</li>
+</ul>
+<p>結果 (result) でラップされたリスナーオブジェクトを返します。</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='accept' class='signature-header'>
+        <code>fun accept(listener, handler)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>リスナーへの着信接続をバックグラウンドで継続的に受け付けます。
+新しい接続が来るたびに、その接続オブジェクトを引数として <code>handler</code> が呼び出されます。</p>
+<ul>
+<li><code>listener</code>: <code>listen</code> が返すリスナーオブジェクト。</li>
+<li><code>handler</code>: 各接続を受け取る関数 <code>fun(conn)</code>。</li>
+</ul>
+<p>すぐに None を返します。プログラムの残りの処理が続く間も、
+バックグラウンドで接続の受付が続きます。</p>
+<h2 id="-">警告: ハンドラの中で外側の変数を変更しないでください</h2>
+<p>各ハンドラの呼び出しは、メインプログラムと同時に独立して実行されます。
+ハンドラが外側で宣言された変数を変更すると、結果は<strong>予測不能</strong>になります —
+値が壊れたり、プログラムが正しく動作しなくなる場合があります。</p>
+<p><strong>以下のコードは危険です:</strong></p>
+<pre><code class="language-vv">let counter = 0
+fun handler(conn)
+    counter = counter + 1  // 危険: 値が壊れる可能性があります
+end
+</code></pre>
+<p>代わりに、<code>channel</code> を使って結果をメインプログラムに送り返すか、
+<code>sync.mutex</code> を使って共有変数を安全に保護してください:</p>
+<p><strong>安全なパターン 1 — channel (推奨):</strong></p>
+<pre><code class="language-vv">import channel from &quot;std/channel.vv&quot;
+let ch = channel.make()
+fun handler(conn)
+    // ... conn を処理 ...
+    channel.send(ch, &quot;done&quot;)
+end
+accept(listener, handler)
+let result = try channel.recv(ch, 5000)
+</code></pre>
+<p><strong>安全なパターン 2 — mutex:</strong></p>
+<pre><code class="language-vv">import sync from &quot;std/sync.vv&quot;
+let mu = sync.mutex()
+let counter = 0
+fun handler(conn)
+    sync.lock(mu)
+    counter = counter + 1
+    sync.unlock(mu)
+end
+</code></pre>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='read' class='signature-header'>
+        <code>fun read(conn, n)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>接続からバイトを読み取ります。</p>
+<ul>
+<li><code>conn</code>: 接続オブジェクト。</li>
+<li><code>n</code>: 読み取るバイト数。</li>
+</ul>
+<p>バイトのリストを含む結果 (result) を返します。</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='write' class='signature-header'>
+        <code>fun write(conn, bytes)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>接続にバイトを書き込みます。</p>
+<ul>
+<li><code>conn</code>: 接続オブジェクト。</li>
+<li><code>bytes</code>: 書き込むバイト (整数または文字のリスト)。</li>
+</ul>
+<p>書き込まれたバイト数を含む結果 (result) を返します。</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='close' class='signature-header'>
+        <code>fun close(conn)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>接続またはリスナーを閉じます。</p>
+<ul>
+<li><code>conn</code>: 閉じる接続またはリスナーオブジェクト。</li>
+</ul>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='set_read_timeout' class='signature-header'>
+        <code>fun set_read_timeout(conn, timeout_ms)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>接続の読み取りタイムアウトを設定します。</p>
+<ul>
+<li><code>conn</code>: 接続オブジェクト。</li>
+<li><code>timeout_ms</code>: ミリ秒単位のタイムアウト (0 にするとタイムアウトが無効になります)。</li>
+</ul>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='set_write_timeout' class='signature-header'>
+        <code>fun set_write_timeout(conn, timeout_ms)</code>
+        <span class='extern-tag'>extern &#34;native&#34;</span>
+    </h3>
+    
+    <div class='docstring'><p>接続の書き込みタイムアウトを設定します。</p>
+<ul>
+<li><code>conn</code>: 接続オブジェクト。</li>
+<li><code>timeout_ms</code>: ミリ秒単位のタイムアウト (0 にするとタイムアウトが無効になります)。</li>
+</ul>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='reader' class='signature-header'>
+        <code>fun reader(conn)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>接続用の汎用リーダーストリームを作成します。</p>
+<ul>
+<li><code>conn</code>: 接続オブジェクト。</li>
+</ul>
+<p><code>conn</code>、<code>read</code>、および <code>close</code> 関数を持つレコードを返します。</p>
+</div>
+    
+</div>
+
+<div class='export-item'>
+    <h3 id='writer' class='signature-header'>
+        <code>fun writer(conn)</code>
+        
+    </h3>
+    
+    <div class='docstring'><p>接続用の汎用ライターストリームを作成します。</p>
+<ul>
+<li><code>conn</code>: 接続オブジェクト。</li>
+</ul>
+<p><code>conn</code>、<code>write</code>、および <code>close</code> 関数を持つレコードを返します。</p>
+</div>
+    
+</div>
+
+
+    </main>
+    <script type="module" src="../../../static/highlight.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+/// @lang en
+/// The `sync` module provides basic synchronization primitives such as mutual exclusion locks.
+///
+/// Example:
+/// ```vv
+/// import sync from "std/sync.vv"
+/// let m = sync.mutex()
+/// sync.lock(m)
+/// defer sync.unlock(m)
+/// ```
+/// @lang ja
+/// `sync` モジュールは、相互排他ロックなどの基本的な同期プリミティブを提供します。
+///
+/// Example:
+/// ```vv
+/// import sync from "std/sync.vv"
+/// let m = sync.mutex()
+/// sync.lock(m)
+/// defer sync.unlock(m)
+/// ```
+
+/// @lang en
+/// Creates a new mutex.
+///
+/// Example:
+/// ```vv
+/// let m = sync.mutex()
+/// ```
+/// @lang ja
+/// 新しいミューテックスを作成します。
+///
+/// Example:
+/// ```vv
+/// let m = sync.mutex()
+/// ```
+pub extern "native" fun mutex()
+
+/// @lang en
+/// Locks the mutex `m`. If the lock is already in use, the calling task blocks until the mutex is available.
+///
+/// Example:
+/// ```vv
+/// sync.lock(m)
+/// ```
+/// @lang ja
+/// ミューテックス `m` をロックします。すでにロックされている場合、ミューテックスが利用可能になるまで呼び出し元のタスクをブロックします。
+///
+/// Example:
+/// ```vv
+/// sync.lock(m)
+/// ```
+pub extern "native" fun lock(m)
+
+/// @lang en
+/// Unlocks the mutex `m`.
+///
+/// Example:
+/// ```vv
+/// sync.unlock(m)
+/// ```
+/// @lang ja
+/// ミューテックス `m` のロックを解除します。
+///
+/// Example:
+/// ```vv
+/// sync.unlock(m)
+/// ```
+pub extern "native" fun unlock(m)

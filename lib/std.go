@@ -115,6 +115,17 @@ var natives = map[string]map[string]interp.Value{
 		"set_read_timeout":  interp.VBuiltinFun(std.NetSetReadTimeout),
 		"set_write_timeout": interp.VBuiltinFun(std.NetSetWriteTimeout),
 	},
+	"std/sync.vv": {
+		"mutex":  interp.VBuiltinFun(std.SyncMutex),
+		"lock":   interp.VBuiltinFun(std.SyncLock),
+		"unlock": interp.VBuiltinFun(std.SyncUnlock),
+	},
+	"std/channel.vv": {
+		"make":   interp.VBuiltinFun(std.ChannelMake),
+		"send":   interp.VBuiltinFun(std.ChannelSend),
+		"recv":   interp.VBuiltinFun(std.ChannelRecv),
+		"select": interp.VBuiltinFun(std.ChannelSelect),
+	},
 }
 
 var Std = &Lib{

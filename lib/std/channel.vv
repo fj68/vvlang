@@ -1,0 +1,90 @@
+/// @lang en
+/// The `channel` module provides channels for communication and synchronization between concurrent tasks.
+///
+/// Example:
+/// ```vv
+/// import channel from "std/channel.vv"
+/// let ch = channel.make()
+/// channel.send(ch, "hello")
+/// let msg = try channel.recv(ch, 1000)
+/// ```
+/// @lang ja
+/// `channel` モジュールは、並行タスク間の通信および同期のためのチャネルを提供します。
+///
+/// Example:
+/// ```vv
+/// import channel from "std/channel.vv"
+/// let ch = channel.make()
+/// channel.send(ch, "hello")
+/// let msg = try channel.recv(ch, 1000)
+/// ```
+
+/// @lang en
+/// Creates a new channel.
+///
+/// Example:
+/// ```vv
+/// let ch = channel.make()
+/// ```
+/// @lang ja
+/// 新しいチャネルを作成します。
+///
+/// Example:
+/// ```vv
+/// let ch = channel.make()
+/// ```
+pub extern "native" fun make()
+
+/// @lang en
+/// Sends `data` to the channel `chan`.
+///
+/// Example:
+/// ```vv
+/// channel.send(chan, data)
+/// ```
+/// @lang ja
+/// データをチャネル `chan` に送信します。
+///
+/// Example:
+/// ```vv
+/// channel.send(chan, data)
+/// ```
+pub extern "native" fun send(chan, data)
+
+/// @lang en
+/// Receives data from the channel `chan`. Blocks up to `timeout_ms` milliseconds.
+/// If `timeout_ms` is 0, it blocks indefinitely without a timeout.
+/// Returns a result object.
+///
+/// Example:
+/// ```vv
+/// let msg = try channel.recv(chan, 3000)
+/// ```
+/// @lang ja
+/// チャネル `chan` からデータを受信します。最大 `timeout_ms` ミリ秒ブロックします。
+/// `timeout_ms` が 0 の場合、タイムアウトなしで無期限にブロックします。
+/// 結果オブジェクトを返します。
+///
+/// Example:
+/// ```vv
+/// let msg = try channel.recv(chan, 3000)
+/// ```
+pub extern "native" fun recv(chan, timeout_ms)
+
+/// @lang en
+/// Waits on multiple channels simultaneously and returns the first available data.
+/// Returns `{ index = i, value = data }` wrapped in a result object.
+///
+/// Example:
+/// ```vv
+/// let res = try channel.select([ch1, ch2], 3000)
+/// ```
+/// @lang ja
+/// 複数のチャネルで同時に待機し、最初に利用可能になったデータを返します。
+/// `{ index = i, value = data }` を結果オブジェクトにラップして返します。
+///
+/// Example:
+/// ```vv
+/// let res = try channel.select([ch1, ch2], 3000)
+/// ```
+pub extern "native" fun select(chans, timeout_ms)

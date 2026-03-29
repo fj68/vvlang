@@ -272,8 +272,8 @@ pre {
 .toc ul,
 .page-index ul {
     margin-bottom: 0;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 .toc ul li,
